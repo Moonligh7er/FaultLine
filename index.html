@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self'; connect-src 'self'; frame-src 'none'; object-src 'none'; base-uri 'self';">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>FixThisFaster — Report Potholes & Infrastructure Issues | Free App</title>
 <meta name="description" content="Report potholes, broken streetlights, and infrastructure problems in 10 seconds. Community-verified reports automatically escalate to government authorities. Free for Android & iOS.">
@@ -497,14 +498,24 @@ footer { background: var(--bg-card); border-top: 1px solid var(--border); paddin
     </div>
     <div class="footer-col">
       <h4>Contact</h4>
-      <a href="mailto:hello@fixthisfaster.com">hello@fixthisfaster.com</a>
-      <a href="mailto:privacy@fixthisfaster.com">privacy@fixthisfaster.com</a>
+      <a data-email="hello|fixthisfaster.com">loading...</a>
+      <a data-email="privacy|fixthisfaster.com">loading...</a>
     </div>
   </div>
   <div class="footer-bottom">
     &copy; 2026 FixThisFaster. Built with frustration and optimism.
   </div>
 </footer>
+
+<script>
+// Email obfuscation — prevents scraping by bots
+document.querySelectorAll('a[data-email]').forEach(function(el) {
+  var parts = el.getAttribute('data-email').split('|');
+  var email = parts[0] + '@' + parts[1];
+  el.href = 'mailto:' + email;
+  el.textContent = email;
+});
+</script>
 
 </body>
 </html>

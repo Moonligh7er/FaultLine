@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self'; connect-src 'self'; frame-src 'none'; object-src 'none'; base-uri 'self';">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>FixThisFaster Features — AI Pothole Detection, Legal Tools, Government Accountability</title>
 <meta name="description" content="50+ features: AI photo analysis, voice reporting, augmented reality, legal demand letters, insurance claim packaging, infrastructure health grades, predictive analytics, 5 languages, and more.">
@@ -201,6 +202,16 @@ footer a { color: var(--text-secondary); margin: 0 12px; }
   <a href="index.html">Home</a> &middot; <a href="privacy.html">Privacy</a> &middot; <a href="terms.html">Terms</a>
   <br><br>&copy; 2026 FixThisFaster
 </footer>
+
+<script>
+// Email obfuscation — prevents scraping by bots
+document.querySelectorAll('a[data-email]').forEach(function(el) {
+  var parts = el.getAttribute('data-email').split('|');
+  var email = parts[0] + '@' + parts[1];
+  el.href = 'mailto:' + email;
+  el.textContent = email;
+});
+</script>
 
 </body>
 </html>

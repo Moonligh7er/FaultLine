@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self'; connect-src 'self'; frame-src 'none'; object-src 'none'; base-uri 'self';">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Privacy Policy — FixThisFaster | Infrastructure Reporting App</title>
 <meta name="description" content="FixThisFaster privacy policy. Learn what data we collect, how we use it, and how we protect your privacy. We never sell personal data.">
@@ -101,7 +102,7 @@ footer a { color: var(--text-secondary); margin: 0 12px; }
 <h2>5. Your Rights</h2>
 <ul>
   <li><strong>Access:</strong> View all your reports and profile data in the app.</li>
-  <li><strong>Delete:</strong> Request deletion of your account and all associated data by emailing <a href="mailto:privacy@fixthisfaster.com">privacy@fixthisfaster.com</a>.</li>
+  <li><strong>Delete:</strong> Request deletion of your account and all associated data by emailing <a data-email="privacy|fixthisfaster.com">loading...</a>.</li>
   <li><strong>Anonymous reporting:</strong> Use the app without creating an account.</li>
   <li><strong>Opt-out of tracking:</strong> Deny the iOS tracking prompt. Disable proximity alerts and commute learning in settings.</li>
   <li><strong>Data portability:</strong> Request an export of your data by emailing us.</li>
@@ -115,12 +116,23 @@ footer a { color: var(--text-secondary); margin: 0 12px; }
 
 <h2>8. Contact</h2>
 <p>For privacy questions or data deletion requests:<br>
-Email: <a href="mailto:privacy@fixthisfaster.com">privacy@fixthisfaster.com</a></p>
+Email: <a data-email="privacy|fixthisfaster.com">loading...</a></p>
 </div>
 
 <footer>
   <a href="index.html">Home</a> &middot; <a href="features.html">Features</a> &middot; <a href="terms.html">Terms</a>
   <br><br>&copy; 2026 FixThisFaster
 </footer>
+
+<script>
+// Email obfuscation — prevents scraping by bots
+document.querySelectorAll('a[data-email]').forEach(function(el) {
+  var parts = el.getAttribute('data-email').split('|');
+  var email = parts[0] + '@' + parts[1];
+  el.href = 'mailto:' + email;
+  el.textContent = email;
+});
+</script>
+
 </body>
 </html>
