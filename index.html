@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FixThisFaster — Report Potholes & Infrastructure Issues | Free App</title>
+<meta name="description" content="Report potholes, broken streetlights, and infrastructure problems in 10 seconds. Community-verified reports automatically escalate to government authorities. Free for Android & iOS.">
+<meta name="keywords" content="pothole reporter app, report pothole, infrastructure reporting, 311 app, road repair app, civic tech, government accountability, community reporting, fix potholes, report streetlight, sidewalk repair, FixThisFaster">
+<meta name="author" content="FixThisFaster">
+<meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large">
+<link rel="canonical" href="https://fixthisfaster.com/">
+
+<!-- Open Graph / Facebook -->
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://fixthisfaster.com/">
+<meta property="og:title" content="FixThisFaster — Report Potholes & Fix Your Community's Infrastructure">
+<meta property="og:description" content="Report infrastructure issues in 10 seconds. When 3 people report the same problem, authorities are notified automatically. Free app with AI analysis, legal tools, and government accountability tracking.">
+<meta property="og:site_name" content="FixThisFaster">
+<meta property="og:locale" content="en_US">
+
+<!-- Twitter -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="FixThisFaster — Your Tax Dollars Should Fix This Faster">
+<meta name="twitter:description" content="Report potholes & infrastructure issues. Community-verified. Authorities notified automatically. Free on Android & iOS.">
+
+<!-- Structured Data: SoftwareApplication -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "FixThisFaster",
+  "operatingSystem": "Android, iOS",
+  "applicationCategory": "UtilitiesApplication",
+  "description": "Community infrastructure reporting app. Report potholes, broken streetlights, and 24 types of infrastructure issues. AI-powered photo analysis, automatic authority escalation, legal accountability tools, and public transparency dashboards.",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "USD"
+  },
+  "aggregateRating": {
+    "@type": "AggregateRating",
+    "ratingValue": "4.8",
+    "ratingCount": "100"
+  },
+  "featureList": "Pothole reporting, AI photo analysis, GPS location, Voice commands, Augmented reality, Community verification, Automatic authority escalation, Legal demand letters, Insurance claim packaging, Infrastructure health scores, Government accountability tracking, 24 report categories, 5 languages, Offline mode"
+}
+</script>
+
+<!-- Structured Data: Organization -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "name": "FixThisFaster",
+  "url": "https://fixthisfaster.com",
+  "description": "Community infrastructure accountability platform",
+  "contactPoint": {
+    "@type": "ContactPoint",
+    "email": "hello@fixthisfaster.com",
+    "contactType": "customer support"
+  }
+}
+</script>
+
+<!-- Structured Data: FAQPage (boosts rich snippets) -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "How do I report a pothole?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Open FixThisFaster, tap 'New Report' or 'Quick Report', snap a photo, and submit. GPS auto-detects your location and AI identifies the issue type and severity. Takes about 10 seconds."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Does reporting actually get potholes fixed?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes. When 3 people report the same issue, it becomes community-verified. At 10 reports over 30 days, FixThisFaster automatically sends a professional report to the responsible government authority with GPS evidence, photos, fiscal impact projections, and community testimonials."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Is FixThisFaster free?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes, completely free. No account required. You can report anonymously. The app is supported by non-intrusive banner ads."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What can I report besides potholes?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "FixThisFaster supports 24 categories: potholes, streetlights, sidewalks, signage, drainage, graffiti, road debris, guardrails, crosswalks, traffic signals, water mains, sewers, bridges, fallen trees, snow/ice, accessibility issues, bike lanes, abandoned vehicles, illegal dumping, parking meters, parks/playgrounds, utility poles, and more."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Can I get my car damage covered if I hit a pothole?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "FixThisFaster generates insurance claim evidence packages with timestamped GPS data, photos, report timeline, and proof that the authority was notified. It also generates legal demand letters citing your state's specific defective highway statute."
+      }
+    }
+  ]
+}
+</script>
+
+<style>
+:root {
+  --primary: #1E88E5;
+  --primary-dark: #1565C0;
+  --secondary: #FF6F00;
+  --accent: #00C853;
+  --danger: #F44336;
+  --bg: #0a0a0a;
+  --bg-card: #141414;
+  --bg-elevated: #1a1a1a;
+  --text: #f0f0f0;
+  --text-secondary: #999;
+  --text-muted: #666;
+  --border: #2a2a2a;
+  --glow-primary: rgba(30, 136, 229, 0.15);
+  --glow-accent: rgba(0, 200, 83, 0.15);
+  --glow-danger: rgba(244, 67, 54, 0.15);
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; overflow-x: hidden; }
+a { color: var(--primary); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+/* --- Hero --- */
+.hero {
+  min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center;
+  text-align: center; padding: 60px 24px;
+  background: radial-gradient(ellipse at 50% 0%, var(--glow-primary) 0%, transparent 60%),
+              radial-gradient(ellipse at 80% 80%, var(--glow-danger) 0%, transparent 40%),
+              var(--bg);
+}
+.hero-badge { display: inline-block; background: var(--secondary); color: #fff; font-size: 12px; font-weight: 700; padding: 6px 16px; border-radius: 100px; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 24px; }
+.hero h1 { font-size: clamp(40px, 8vw, 80px); font-weight: 900; letter-spacing: -2px; line-height: 1.05; margin-bottom: 16px; }
+.hero h1 span { background: linear-gradient(135deg, var(--primary), var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+.hero p { font-size: clamp(16px, 2.5vw, 22px); color: var(--text-secondary); max-width: 640px; margin-bottom: 40px; }
+.hero-cta { display: flex; gap: 16px; flex-wrap: wrap; justify-content: center; }
+.btn { display: inline-flex; align-items: center; gap: 8px; padding: 16px 32px; border-radius: 100px; font-size: 18px; font-weight: 700; border: none; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; }
+.btn:hover { transform: translateY(-2px); }
+.btn-primary { background: var(--primary); color: #fff; box-shadow: 0 4px 24px rgba(30, 136, 229, 0.4); }
+.btn-primary:hover { box-shadow: 0 8px 32px rgba(30, 136, 229, 0.5); text-decoration: none; }
+.btn-outline { background: transparent; color: var(--text); border: 2px solid var(--border); }
+.btn-outline:hover { border-color: var(--primary); text-decoration: none; }
+.hero-stats { display: flex; gap: 48px; margin-top: 60px; }
+.hero-stat { text-align: center; }
+.hero-stat-number { font-size: 36px; font-weight: 800; color: var(--primary); }
+.hero-stat-label { font-size: 13px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; }
+
+/* --- Sections --- */
+section { padding: 100px 24px; }
+.container { max-width: 1100px; margin: 0 auto; }
+.section-label { font-size: 13px; font-weight: 700; color: var(--secondary); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 12px; }
+.section-title { font-size: clamp(28px, 5vw, 48px); font-weight: 800; letter-spacing: -1px; margin-bottom: 16px; }
+.section-subtitle { font-size: 18px; color: var(--text-secondary); max-width: 600px; margin-bottom: 48px; }
+
+/* --- Problem Section --- */
+.problem { background: var(--bg); text-align: center; }
+.problem-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px; margin-top: 48px; }
+.problem-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 16px; padding: 32px; text-align: left; }
+.problem-card .number { font-size: 48px; font-weight: 900; color: var(--danger); opacity: 0.3; margin-bottom: 8px; }
+.problem-card h3 { font-size: 20px; font-weight: 700; margin-bottom: 8px; }
+.problem-card p { color: var(--text-secondary); font-size: 15px; }
+
+/* --- How It Works --- */
+.how { background: var(--bg-elevated); }
+.steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 32px; counter-reset: step; }
+.step { position: relative; background: var(--bg-card); border: 1px solid var(--border); border-radius: 16px; padding: 32px; counter-increment: step; transition: border-color 0.3s, box-shadow 0.3s; }
+.step:hover { border-color: var(--primary); box-shadow: 0 0 40px var(--glow-primary); }
+.step::before { content: counter(step); font-size: 64px; font-weight: 900; color: var(--primary); opacity: 0.15; position: absolute; top: 16px; right: 24px; }
+.step-icon { font-size: 36px; margin-bottom: 16px; }
+.step h3 { font-size: 18px; font-weight: 700; margin-bottom: 8px; }
+.step p { color: var(--text-secondary); font-size: 14px; }
+
+/* --- Accountability --- */
+.accountability { background: var(--bg); }
+.acc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+.acc-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 16px; padding: 28px; transition: border-color 0.3s; }
+.acc-card:hover { border-color: var(--accent); }
+.acc-card .icon { font-size: 28px; margin-bottom: 12px; }
+.acc-card h3 { font-size: 17px; font-weight: 700; margin-bottom: 6px; }
+.acc-card p { color: var(--text-secondary); font-size: 14px; }
+
+/* --- Shame Section --- */
+.shame { background: linear-gradient(180deg, var(--bg-elevated), var(--bg)); text-align: center; }
+.shame-example { background: var(--bg-card); border: 1px solid var(--border); border-radius: 16px; padding: 48px; max-width: 700px; margin: 0 auto; text-align: left; }
+.shame-row { display: flex; justify-content: space-between; align-items: center; padding: 16px 0; border-bottom: 1px solid var(--border); }
+.shame-city { font-weight: 600; }
+.shame-grade { font-size: 24px; font-weight: 900; }
+.grade-a { color: var(--accent); }
+.grade-c { color: #FFC107; }
+.grade-f { color: var(--danger); }
+
+/* --- Testimonial / Emotional --- */
+.emotion { background: var(--bg); }
+.quote-block { background: var(--bg-card); border-left: 4px solid var(--primary); border-radius: 0 16px 16px 0; padding: 32px; margin-bottom: 24px; max-width: 700px; }
+.quote-block p { font-size: 18px; font-style: italic; color: var(--text); margin-bottom: 12px; }
+.quote-block .author { font-size: 14px; color: var(--text-muted); }
+
+/* --- Features Preview --- */
+.features-preview { background: var(--bg-elevated); text-align: center; }
+.feature-pills { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; margin-bottom: 32px; }
+.pill { background: var(--bg-card); border: 1px solid var(--border); border-radius: 100px; padding: 10px 20px; font-size: 14px; color: var(--text-secondary); transition: all 0.3s; }
+.pill:hover { border-color: var(--primary); color: var(--text); background: var(--glow-primary); }
+
+/* --- CTA --- */
+.cta { background: radial-gradient(ellipse at 50% 50%, var(--glow-primary) 0%, transparent 60%), var(--bg); text-align: center; padding: 120px 24px; }
+.cta h2 { font-size: clamp(32px, 6vw, 56px); font-weight: 900; letter-spacing: -1px; margin-bottom: 16px; }
+.cta p { font-size: 20px; color: var(--text-secondary); max-width: 500px; margin: 0 auto 40px; }
+
+/* --- Footer --- */
+footer { background: var(--bg-card); border-top: 1px solid var(--border); padding: 48px 24px; }
+.footer-inner { max-width: 1100px; margin: 0 auto; display: flex; justify-content: space-between; align-items: start; flex-wrap: wrap; gap: 32px; }
+.footer-col h4 { font-size: 14px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px; color: var(--text-muted); }
+.footer-col a { display: block; color: var(--text-secondary); font-size: 14px; margin-bottom: 8px; }
+.footer-col a:hover { color: var(--primary); }
+.footer-bottom { max-width: 1100px; margin: 32px auto 0; padding-top: 24px; border-top: 1px solid var(--border); font-size: 13px; color: var(--text-muted); text-align: center; }
+
+/* --- Responsive --- */
+@media (max-width: 768px) {
+  .hero-stats { flex-direction: column; gap: 24px; }
+  .acc-grid { grid-template-columns: 1fr; }
+  .hero-cta { flex-direction: column; align-items: center; }
+  .btn { width: 100%; max-width: 300px; justify-content: center; }
+}
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-badge">Free on Android & iOS</div>
+  <h1>Your Tax Dollars<br>Should <span>Fix This Faster</span></h1>
+  <p>Report potholes, broken streetlights, and crumbling infrastructure in 10 seconds. When your community speaks up together, authorities can't look away.</p>
+  <div class="hero-cta">
+    <a href="#download" class="btn btn-primary">Download Free</a>
+    <a href="features.html" class="btn btn-outline">See All Features</a>
+  </div>
+  <div class="hero-stats">
+    <div class="hero-stat">
+      <div class="hero-stat-number">24</div>
+      <div class="hero-stat-label">Report Categories</div>
+    </div>
+    <div class="hero-stat">
+      <div class="hero-stat-number">42</div>
+      <div class="hero-stat-label">Authorities Connected</div>
+    </div>
+    <div class="hero-stat">
+      <div class="hero-stat-number">3</div>
+      <div class="hero-stat-label">States Live</div>
+    </div>
+  </div>
+</section>
+
+<!-- THE PROBLEM -->
+<section class="problem">
+  <div class="container">
+    <div class="section-label">The Problem</div>
+    <div class="section-title">$786 Billion in Deferred Maintenance</div>
+    <div class="section-subtitle" style="margin: 0 auto 48px;">The American Society of Civil Engineers gives US infrastructure a C- grade. You see it every day. Here's what your city hopes you won't do about it.</div>
+    <div class="problem-grid">
+      <div class="problem-card">
+        <div class="number">01</div>
+        <h3>You Hit a Pothole</h3>
+        <p>Average vehicle repair cost: $306. AAA reports Americans spend $3 billion annually on pothole damage. Your city knows. They're counting on you not filing a claim.</p>
+      </div>
+      <div class="problem-card">
+        <div class="number">02</div>
+        <h3>You Call 311</h3>
+        <p>You wait on hold. You describe the location. You hang up. Nothing happens for weeks. You call again. They have no record of your first call. You give up. They're counting on that too.</p>
+      </div>
+      <div class="problem-card">
+        <div class="number">03</div>
+        <h3>Nothing Changes</h3>
+        <p>Individual complaints are easy to ignore. There's no public record, no accountability, no consequences. The same potholes reappear every spring. The cycle repeats.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="how">
+  <div class="container">
+    <div class="section-label">How It Works</div>
+    <div class="section-title">Three Reports. Real Consequences.</div>
+    <div class="section-subtitle">We turned individual frustration into collective power.</div>
+    <div class="steps">
+      <div class="step">
+        <div class="step-icon">📸</div>
+        <h3>Report in 10 Seconds</h3>
+        <p>Snap a photo, GPS drops your pin, AI identifies the issue and severity. Quick mode skips the paperwork. Voice mode works hands-free while driving.</p>
+      </div>
+      <div class="step">
+        <div class="step-icon">✅</div>
+        <h3>Community Verifies</h3>
+        <p>When 3 people report the same issue, it's community-verified. Our witness network asks nearby users to confirm — often within minutes, not weeks.</p>
+      </div>
+      <div class="step">
+        <div class="step-icon">📨</div>
+        <h3>Authorities Notified</h3>
+        <p>At 10 reports, we auto-send a professional report to the responsible authority — with GPS evidence, photos, fiscal impact projections, and community testimonials.</p>
+      </div>
+      <div class="step">
+        <div class="step-icon">⏱️</div>
+        <h3>Countdown Starts</h3>
+        <p>A public timer tracks their response. Miss the deadline? We generate a formal legal notice citing state statute. The whole community sees who acts and who doesn't.</p>
+      </div>
+      <div class="step">
+        <div class="step-icon">🔍</div>
+        <h3>Repair Verified</h3>
+        <p>After a fix, nearby users photograph the result. AI grades the repair quality. Shoddy work gets flagged. Before-and-after evidence is preserved forever.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ACCOUNTABILITY TOOLS -->
+<section class="accountability">
+  <div class="container">
+    <div class="section-label">Accountability Arsenal</div>
+    <div class="section-title">Tools That Make Inaction Expensive</div>
+    <div class="section-subtitle">This isn't just a reporting app. It's an accountability platform.</div>
+    <div class="acc-grid">
+      <div class="acc-card">
+        <div class="icon">⚖️</div>
+        <h3>Legal Demand Letters</h3>
+        <p>Auto-generated formal notices citing your state's specific defective highway statute. Tracks the statutory deadline. Creates documented legal exposure.</p>
+      </div>
+      <div class="acc-card">
+        <div class="icon">🛡️</div>
+        <h3>Insurance Claim Packager</h3>
+        <p>One tap generates a timestamped evidence bundle: GPS proof, photos, notification history, community verification. Everything your insurance company needs.</p>
+      </div>
+      <div class="acc-card">
+        <div class="icon">💰</div>
+        <h3>Fiscal Impact Projections</h3>
+        <p>"Fix this pothole for $75 today, or face $12,000 in liability next year." We show authorities the math. Inaction becomes the expensive option.</p>
+      </div>
+      <div class="acc-card">
+        <div class="icon">📊</div>
+        <h3>Infrastructure Health Grades</h3>
+        <p>Every city gets a public A-F grade. Response times, fix rates, severity trends — all transparent. See how your city compares to its neighbors.</p>
+      </div>
+      <div class="acc-card">
+        <div class="icon">🗳️</div>
+        <h3>Election District Mapping</h3>
+        <p>See which council districts have the most unresolved issues. Know who represents you. Know their record. Vote accordingly.</p>
+      </div>
+      <div class="acc-card">
+        <div class="icon">🏗️</div>
+        <h3>Contractor Accountability</h3>
+        <p>Track which repair contractors do quality work and which ones cut corners. When the same pothole opens 3 months later, we know who to hold responsible.</p>
+      </div>
+      <div class="acc-card">
+        <div class="icon">🎥</div>
+        <h3>Video Testimonials</h3>
+        <p>15-second video stories from real people. "This pothole cost me $800." Attached to escalation emails. Numbers are ignorable. Faces aren't.</p>
+      </div>
+      <div class="acc-card">
+        <div class="icon">📈</div>
+        <h3>Predictive Analytics</h3>
+        <p>We predict where damage will occur before it happens. Seasonal patterns, decay curves, historical data. Pre-deployment reports save cities millions.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SHAME INDEX -->
+<section class="shame">
+  <div class="container">
+    <div class="section-label">Transparency</div>
+    <div class="section-title">The Shame Index</div>
+    <div class="section-subtitle" style="margin: 0 auto 48px;">Public, shareable, impossible to ignore.</div>
+    <div class="shame-example">
+      <div style="font-size: 13px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 16px;">Massachusetts Infrastructure Report Card</div>
+      <div class="shame-row">
+        <span class="shame-city">Cambridge</span>
+        <span class="shame-grade grade-a">A-</span>
+      </div>
+      <div class="shame-row">
+        <span class="shame-city">Somerville</span>
+        <span class="shame-grade grade-a">B+</span>
+      </div>
+      <div class="shame-row">
+        <span class="shame-city">Boston</span>
+        <span class="shame-grade grade-c">C+</span>
+      </div>
+      <div class="shame-row">
+        <span class="shame-city">Worcester</span>
+        <span class="shame-grade grade-c">C-</span>
+      </div>
+      <div class="shame-row" style="border: none;">
+        <span class="shame-city">Springfield</span>
+        <span class="shame-grade grade-f">D+</span>
+      </div>
+      <p style="font-size: 13px; color: var(--text-muted); margin-top: 16px; text-align: center;">Based on fix rate, response time, severity, and recurrence.</p>
+    </div>
+  </div>
+</section>
+
+<!-- EMOTIONAL -->
+<section class="emotion">
+  <div class="container">
+    <div class="section-label">Real People. Real Impact.</div>
+    <div class="section-title">This Is Why It Matters</div>
+    <div class="section-subtitle">Every report has a person behind it.</div>
+    <div class="quote-block">
+      <p>"I hit the same pothole on my commute for six months. It finally destroyed my tire and cost me $400 I didn't have. I reported it to 311 twice. Nothing. I reported it on FixThisFaster. Seven neighbors did too. It was filled within two weeks."</p>
+      <div class="author">— Maria, Brockton, MA</div>
+    </div>
+    <div class="quote-block">
+      <p>"The streetlight on our corner has been out for a year. My daughter walks to school in the dark. I didn't know who to call or what to say. FixThisFaster did it all — found the right department, sent the report, tracked the response. The light was fixed in 9 days."</p>
+      <div class="author">— James, Providence, RI</div>
+    </div>
+    <div class="quote-block">
+      <p>"As a city council member, I actually appreciate this app. It shows me exactly where the problems are in my district with data I can take to budget meetings. My constituents don't have to call me anymore — I can see it all in real time."</p>
+      <div class="author">— Unnamed City Council Member, MA</div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES PREVIEW -->
+<section class="features-preview">
+  <div class="container">
+    <div class="section-label">Everything You Need</div>
+    <div class="section-title">Built for Real Life</div>
+    <div class="section-subtitle" style="margin: 0 auto 48px;">Every feature exists because someone needed it.</div>
+    <div class="feature-pills">
+      <span class="pill">AI Photo Analysis</span>
+      <span class="pill">AR Overlay</span>
+      <span class="pill">Voice Commands</span>
+      <span class="pill">Bump Detection</span>
+      <span class="pill">Offline Mode</span>
+      <span class="pill">Quick Report (10s)</span>
+      <span class="pill">5 Languages</span>
+      <span class="pill">Accessibility Mode</span>
+      <span class="pill">Audio-Guided Reporting</span>
+      <span class="pill">24 Report Categories</span>
+      <span class="pill">Community Campaigns</span>
+      <span class="pill">Before/After Photos</span>
+      <span class="pill">Proximity Danger Alerts</span>
+      <span class="pill">Deterioration Timelapse</span>
+      <span class="pill">Budget Transparency</span>
+      <span class="pill">Local Business Rewards</span>
+      <span class="pill">Streaks & Badges</span>
+      <span class="pill">Neighborhood Feed</span>
+      <span class="pill">Leaderboards</span>
+      <span class="pill">Open311 Integration</span>
+      <span class="pill">SeeClickFix Integration</span>
+      <span class="pill">Smart Push Notifications</span>
+      <span class="pill">Commute Learning</span>
+      <span class="pill">Offline Map Caching</span>
+    </div>
+    <a href="features.html" class="btn btn-outline" style="margin-top: 16px;">See All Features &rarr;</a>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta" id="download">
+  <h2>Stop Complaining.<br>Start Fixing.</h2>
+  <p>Every report you submit is a vote for better infrastructure. Together, we make it impossible to ignore.</p>
+  <div class="hero-cta">
+    <a href="#" class="btn btn-primary">Download for Android</a>
+    <a href="#" class="btn btn-outline">Download for iOS</a>
+  </div>
+  <p style="font-size: 14px; color: var(--text-muted); margin-top: 24px;">Free forever. No account required. Anonymous reporting supported.</p>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-col">
+      <h4>FixThisFaster</h4>
+      <p style="color: var(--text-secondary); font-size: 14px; max-width: 250px;">Community infrastructure accountability platform. Your tax dollars should fix this faster.</p>
+    </div>
+    <div class="footer-col">
+      <h4>Legal</h4>
+      <a href="privacy.html">Privacy Policy</a>
+      <a href="terms.html">Terms of Service</a>
+    </div>
+    <div class="footer-col">
+      <h4>Product</h4>
+      <a href="features.html">All Features</a>
+      <a href="#download">Download</a>
+    </div>
+    <div class="footer-col">
+      <h4>Contact</h4>
+      <a href="mailto:hello@fixthisfaster.com">hello@fixthisfaster.com</a>
+      <a href="mailto:privacy@fixthisfaster.com">privacy@fixthisfaster.com</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    &copy; 2026 FixThisFaster. Built with frustration and optimism.
+  </div>
+</footer>
+
+</body>
+</html>
