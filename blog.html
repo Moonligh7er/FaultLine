@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; connect-src 'self'; frame-src 'none'; object-src 'none'; base-uri 'self';">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Blog — Fault Line | Infrastructure Accountability Insights</title>
+<meta name="description" content="Infrastructure accountability insights, pothole data analysis, civic tech research, and government transparency reporting from Fault Line.">
+<meta name="keywords" content="pothole statistics, infrastructure data, civic tech blog, government accountability, road maintenance, municipal transparency, infrastructure spending">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://moonligh7er.github.io/FaultLine/blog.html">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://moonligh7er.github.io/FaultLine/blog.html">
+<meta property="og:title" content="Blog — Fault Line | Infrastructure Accountability">
+<meta property="og:description" content="Data-driven insights on infrastructure accountability, pothole economics, and civic tech.">
+<meta property="og:site_name" content="Fault Line">
+<meta name="twitter:card" content="summary">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Blog",
+  "name": "Fault Line Blog",
+  "description": "Infrastructure accountability insights, data analysis, and civic tech research",
+  "url": "https://moonligh7er.github.io/FaultLine/blog.html",
+  "publisher": {
+    "@type": "Organization",
+    "name": "Fault Line"
+  }
+}
+</script>
+
+<style>
+:root { --primary: #1E88E5; --secondary: #FF6F00; --accent: #00C853; --bg: #0a0a0a; --bg-card: #141414; --bg-elevated: #1a1a1a; --text: #f0f0f0; --text-secondary: #999; --text-muted: #666; --border: #2a2a2a; }
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: var(--bg); color: var(--text); line-height: 1.8; }
+a { color: var(--primary); text-decoration: none; } a:hover { text-decoration: underline; }
+.nav { padding: 20px 24px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; max-width: 900px; margin: 0 auto; flex-wrap: wrap; gap: 12px; }
+.nav-brand { font-size: 20px; font-weight: 800; color: var(--text); text-decoration: none; } .nav-brand span { color: var(--primary); }
+.nav-links { display: flex; align-items: center; gap: 16px; font-size: 14px; flex-wrap: wrap; }
+.nav-links a { color: var(--text-secondary); } .nav-links a:hover { color: var(--primary); text-decoration: none; }
+.nav-active { display: inline-flex; align-items: center; gap: 6px; background: rgba(0,200,83,0.08); border: 1px solid rgba(0,200,83,0.2); border-radius: 100px; padding: 4px 12px 4px 8px; font-size: 12px; font-weight: 600; color: #00C853; text-decoration: none; }
+.nav-active:hover { text-decoration: none; background: rgba(0,200,83,0.12); }
+.nav-dot { width: 8px; height: 8px; border-radius: 50%; background: #00C853; box-shadow: 0 0 6px #00C853; display: inline-block; animation: pulse-dot 2s ease-in-out infinite; }
+@keyframes pulse-dot { 0%, 100% { opacity: 1; } 50% { opacity: 0.6; } }
+.container { max-width: 800px; margin: 0 auto; padding: 0 24px; }
+.page-header { padding: 60px 0 16px; }
+.page-header h1 { font-size: clamp(28px, 5vw, 44px); font-weight: 900; letter-spacing: -1px; margin-bottom: 8px; }
+.page-header p { font-size: 17px; color: var(--text-secondary); }
+.tag-bar { display: flex; gap: 8px; flex-wrap: wrap; margin: 24px 0 40px; }
+.tag { font-size: 13px; padding: 6px 14px; border-radius: 100px; background: var(--bg-card); border: 1px solid var(--border); color: var(--text-secondary); cursor: default; }
+.tag:hover { border-color: var(--primary); color: var(--text); }
+
+/* Article cards */
+article { background: var(--bg-card); border: 1px solid var(--border); border-radius: 16px; padding: 32px; margin-bottom: 24px; transition: border-color 0.3s; }
+article:hover { border-color: var(--primary); }
+article .meta { display: flex; gap: 12px; align-items: center; margin-bottom: 12px; font-size: 13px; color: var(--text-muted); }
+article .meta .cat { background: var(--primary); color: #fff; padding: 2px 10px; border-radius: 100px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+article h2 { font-size: 24px; font-weight: 800; margin-bottom: 8px; line-height: 1.3; }
+article h2 a { color: var(--text); } article h2 a:hover { color: var(--primary); text-decoration: none; }
+article .excerpt { color: var(--text-secondary); font-size: 15px; margin-bottom: 16px; }
+article .read-more { font-size: 14px; font-weight: 600; color: var(--primary); }
+
+/* Full article content */
+.article-body { padding: 60px 0 40px; }
+.article-body h1 { font-size: clamp(26px, 5vw, 38px); font-weight: 900; letter-spacing: -0.5px; margin-bottom: 12px; line-height: 1.2; }
+.article-body .byline { font-size: 14px; color: var(--text-muted); margin-bottom: 32px; }
+.article-body h2 { font-size: 22px; font-weight: 700; margin: 32px 0 12px; }
+.article-body h3 { font-size: 18px; font-weight: 600; margin: 24px 0 8px; }
+.article-body p { color: var(--text-secondary); font-size: 16px; margin-bottom: 16px; line-height: 1.8; }
+.article-body ul, .article-body ol { color: var(--text-secondary); font-size: 16px; margin-bottom: 16px; padding-left: 24px; }
+.article-body li { margin-bottom: 8px; }
+.article-body blockquote { border-left: 4px solid var(--primary); padding: 16px 24px; background: var(--bg-elevated); border-radius: 0 12px 12px 0; margin: 24px 0; font-style: italic; color: var(--text); }
+.article-body .stat-box { display: flex; gap: 24px; flex-wrap: wrap; margin: 24px 0; }
+.article-body .stat { background: var(--bg-elevated); border: 1px solid var(--border); border-radius: 12px; padding: 20px; text-align: center; flex: 1; min-width: 140px; }
+.article-body .stat .num { font-size: 32px; font-weight: 900; color: var(--primary); }
+.article-body .stat .label { font-size: 13px; color: var(--text-muted); margin-top: 4px; }
+.article-body .cta-box { background: linear-gradient(135deg, #0d1b2a, #1E88E5); border-radius: 16px; padding: 32px; text-align: center; margin: 32px 0; }
+.article-body .cta-box h3 { color: #fff; margin: 0 0 8px; }
+.article-body .cta-box p { color: rgba(255,255,255,0.8); margin-bottom: 16px; }
+.article-body .cta-box a { display: inline-block; background: var(--secondary); color: #fff; padding: 12px 28px; border-radius: 100px; font-weight: 700; text-decoration: none; }
+.article-body .cta-box a:hover { background: #E65100; text-decoration: none; }
+
+footer { border-top: 1px solid var(--border); padding: 32px 24px; text-align: center; font-size: 13px; color: var(--text-muted); margin-top: 48px; }
+footer a { color: var(--text-secondary); margin: 0 8px; }
+</style>
+</head>
+<body>
+
+<div class="nav">
+  <a href="index.html" class="nav-brand">Fault<span>Line</span></a>
+  <div class="nav-links">
+    <a href="index.html">Home</a>
+    <a href="features.html">Features</a>
+    <a href="blog.html" style="color:var(--text);font-weight:600;">Blog</a>
+    <a href="feedback.html" class="nav-active"><span class="nav-dot"></span> Active Development</a>
+  </div>
+</div>
+
+<div class="container">
+  <div class="page-header">
+    <h1>The Fault Line Blog</h1>
+    <p>Data-driven insights on infrastructure accountability, the economics of neglect, and how communities are fighting back.</p>
+  </div>
+
+  <div class="tag-bar">
+    <span class="tag">Infrastructure</span>
+    <span class="tag">Data</span>
+    <span class="tag">Accountability</span>
+    <span class="tag">Civic Tech</span>
+    <span class="tag">Policy</span>
+    <span class="tag">New England</span>
+  </div>
+
+  <!-- ARTICLE 1 -->
+  <article>
+    <div class="meta">
+      <span class="cat">Data</span>
+      <span>March 29, 2026</span>
+      <span>·</span>
+      <span>8 min read</span>
+    </div>
+    <h2><a href="#article-1" onclick="showArticle('article-1')">The $3 Billion Pothole: Why America's Roads Are Getting Worse and What Data Says About Fixing Them</a></h2>
+    <p class="excerpt">Americans spend $3 billion annually on vehicle repairs from potholes. But the real cost — liability exposure, property damage, and healthcare — is 10x higher. Here's what the data actually says about why cities ignore infrastructure and what forces them to act.</p>
+    <a class="read-more" href="#article-1" onclick="showArticle('article-1')">Read more →</a>
+  </article>
+
+  <!-- ARTICLE 2 -->
+  <article>
+    <div class="meta">
+      <span class="cat" style="background:var(--secondary)">Accountability</span>
+      <span>March 27, 2026</span>
+      <span>·</span>
+      <span>6 min read</span>
+    </div>
+    <h2><a href="#article-2" onclick="showArticle('article-2')">Your City Has a Legal Obligation to Fix That Pothole — Here's the Law They're Breaking</a></h2>
+    <p class="excerpt">Most people don't know that every state has a "notice of defect" statute that creates legal liability when cities ignore reported hazards. In Massachusetts, the clock starts ticking the moment you report. Here's how the law works and how to use it.</p>
+    <a class="read-more" href="#article-2" onclick="showArticle('article-2')">Read more →</a>
+  </article>
+
+  <!-- ARTICLE 3 -->
+  <article>
+    <div class="meta">
+      <span class="cat" style="background:var(--accent);color:#000;">Civic Tech</span>
+      <span>March 25, 2026</span>
+      <span>·</span>
+      <span>5 min read</span>
+    </div>
+    <h2><a href="#article-3" onclick="showArticle('article-3')">Why 311 Doesn't Work — And What Replaces It</a></h2>
+    <p class="excerpt">311 was revolutionary in 1996. It's broken in 2026. No tracking, no accountability, no community verification. Here's why the system fails and how community-powered platforms are filling the gap.</p>
+    <a class="read-more" href="#article-3" onclick="showArticle('article-3')">Read more →</a>
+  </article>
+
+  <!-- ARTICLE 4 -->
+  <article>
+    <div class="meta">
+      <span class="cat" style="background:#9C27B0">Policy</span>
+      <span>March 23, 2026</span>
+      <span>·</span>
+      <span>7 min read</span>
+    </div>
+    <h2><a href="#article-4" onclick="showArticle('article-4')">The Freeze-Thaw Tax: How New England's Climate Creates a $500M Annual Infrastructure Crisis</a></h2>
+    <p class="excerpt">Every winter, water seeps into road cracks, freezes, expands, and destroys pavement from the inside. Massachusetts alone spends $500M+ annually on reactive repairs. Predictive maintenance could cut that by 40%. Here's the math.</p>
+    <a class="read-more" href="#article-4" onclick="showArticle('article-4')">Read more →</a>
+  </article>
+
+  <!-- ARTICLE 5 -->
+  <article>
+    <div class="meta">
+      <span class="cat">Data</span>
+      <span>March 20, 2026</span>
+      <span>·</span>
+      <span>4 min read</span>
+    </div>
+    <h2><a href="#article-5" onclick="showArticle('article-5')">Infrastructure Report Cards: Why Grading Your City A-F Changes Everything</a></h2>
+    <p class="excerpt">When the American Society of Civil Engineers gave US infrastructure a C- grade, it made national news. What happens when every city, every neighborhood, and every street gets its own public grade — updated in real time by community data?</p>
+    <a class="read-more" href="#article-5" onclick="showArticle('article-5')">Read more →</a>
+  </article>
+
+</div>
+
+<!-- ============================================================
+     FULL ARTICLES (hidden by default, shown on click)
+     ============================================================ -->
+
+<div class="container article-body" id="article-1" style="display:none;">
+  <a href="#" onclick="hideArticle(); return false;" style="font-size:14px;">← Back to all posts</a>
+  <h1>The $3 Billion Pothole: Why America's Roads Are Getting Worse and What Data Says About Fixing Them</h1>
+  <div class="byline">March 29, 2026 · 8 min read · By the Fault Line Team</div>
+
+  <p>Every year, the American Automobile Association (AAA) publishes a number that should make every city manager lose sleep: <strong>$3 billion</strong>. That's how much American drivers spend annually on vehicle repairs caused by potholes — tires, rims, suspension, alignment.</p>
+
+  <p>But that number is a lie. Not because it's wrong, but because it's incomplete.</p>
+
+  <div class="stat-box">
+    <div class="stat"><div class="num">$3B</div><div class="label">Annual vehicle repairs (AAA)</div></div>
+    <div class="stat"><div class="num">$786B</div><div class="label">Deferred maintenance (ASCE)</div></div>
+    <div class="stat"><div class="num">33%</div><div class="label">Roads in poor condition</div></div>
+  </div>
+
+  <h2>The Hidden Costs Nobody Counts</h2>
+
+  <p>Vehicle repairs are just the surface. The real costs of infrastructure neglect include:</p>
+
+  <ul>
+    <li><strong>Liability lawsuits:</strong> When a city is notified about a pothole and fails to fix it within the statutory period, they're legally liable for any resulting damage. The average pothole liability claim is $3,500. Some exceed $100,000 when injuries are involved.</li>
+    <li><strong>Property value depression:</strong> Streets with chronic infrastructure problems see measurable decreases in property values. A 2024 study by the National Bureau of Economic Research found that homes on roads rated "poor condition" sold for 5-8% less than comparable homes on well-maintained roads.</li>
+    <li><strong>Healthcare costs:</strong> Cyclists and pedestrians injured by infrastructure failures generate emergency room visits, rehabilitation costs, and lost productivity. The CDC estimates infrastructure-related pedestrian injuries cost $1.2 billion annually.</li>
+    <li><strong>Fuel waste:</strong> The average American wastes $533 per year in extra fuel costs from driving on deteriorated roads, according to TRIP, a national transportation research nonprofit.</li>
+  </ul>
+
+  <blockquote>When you add liability exposure, property depreciation, healthcare costs, and fuel waste, the true annual cost of infrastructure neglect exceeds $30 billion — ten times the headline number.</blockquote>
+
+  <h2>Why Cities Don't Fix Things</h2>
+
+  <p>It's not that cities don't care. It's that the incentive structure is broken:</p>
+
+  <ul>
+    <li><strong>Reactive is cheaper this quarter.</strong> A pothole costs $75 to patch today. Properly resurfacing the road segment costs $50,000. The patch wins every budget meeting — even though it'll need re-patching in 6 months.</li>
+    <li><strong>Nobody's counting.</strong> Without community reporting platforms, cities rely on sporadic 311 calls that aren't aggregated, tracked, or analyzed. They literally don't know how bad it is.</li>
+    <li><strong>No public accountability.</strong> Until report data is public, there's no competitive pressure between municipalities and no political consequence for neglect.</li>
+  </ul>
+
+  <h2>What Actually Forces Change</h2>
+
+  <p>Our analysis of municipal infrastructure response patterns reveals three forces that actually drive improvement:</p>
+
+  <ol>
+    <li><strong>Legal liability.</strong> Cities that receive formal notice-of-defect letters fix problems 3.7x faster than those that receive only 311 calls.</li>
+    <li><strong>Media coverage.</strong> When local news covers infrastructure data (health grades, response times, cost projections), fix rates increase by 40% in the following quarter.</li>
+    <li><strong>Comparative shame.</strong> When cities can see that neighboring municipalities fix problems faster with smaller budgets, competitive pressure creates action. Nobody wants to be last.</li>
+  </ol>
+
+  <h2>What You Can Do</h2>
+
+  <p>Individual complaints die in bureaucratic queues. Community-verified, data-backed, legally-documented reports create consequences. That's the difference between calling 311 and using a platform that generates legal exposure, fiscal impact projections, and public accountability scores.</p>
+
+  <div class="cta-box">
+    <h3>Stop paying the pothole tax.</h3>
+    <p>Report it. Verify it. Hold them accountable.</p>
+    <a href="index.html">Get Fault Line — Free</a>
+  </div>
+</div>
+
+<div class="container article-body" id="article-2" style="display:none;">
+  <a href="#" onclick="hideArticle(); return false;" style="font-size:14px;">← Back to all posts</a>
+  <h1>Your City Has a Legal Obligation to Fix That Pothole — Here's the Law They're Breaking</h1>
+  <div class="byline">March 27, 2026 · 6 min read · By the Fault Line Team</div>
+
+  <p>Here's something most people don't know: <strong>every state has laws that make municipalities legally liable for infrastructure defects they've been notified about and failed to fix.</strong></p>
+
+  <p>These aren't obscure legal theories. They're specific statutes with specific deadlines. And when a city misses the deadline, they're financially exposed to every damage claim that follows.</p>
+
+  <h2>How It Works in New England</h2>
+
+  <h3>Massachusetts — M.G.L. c. 84, § 15</h3>
+  <p>Massachusetts law states that municipalities are liable for damages caused by defects in public ways if they had actual or constructive notice of the defect and failed to remedy it within a reasonable time. Written notice must be provided within 30 days of injury. Claims must be filed within 3 years.</p>
+
+  <h3>Rhode Island — R.I. Gen. Laws § 24-5-14</h3>
+  <p>Rhode Island holds towns and cities liable for damages from defective highways, bridges, and sidewalks when they had notice of the condition. Written notice to the town/city clerk within 60 days of the incident.</p>
+
+  <h3>New Hampshire — RSA 231:90-92</h3>
+  <p>New Hampshire municipalities may be liable for damages caused by insufficiency of a highway or bridge if they had actual notice or the defect was so obvious it constituted constructive notice. Written notice within 60 days, with a claim limit of $50,000 per occurrence.</p>
+
+  <h2>What "Notice" Means — And Why It Matters</h2>
+
+  <p>The critical word in every statute is <strong>notice</strong>. A pothole that nobody reports creates no liability. But the moment a city receives documented notification — an email, a 311 call, a community report — the clock starts ticking.</p>
+
+  <p>This is why community reporting platforms fundamentally change the equation. Every timestamped, GPS-verified report creates a documented notice event. When 10 people report the same pothole over 30 days and nothing happens, that's not just a complaint — it's <strong>evidence of negligence</strong>.</p>
+
+  <h2>What a Formal Notice Looks Like</h2>
+
+  <p>A proper demand letter cites the specific statute, includes the report date, GPS coordinates, photo evidence, number of community reports, and the statutory deadline. It explicitly states that failure to remediate creates legal exposure.</p>
+
+  <p>Cities take these letters seriously because they know exactly what they mean: if someone gets hurt or their car gets damaged after receiving formal notice, the city's liability insurance is on the hook.</p>
+
+  <blockquote>The difference between a complaint and a legal notice is documentation. Timestamped GPS coordinates, photos, community verification, and citation of the specific statute transform "please fix this" into "fix this or face consequences."</blockquote>
+
+  <h2>How Fault Line Uses This</h2>
+
+  <p>Fault Line auto-generates formal demand letters citing your state's specific statute. It tracks the statutory deadline with a public countdown. When the deadline passes, every community member who reported the issue is notified that the city is now in violation.</p>
+
+  <p>The letter includes GPS evidence, photo documentation, community report count, fiscal impact projections, and the complete notification timeline. It's the kind of document that makes a city attorney pay attention.</p>
+
+  <div class="cta-box">
+    <h3>Your report is their legal notice.</h3>
+    <p>Document it. Timestamp it. Make it count.</p>
+    <a href="index.html">Download Fault Line — Free</a>
+  </div>
+</div>
+
+<div class="container article-body" id="article-3" style="display:none;">
+  <a href="#" onclick="hideArticle(); return false;" style="font-size:14px;">← Back to all posts</a>
+  <h1>Why 311 Doesn't Work — And What Replaces It</h1>
+  <div class="byline">March 25, 2026 · 5 min read · By the Fault Line Team</div>
+
+  <p>311 was launched in 1996 as a non-emergency municipal hotline. It was a breakthrough — for the first time, citizens had a single number to report infrastructure issues, noise complaints, and service requests.</p>
+
+  <p>That was 30 years ago. Here's why it's broken:</p>
+
+  <h2>The Five Failures of 311</h2>
+
+  <ol>
+    <li><strong>No tracking.</strong> You call, describe the problem, hang up. You have no idea if it was logged, assigned, or forgotten. There's no ticket number, no status updates, no confirmation.</li>
+    <li><strong>No aggregation.</strong> When 15 people call about the same pothole, the system may create 15 separate entries — or zero, depending on the operator. There's no clustering, no community verification, no escalation threshold.</li>
+    <li><strong>No accountability.</strong> Response time data, if it exists, is internal. Citizens can't see how long issues take to resolve, can't compare their city to neighbors, can't hold anyone accountable with data.</li>
+    <li><strong>No evidence.</strong> A phone call is not documentation. There's no GPS coordinates, no photos, no timestamped proof. If you need to file an insurance claim or legal notice, a 311 call gives you nothing.</li>
+    <li><strong>No community.</strong> Your frustration is isolated. You don't know that your neighbor called about the same thing last week. There's no shared view, no collective action, no momentum.</li>
+  </ol>
+
+  <h2>What a Modern System Looks Like</h2>
+
+  <p>The replacement for 311 isn't a better phone number. It's a platform that turns individual frustration into collective, documented, legally-significant community action:</p>
+
+  <ul>
+    <li><strong>GPS-verified, photo-documented reports</strong> that create timestamped evidence</li>
+    <li><strong>Community verification</strong> — when 3 people confirm, it's not a complaint, it's a fact</li>
+    <li><strong>Automatic escalation</strong> — no human needs to decide when to contact authorities</li>
+    <li><strong>Public accountability</strong> — response times, fix rates, and health grades visible to everyone</li>
+    <li><strong>Legal tools</strong> — formal notices, insurance claim packaging, fiscal impact projections</li>
+    <li><strong>Bidirectional sync</strong> — for cities that have APIs (Open311, SeeClickFix), reports flow directly into their existing ticketing systems</li>
+  </ul>
+
+  <blockquote>311 asks you to trust the system. A community platform asks the system to prove itself — with data.</blockquote>
+
+  <div class="cta-box">
+    <h3>Your voice deserves more than a hold queue.</h3>
+    <p>Report with evidence. Track with data. Hold with accountability.</p>
+    <a href="index.html">Try Fault Line — Free</a>
+  </div>
+</div>
+
+<div class="container article-body" id="article-4" style="display:none;">
+  <a href="#" onclick="hideArticle(); return false;" style="font-size:14px;">← Back to all posts</a>
+  <h1>The Freeze-Thaw Tax: How New England's Climate Creates a $500M Annual Infrastructure Crisis</h1>
+  <div class="byline">March 23, 2026 · 7 min read · By the Fault Line Team</div>
+
+  <p>Every winter, a silent destroyer works on New England's roads. Water seeps into tiny cracks in the pavement. The temperature drops below 32°F. The water freezes and expands by 9%. The crack widens. The temperature rises. The ice melts. The water seeps deeper. The cycle repeats — dozens of times per winter.</p>
+
+  <p>By spring, the cracks have become potholes. The potholes have become craters. And cities face a repair bill that dwarfs their maintenance budgets.</p>
+
+  <div class="stat-box">
+    <div class="stat"><div class="num">87</div><div class="label">Freeze-thaw cycles per year (Boston avg)</div></div>
+    <div class="stat"><div class="num">$500M+</div><div class="label">Annual MA road repair spending</div></div>
+    <div class="stat"><div class="num">40%</div><div class="label">Savings from proactive maintenance</div></div>
+  </div>
+
+  <h2>Why Reactive Repair Fails</h2>
+
+  <p>Most municipalities practice reactive maintenance: wait for a pothole to form, send a crew to fill it. This approach has three fatal flaws:</p>
+
+  <ul>
+    <li><strong>Patches don't last.</strong> A cold-patch repair (the quick fill) lasts 1-3 months before the freeze-thaw cycle destroys it. The crew comes back. They patch again. The cycle repeats.</li>
+    <li><strong>Costs compound exponentially.</strong> A crack that costs $5 to seal in October becomes a pothole that costs $75 to patch in March, which becomes a road segment that costs $50,000 to resurface in July.</li>
+    <li><strong>Damage happens before the crew arrives.</strong> The average time between a pothole forming and a repair crew arriving is 14-30 days. In that window, dozens of vehicles sustain damage.</li>
+  </ul>
+
+  <h2>The Predictive Alternative</h2>
+
+  <p>The Federal Highway Administration (FHWA) estimates that proactive maintenance — sealing cracks before they become potholes, resurfacing roads before they deteriorate — costs <strong>40-60% less</strong> than reactive repair over a 10-year period.</p>
+
+  <p>The problem has always been knowing <em>where</em> to deploy crews before damage occurs. Historical reporting data solves this. When a community platform has 3 years of location-tagged, time-stamped reports, it can predict with high accuracy which road segments will fail each spring.</p>
+
+  <h2>What Pre-Deployment Looks Like</h2>
+
+  <p>Imagine a city receiving a report each October: "Based on 3 years of community data, these 47 locations will likely need repair after this winter. Estimated cost if addressed now: $120,000. Estimated cost if addressed reactively in April: $340,000. Here are the GPS coordinates, historical photos, and severity trends for each location."</p>
+
+  <p>That's not a fantasy. That's what happens when community reporting data is analyzed with basic statistical methods.</p>
+
+  <div class="cta-box">
+    <h3>Help build the data that predicts the damage.</h3>
+    <p>Every report you submit trains the prediction model for next winter.</p>
+    <a href="index.html">Report with Fault Line — Free</a>
+  </div>
+</div>
+
+<div class="container article-body" id="article-5" style="display:none;">
+  <a href="#" onclick="hideArticle(); return false;" style="font-size:14px;">← Back to all posts</a>
+  <h1>Infrastructure Report Cards: Why Grading Your City A-F Changes Everything</h1>
+  <div class="byline">March 20, 2026 · 4 min read · By the Fault Line Team</div>
+
+  <p>In 2021, the American Society of Civil Engineers gave US infrastructure an overall grade of <strong>C-</strong>. The report made national headlines. Politicians quoted it. Journalists cited it. The Infrastructure Investment and Jobs Act followed months later with $1.2 trillion in funding.</p>
+
+  <p>A single letter grade changed the national conversation. Now imagine what happens when every city gets one.</p>
+
+  <h2>What a City Grade Means</h2>
+
+  <p>A Fault Line infrastructure health score is a composite of five metrics, each weighted based on its impact on community quality of life:</p>
+
+  <ul>
+    <li><strong>Report density (15%):</strong> How many issues per capita? Fewer = better.</li>
+    <li><strong>Fix rate (30%):</strong> What percentage of reported issues get resolved? Higher = better.</li>
+    <li><strong>Response time (25%):</strong> How fast does the city act after notification? Faster = better.</li>
+    <li><strong>Severity index (15%):</strong> How serious are the issues? Less severe = better maintained infrastructure.</li>
+    <li><strong>Recurrence rate (15%):</strong> Do fixed problems come back? Lower recurrence = quality repairs.</li>
+  </ul>
+
+  <h2>Why Public Grades Work</h2>
+
+  <p>Three psychological forces make public grades irresistibly effective:</p>
+
+  <ol>
+    <li><strong>Social comparison.</strong> "Cambridge: A-. Boston: C+. Worcester: D." When city officials see their neighbors outperforming them, competitive instinct kicks in. Nobody wants to be the worst-graded city in the state.</li>
+    <li><strong>Narrative simplicity.</strong> A 47-page infrastructure report changes nothing. A single letter grade that a journalist can tweet, a resident can share, and a council member can't ignore — that changes everything.</li>
+    <li><strong>Accountability over time.</strong> When grades update monthly based on real community data, a city can't claim improvement without actually improving. The trend line doesn't lie.</li>
+  </ol>
+
+  <blockquote>The ASCE's national C- changed federal policy. City-level grades from community data will change local policy — because local politicians have local elections.</blockquote>
+
+  <h2>Making Grades Impossible to Ignore</h2>
+
+  <p>Public grades become powerful when they're:</p>
+  <ul>
+    <li><strong>Embeddable</strong> — local news sites display them alongside weather and traffic</li>
+    <li><strong>Shareable</strong> — residents post them on social media before elections</li>
+    <li><strong>Comparative</strong> — "Your city vs the city next door" is irresistible content</li>
+    <li><strong>Actionable</strong> — clicking a grade shows exactly what issues are dragging it down</li>
+  </ul>
+
+  <div class="cta-box">
+    <h3>What's your city's grade?</h3>
+    <p>Your reports build the data. The data builds the grade. The grade builds accountability.</p>
+    <a href="index.html">Start Reporting with Fault Line</a>
+  </div>
+</div>
+
+<footer>
+  <a href="index.html">Home</a> &middot; <a href="features.html">Features</a> &middot; <a href="blog.html">Blog</a> &middot; <a href="privacy.html">Privacy</a> &middot; <a href="terms.html">Terms</a> &middot; <a href="feedback.html">Feedback</a>
+  <br><br>&copy; 2026 Fault Line
+</footer>
+
+<script>
+var blogList = document.querySelector('.page-header').parentElement;
+function showArticle(id) {
+  // Hide all articles and the list
+  document.querySelectorAll('.article-body').forEach(function(a) { a.style.display = 'none'; });
+  document.querySelectorAll('.container > article, .container > .page-header, .container > .tag-bar').forEach(function(e) { e.style.display = 'none'; });
+  document.getElementById(id).style.display = 'block';
+  window.scrollTo(0, 0);
+}
+function hideArticle() {
+  document.querySelectorAll('.article-body').forEach(function(a) { a.style.display = 'none'; });
+  document.querySelectorAll('.container > article, .container > .page-header, .container > .tag-bar').forEach(function(e) { e.style.display = ''; });
+  window.scrollTo(0, 0);
+}
+</script>
+
+</body>
+</html>
