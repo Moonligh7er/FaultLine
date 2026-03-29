@@ -1,3 +1,3 @@
 User-agent: *
 Allow: /
-Sitemap: https://faultline.app/sitemap.xml
+Sitemap: https://moonligh7er.github.io/FaultLine/sitemap.xml
