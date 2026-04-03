@@ -1,0 +1,14 @@
+# ============================================================
+# Only the website/ directory belongs in this git repo.
+# Everything else is the native app, managed separately.
+# ============================================================
+
+# Ignore everything by default
+*
+
+# Allow website directory
+!website/
+!website/**
+
+# Allow this gitignore
+!.gitignore

@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://*.supabase.co https://www.googletagmanager.com https://pagead2.googlesyndication.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self'; connect-src 'self' https://*.supabase.co https://www.google-analytics.com https://analytics.google.com; frame-src 'none'; object-src 'none'; base-uri 'self';">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Feedback & Feature Requests — Fault Line</title>
+<meta name="description" content="Submit feedback, report bugs, or request features for Fault Line. Help shape the future of community infrastructure accountability.">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://moonligh7er.github.io/FaultLine/feedback.html">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://moonligh7er.github.io/FaultLine/feedback.html">
+<meta property="og:title" content="Feedback & Feature Requests — Fault Line">
+<meta property="og:description" content="Help shape the future of Fault Line. Submit feedback, report bugs, or request new features.">
+<meta property="og:site_name" content="Fault Line">
+<meta property="og:image" content="https://moonligh7er.github.io/FaultLine/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://moonligh7er.github.io/FaultLine/og-image.png">
+
+<!-- Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-XXXXXXXXXX');</script>
+
+<style>
+:root { --primary: #1E88E5; --secondary: #FF6F00; --accent: #00C853; --bg: #0a0a0a; --bg-card: #141414; --bg-elevated: #1a1a1a; --text: #f0f0f0; --text-secondary: #999; --text-muted: #666; --border: #2a2a2a; --success: #4CAF50; --error: #F44336; }
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; }
+a { color: var(--primary); text-decoration: none; } a:hover { text-decoration: underline; }
+
+/* Nav */
+.nav { padding: 16px 24px; border-bottom: 1px solid var(--border); max-width: 900px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; }
+.nav-brand { font-size: 20px; font-weight: 800; color: var(--text); text-decoration: none; } .nav-brand span { color: var(--primary); }
+.nav-links { display: flex; align-items: center; gap: 16px; font-size: 14px; }
+.nav-links a { color: var(--text-secondary); } .nav-links a:hover { color: var(--primary); text-decoration: none; }
+.nav-active { display: inline-flex; align-items: center; gap: 6px; background: rgba(0,200,83,0.08); border: 1px solid rgba(0,200,83,0.2); border-radius: 100px; padding: 4px 12px 4px 8px; font-size: 12px; font-weight: 600; color: var(--accent); text-decoration: none; }
+.nav-active:hover { text-decoration: none; background: rgba(0,200,83,0.12); }
+.nav-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 6px var(--accent); animation: pulse-dot 2s ease-in-out infinite; }
+@keyframes pulse-dot { 0%, 100% { opacity: 1; box-shadow: 0 0 6px var(--accent); } 50% { opacity: 0.6; box-shadow: 0 0 12px var(--accent); } }
+
+/* Page */
+.container { max-width: 900px; margin: 0 auto; padding: 0 24px; }
+.page-header { padding: 60px 0 32px; text-align: center; }
+.page-header h1 { font-size: clamp(28px, 5vw, 44px); font-weight: 900; letter-spacing: -1px; margin-bottom: 8px; }
+.page-header p { font-size: 17px; color: var(--text-secondary); max-width: 500px; margin: 0 auto; }
+
+/* Tabs */
+.tabs { display: flex; gap: 8px; margin-bottom: 32px; justify-content: center; }
+.tab { padding: 10px 24px; border-radius: 100px; font-size: 15px; font-weight: 600; cursor: pointer; border: 1px solid var(--border); background: var(--bg-card); color: var(--text-secondary); transition: all 0.2s; }
+.tab:hover { border-color: var(--primary); color: var(--text); }
+.tab.active { background: var(--primary); color: #fff; border-color: var(--primary); }
+
+/* Form */
+.form-section { display: none; }
+.form-section.active { display: block; }
+.form-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 16px; padding: 32px; max-width: 600px; margin: 0 auto; }
+.form-card h2 { font-size: 22px; font-weight: 700; margin-bottom: 4px; }
+.form-card .form-desc { font-size: 14px; color: var(--text-muted); margin-bottom: 24px; }
+.field { margin-bottom: 20px; }
+.field label { display: block; font-size: 14px; font-weight: 600; color: var(--text-secondary); margin-bottom: 6px; }
+.field input, .field textarea, .field select {
+  width: 100%; padding: 12px 16px; background: var(--bg); border: 1px solid var(--border);
+  border-radius: 10px; color: var(--text); font-size: 15px; font-family: inherit;
+  transition: border-color 0.2s;
+}
+.field input:focus, .field textarea:focus, .field select:focus { outline: none; border-color: var(--primary); }
+.field textarea { min-height: 120px; resize: vertical; }
+.field select { appearance: none; cursor: pointer; }
+.field .optional { font-size: 12px; color: var(--text-muted); font-weight: 400; }
+.submit-btn {
+  width: 100%; padding: 14px; background: var(--primary); color: #fff; border: none;
+  border-radius: 10px; font-size: 16px; font-weight: 700; cursor: pointer; transition: all 0.2s;
+}
+.submit-btn:hover { background: #1565C0; transform: translateY(-1px); }
+.submit-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+.success-msg { display: none; text-align: center; padding: 32px; }
+.success-msg .icon { font-size: 48px; margin-bottom: 12px; }
+.success-msg h3 { font-size: 20px; font-weight: 700; margin-bottom: 8px; color: var(--success); }
+.success-msg p { color: var(--text-secondary); font-size: 15px; }
+
+/* Existing submissions */
+.submissions { margin-top: 48px; padding-bottom: 60px; }
+.submissions h2 { font-size: 22px; font-weight: 700; margin-bottom: 16px; text-align: center; }
+.submission-list { max-width: 600px; margin: 0 auto; }
+.submission { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 20px; margin-bottom: 12px; transition: border-color 0.2s; }
+.submission:hover { border-color: var(--primary); }
+.submission-header { display: flex; justify-content: space-between; align-items: start; gap: 12px; margin-bottom: 8px; }
+.submission-subject { font-size: 16px; font-weight: 700; }
+.submission-badge { font-size: 11px; font-weight: 600; padding: 3px 10px; border-radius: 100px; text-transform: uppercase; letter-spacing: 0.5px; white-space: nowrap; }
+.badge-new { background: rgba(30,136,229,0.15); color: var(--primary); }
+.badge-planned { background: rgba(0,200,83,0.15); color: var(--accent); }
+.badge-reviewed { background: rgba(255,111,0,0.15); color: var(--secondary); }
+.badge-feature { background: rgba(156,39,176,0.15); color: #CE93D8; }
+.badge-feedback { background: rgba(30,136,229,0.15); color: #64B5F6; }
+.badge-bug { background: rgba(244,67,54,0.15); color: #EF5350; }
+.submission-body { font-size: 14px; color: var(--text-secondary); margin-bottom: 8px; }
+.submission-meta { font-size: 12px; color: var(--text-muted); }
+.empty-state { text-align: center; padding: 40px; color: var(--text-muted); font-size: 15px; }
+
+footer { border-top: 1px solid var(--border); padding: 24px; text-align: center; font-size: 13px; color: var(--text-muted); }
+footer a { color: var(--text-secondary); margin: 0 12px; }
+
+@media (max-width: 600px) {
+  .form-card { padding: 20px; }
+  .tabs { flex-direction: column; align-items: center; }
+}
+</style>
+</head>
+<body>
+
+<div class="nav">
+  <a href="index.html" class="nav-brand">Fault<span>Line</span></a>
+  <div class="nav-links">
+    <a href="index.html">Home</a>
+    <a href="features.html">Features</a>
+    <a href="privacy.html">Privacy</a>
+    <a href="terms.html">Terms</a>
+    <a href="blog.html">Blog</a>
+    <a href="feedback.html" class="nav-active"><span class="nav-dot"></span> Active Development</a>
+  </div>
+</div>
+
+<div class="container">
+  <div class="page-header">
+    <h1>Help Shape Fault Line</h1>
+    <p>We're actively building this app. Your feedback directly influences what we build next.</p>
+  </div>
+
+  <!-- Tabs -->
+  <div class="tabs">
+    <div class="tab active" onclick="switchTab('feedback')">💬 Feedback</div>
+    <div class="tab" onclick="switchTab('feature')">💡 Feature Request</div>
+    <div class="tab" onclick="switchTab('bug')">🐛 Bug Report</div>
+  </div>
+
+  <!-- Feedback Form -->
+  <div id="form-feedback" class="form-section active">
+    <div class="form-card">
+      <h2>Send Feedback</h2>
+      <p class="form-desc">Tell us what you think — what's working, what isn't, what could be better.</p>
+      <form onsubmit="submitForm(event, 'feedback')">
+        <div class="field">
+          <label>Name <span class="optional">(optional)</span></label>
+          <input type="text" name="name" placeholder="Your name">
+        </div>
+        <div class="field">
+          <label>Email <span class="optional">(optional — for follow-up)</span></label>
+          <input type="email" name="email" placeholder="you@email.com">
+        </div>
+        <div class="field">
+          <label>Subject *</label>
+          <input type="text" name="subject" placeholder="What's on your mind?" required>
+        </div>
+        <div class="field">
+          <label>Message *</label>
+          <textarea name="message" placeholder="Tell us more..." required></textarea>
+        </div>
+        <button type="submit" class="submit-btn">Send Feedback</button>
+      </form>
+      <div class="success-msg" id="success-feedback">
+        <div class="icon">✅</div>
+        <h3>Thank you!</h3>
+        <p>Your feedback has been recorded. We read every submission.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Feature Request Form -->
+  <div id="form-feature" class="form-section">
+    <div class="form-card">
+      <h2>Request a Feature</h2>
+      <p class="form-desc">What should Fault Line do that it doesn't yet? Dream big.</p>
+      <form onsubmit="submitForm(event, 'feature_request')">
+        <div class="field">
+          <label>Name <span class="optional">(optional)</span></label>
+          <input type="text" name="name" placeholder="Your name">
+        </div>
+        <div class="field">
+          <label>Email <span class="optional">(optional)</span></label>
+          <input type="email" name="email" placeholder="you@email.com">
+        </div>
+        <div class="field">
+          <label>Feature Title *</label>
+          <input type="text" name="subject" placeholder="e.g., Dark mode for the map" required>
+        </div>
+        <div class="field">
+          <label>Description *</label>
+          <textarea name="message" placeholder="Describe the feature, why it matters, and how you'd use it..." required></textarea>
+        </div>
+        <button type="submit" class="submit-btn">Submit Request</button>
+      </form>
+      <div class="success-msg" id="success-feature_request">
+        <div class="icon">💡</div>
+        <h3>Feature request received!</h3>
+        <p>We review every request. Popular ones get built first.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bug Report Form -->
+  <div id="form-bug" class="form-section">
+    <div class="form-card">
+      <h2>Report a Bug</h2>
+      <p class="form-desc">Found something broken? Help us fix it.</p>
+      <form onsubmit="submitForm(event, 'bug')">
+        <div class="field">
+          <label>Name <span class="optional">(optional)</span></label>
+          <input type="text" name="name" placeholder="Your name">
+        </div>
+        <div class="field">
+          <label>Email <span class="optional">(optional)</span></label>
+          <input type="email" name="email" placeholder="you@email.com">
+        </div>
+        <div class="field">
+          <label>Bug Summary *</label>
+          <input type="text" name="subject" placeholder="e.g., App crashes when taking photo" required>
+        </div>
+        <div class="field">
+          <label>Steps to Reproduce *</label>
+          <textarea name="message" placeholder="1. Open the app&#10;2. Tap 'Report'&#10;3. Take a photo&#10;4. App crashes" required></textarea>
+        </div>
+        <button type="submit" class="submit-btn">Submit Bug Report</button>
+      </form>
+      <div class="success-msg" id="success-bug">
+        <div class="icon">🐛</div>
+        <h3>Bug report filed!</h3>
+        <p>We'll investigate and fix it as soon as possible.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Recent Submissions -->
+  <div class="submissions">
+    <h2>Community Feedback Board</h2>
+    <div class="submission-list" id="submission-list">
+      <div class="empty-state">Loading submissions...</div>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <a href="index.html">Home</a> &middot; <a href="features.html">Features</a> &middot; <a href="about.html">About</a> &middot; <a href="privacy.html">Privacy</a> &middot; <a href="terms.html">Terms</a> &middot; <a href="blog.html">Blog</a> &middot; <a href="https://ko-fi.com/moonlitsociallabs" target="_blank" rel="noopener">☕ Support</a>
+  <br><br>&copy; 2026 Fault Line
+</footer>
+
+<script>
+// Supabase config (publishable key — safe for client)
+var SUPABASE_URL = 'https://dzewklljiksyivsfpunt.supabase.co';
+var SUPABASE_KEY = 'sb_publishable_Cbxqf9tfG8mpSgShyxEkwg_jr5T1Y3z';
+
+function switchTab(tab) {
+  document.querySelectorAll('.tab').forEach(function(t) { t.classList.remove('active'); });
+  document.querySelectorAll('.form-section').forEach(function(s) { s.classList.remove('active'); });
+  event.target.classList.add('active');
+  document.getElementById('form-' + tab).classList.add('active');
+}
+
+async function submitForm(e, type) {
+  e.preventDefault();
+  var form = e.target;
+  var btn = form.querySelector('.submit-btn');
+  btn.disabled = true;
+  btn.textContent = 'Submitting...';
+
+  var data = {
+    type: type,
+    name: form.name.value || null,
+    email: form.email.value || null,
+    subject: form.subject.value,
+    message: form.message.value,
+  };
+
+  try {
+    var res = await fetch(SUPABASE_URL + '/rest/v1/feedback', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'apikey': SUPABASE_KEY,
+        'Authorization': 'Bearer ' + SUPABASE_KEY,
+        'Prefer': 'return=minimal',
+      },
+      body: JSON.stringify(data),
+    });
+
+    if (res.ok) {
+      form.style.display = 'none';
+      document.getElementById('success-' + type).style.display = 'block';
+      loadSubmissions();
+    } else {
+      alert('Something went wrong. Please try again.');
+      btn.disabled = false;
+      btn.textContent = 'Submit';
+    }
+  } catch (err) {
+    alert('Network error. Please check your connection.');
+    btn.disabled = false;
+    btn.textContent = 'Submit';
+  }
+}
+
+async function loadSubmissions() {
+  try {
+    var res = await fetch(SUPABASE_URL + '/rest/v1/feedback?order=created_at.desc&limit=20', {
+      headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY },
+    });
+    var data = await res.json();
+    var list = document.getElementById('submission-list');
+
+    if (!data || data.length === 0) {
+      list.innerHTML = '<div class="empty-state">No submissions yet. Be the first!</div>';
+      return;
+    }
+
+    list.innerHTML = data.map(function(item) {
+      var typeBadge = item.type === 'feature_request' ? '<span class="submission-badge badge-feature">Feature</span>'
+        : item.type === 'bug' ? '<span class="submission-badge badge-bug">Bug</span>'
+        : '<span class="submission-badge badge-feedback">Feedback</span>';
+
+      var statusBadge = item.status === 'planned' ? '<span class="submission-badge badge-planned">Planned</span>'
+        : item.status === 'reviewed' ? '<span class="submission-badge badge-reviewed">Reviewed</span>'
+        : '<span class="submission-badge badge-new">New</span>';
+
+      var date = new Date(item.created_at).toLocaleDateString();
+
+      return '<div class="submission">'
+        + '<div class="submission-header">'
+        + '<div class="submission-subject">' + escapeHtml(item.subject) + '</div>'
+        + '<div>' + typeBadge + ' ' + statusBadge + '</div>'
+        + '</div>'
+        + '<div class="submission-body">' + escapeHtml(item.message).substring(0, 200) + (item.message.length > 200 ? '...' : '') + '</div>'
+        + '<div class="submission-meta">' + (item.name ? escapeHtml(item.name) + ' · ' : '') + date + '</div>'
+        + '</div>';
+    }).join('');
+  } catch (err) {
+    document.getElementById('submission-list').innerHTML = '<div class="empty-state">Could not load submissions.</div>';
+  }
+}
+
+function escapeHtml(text) {
+  var div = document.createElement('div');
+  div.textContent = text;
+  return div.innerHTML;
+}
+
+// Load on page load
+loadSubmissions();
+</script>
+
+</body>
+</html>
