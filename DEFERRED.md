@@ -232,21 +232,72 @@ Each item includes what's needed and what has already been prepared.
 
 ---
 
-## 15. Ad-Free Paid Tier (RevenueCat)
+## 15. Ad-Free Paid Tier — Feature Flag Scaffold (RevenueCat + Stripe)
 
 **Status:** Not started. App is currently free with AdMob ads only.
-**What's needed:** App Store + Play Store app registrations (item #5/#6), then RevenueCat setup
-**Steps:**
+**Decision:** User chose "scaffold behind a feature flag" — build all the infrastructure but keep a feature flag returning `false` until ready to launch. App ships as free; flip the flag when stores approve.
+**What's needed:** App Store + Play Store app registrations (item #5/#6), then RevenueCat + Stripe setup
+**Steps (mobile — RevenueCat):**
 1. Complete items #5 and #6 first (Apple credentials + store submissions)
 2. Create a RevenueCat account at [revenuecat.com](https://www.revenuecat.com)
-3. Create an "Ad-Free" subscription product in App Store Connect and Google Play Console
+3. Create an "Ad-Free" subscription product in App Store Connect and Google Play Console ($2.99/mo or $19.99/yr)
 4. Install SDK: `npx expo install react-native-purchases`
 5. Add `react-native-purchases` to `app.config.js` plugins
-6. Create `src/services/purchases.ts` — initialize SDK, expose `isAdFree()` check
+6. Create `src/services/purchases.ts` — initialize SDK, expose `isAdFree()` check + `AD_FREE_ENABLED` feature flag (defaults to `false`)
 7. In `AdBanner.tsx`, gate rendering on `!isAdFree()`
-8. Add a "Remove Ads" button to `ProfileScreen.tsx` that triggers the purchase flow
+8. Add a "Remove Ads" button to `ProfileScreen.tsx` that triggers the purchase flow (hidden when flag is false)
 9. Add RevenueCat API keys to `.env`:
    ```
    REVENUECAT_API_KEY_ANDROID=your_key
    REVENUECAT_API_KEY_IOS=your_key
    ```
+
+**Steps (web — Stripe):**
+1. Create a Stripe account and product ($2.99/mo recurring)
+2. Install `stripe` and `@stripe/stripe-js` in `fault-line-web`
+3. Create `/api/stripe/checkout` route (create Checkout Session) + `/api/stripe/webhook` route (handle subscription events, store entitlement in Supabase profiles table)
+4. Create `/pricing` page with plan comparison + Stripe checkout button
+5. Add `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` to `.env.example`
+6. Gate ad display (once AdSense is wired) on `!isAdFree()` check against Supabase profile
+7. Feature flag: set `AD_FREE_ENABLED=false` in env, all entitlement checks short-circuit to `false`
+
+---
+
+## 16. Next.js Web App — Update About / Privacy / Terms Attribution
+
+**Status:** Not started. The marketing-site HTML pages were updated (copyright → Moonlit Social Labs, contact → moonlit-social-labs@proton.me). The Next.js web app has its own `/about`, `/privacy`, `/terms` routes that still say "Fault Line" in their body text (footer was already updated in layout.tsx). These need a content audit to match the marketing-site changes.
+**Effort:** 15 minutes — read each page.tsx, update text in place.
+
+---
+
+## 17. Replace Google Analytics Placeholder (GA4)
+
+**Status:** The measurement ID `G-XXXXXXXXXX` is on all 7 marketing pages and in `.env.example` for the Next.js app.
+**What's needed:** Create a GA4 property at [analytics.google.com](https://analytics.google.com), copy the measurement ID (format: `G-XXXXXXXXXX`).
+**Steps:**
+1. Create GA4 property → copy Measurement ID
+2. Find-and-replace `G-XXXXXXXXXX` in all files under `website/` (7 files + features-plain.html + landing.html)
+3. Set `NEXT_PUBLIC_GA_MEASUREMENT_ID=G-YOURVALUE` in `fault-line-web/.env.local`
+
+---
+
+## 18. Create OG Social Share Image
+
+**Status:** `og:image` and `twitter:image` meta tags point to `og-image.png` on all pages. Current file is a placeholder.
+**What's needed:** A branded 1200×630px social-share image.
+**Steps:**
+1. Design (or AI-generate) a 1200×630 image showing app name, tagline, visual
+2. Save as `website/og-image.png`
+3. Test with [opengraph.xyz](https://opengraph.xyz) or Twitter Card Validator
+
+---
+
+## 19. App Store Paperwork & Screenshots
+
+**Status:** Templates exist in `store-metadata/` (description.md, google-data-safety.md, content-rating.md, apple-privacy-labels.md). Actual screenshots and store submissions require a running app on real devices.
+**Steps:**
+1. Build the app: `npx eas build --platform all --profile preview`
+2. Run on device/simulator, take 8 screenshots per `store-metadata/description.md` spec
+3. Fill out Google Play Data Safety form using `google-data-safety.md`
+4. Fill out Apple Privacy Labels using `apple-privacy-labels.md`
+5. Complete Content Rating questionnaire using `content-rating.md`
