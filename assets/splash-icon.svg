@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1284" height="2778" viewBox="0 0 1284 2778">
+  <rect width="1284" height="2778" fill="#1E88E5"/>
+  <!-- Pin icon -->
+  <circle cx="642" cy="1055.64" r="60" fill="#FFFFFF"/>
+  <circle cx="642" cy="1055.64" r="25" fill="#1E88E5"/>
+  <polygon points="607,1100.64 642,1140.64 677,1100.64" fill="#FFFFFF"/>
+  <!-- App name -->
+  <text x="642" y="1527.9" font-family="Arial Black, sans-serif" font-size="48" font-weight="900" fill="#FFFFFF" text-anchor="middle">FixThisFaster</text>
+  <text x="642" y="1639.02" font-family="Arial, sans-serif" font-size="18" fill="#FFFFFF" opacity="0.8" text-anchor="middle">Community Infrastructure Reporter</text>
+</svg>

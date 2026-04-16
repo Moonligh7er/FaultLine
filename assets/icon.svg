@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
+  <rect width="1024" height="1024" rx="153.6" fill="#1E88E5"/>
+  <!-- Road line -->
+  <rect x="430.08" y="563.2" width="163.84" height="307.2" rx="20.48" fill="#FFFFFF" opacity="0.3"/>
+  <rect x="471.04" y="614.4" width="81.92" height="61.44" rx="10.24" fill="#FFFFFF" opacity="0.6"/>
+  <rect x="471.04" y="737.28" width="81.92" height="61.44" rx="10.24" fill="#FFFFFF" opacity="0.6"/>
+  <!-- Pin icon -->
+  <circle cx="512" cy="327.68" r="153.6" fill="#FFFFFF"/>
+  <circle cx="512" cy="327.68" r="71.68" fill="#1E88E5"/>
+  <polygon points="430.08,430.08 512,563.2 593.92,430.08" fill="#FFFFFF"/>
+  <!-- FTF text -->
+  <text x="512" y="358.4" font-family="Arial Black, sans-serif" font-size="61.44" font-weight="900" fill="#1E88E5" text-anchor="middle" dominant-baseline="middle">FTF</text>
+</svg>
