@@ -265,8 +265,7 @@ Each item includes what's needed and what has already been prepared.
 
 ## 16. Next.js Web App — Update About / Privacy / Terms Attribution
 
-**Status:** Not started. The marketing-site HTML pages were updated (copyright → Moonlit Social Labs, contact → moonlit-social-labs@proton.me). The Next.js web app has its own `/about`, `/privacy`, `/terms` routes that still say "Fault Line" in their body text (footer was already updated in layout.tsx). These need a content audit to match the marketing-site changes.
-**Effort:** 15 minutes — read each page.tsx, update text in place.
+**Status:** ✅ DONE. All three routes updated with Moonlit Social Labs attribution, correct contact email, expanded content matching marketing-site depth.
 
 ---
 
