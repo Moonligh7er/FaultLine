@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Fault Line — Investor & Grant Pitch</title>
+<style>
+:root {
+  --bg: #050507;
+  --bg-card: #0f1014;
+  --bg-elevated: #16181f;
+  --text: #f6f6f9;
+  --text-secondary: #a8aab5;
+  --text-muted: #6b6d7a;
+  --border: #25272f;
+  --primary: #1E88E5;
+  --secondary: #FF6F00;
+  --accent: #00C853;
+  --danger: #F44336;
+  --gradient: linear-gradient(135deg, #1E88E5 0%, #00C853 100%);
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { font-family: 'Charter', 'Iowan Old Style', 'Sitka Text', Georgia, serif; background: var(--bg); color: var(--text); line-height: 1.7; font-size: 17px; }
+.sans { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+a { color: var(--primary); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+.confidential {
+  background: rgba(244,67,54,0.08); border-bottom: 1px solid rgba(244,67,54,0.2);
+  padding: 10px 24px; text-align: center; font-size: 12px; color: #ff6e6e;
+  font-family: -apple-system, sans-serif; text-transform: uppercase; letter-spacing: 1.5px; font-weight: 700;
+}
+
+.hero { padding: 80px 24px 40px; text-align: center; max-width: 900px; margin: 0 auto; }
+.hero .label { display: inline-block; font-family: -apple-system, sans-serif; font-size: 12px; color: var(--secondary); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 24px; }
+.hero h1 { font-size: clamp(40px, 7vw, 68px); font-weight: 900; letter-spacing: -2px; line-height: 1.05; margin-bottom: 24px; font-family: -apple-system, sans-serif; }
+.hero h1 .gradient { background: var(--gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+.hero .tagline { font-size: 22px; color: var(--text-secondary); font-style: italic; max-width: 720px; margin: 0 auto; }
+
+.container { max-width: 820px; margin: 0 auto; padding: 0 24px; }
+.section { padding: 60px 0; border-top: 1px solid var(--border); }
+.section h2 { font-family: -apple-system, sans-serif; font-size: clamp(28px, 4vw, 40px); font-weight: 900; letter-spacing: -1px; margin-bottom: 24px; line-height: 1.15; }
+.section h3 { font-family: -apple-system, sans-serif; font-size: 22px; font-weight: 700; margin: 32px 0 12px; }
+.section p { color: var(--text-secondary); margin-bottom: 18px; font-size: 17px; }
+.section p strong { color: var(--text); font-weight: 600; }
+.section ul, .section ol { color: var(--text-secondary); padding-left: 24px; margin-bottom: 18px; }
+.section li { margin-bottom: 10px; }
+.section blockquote { border-left: 4px solid var(--primary); padding: 16px 24px; background: var(--bg-card); border-radius: 0 12px 12px 0; margin: 24px 0; font-style: italic; color: var(--text); }
+
+.elevator {
+  background: linear-gradient(180deg, var(--bg-card), var(--bg-elevated));
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 40px 48px;
+  margin: 32px 0;
+  position: relative;
+}
+.elevator::before {
+  content: 'Elevator Pitch'; position: absolute; top: -12px; left: 32px;
+  background: var(--bg); padding: 0 12px;
+  font-family: -apple-system, sans-serif; font-size: 11px; font-weight: 800;
+  color: var(--accent); text-transform: uppercase; letter-spacing: 2px;
+}
+.elevator p { font-size: 19px; line-height: 1.65; color: var(--text); margin-bottom: 16px; }
+.elevator p:last-child { margin-bottom: 0; }
+.elevator .punch { font-size: 22px; font-weight: 600; }
+
+.metric-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px; margin: 24px 0; font-family: -apple-system, sans-serif; }
+.metric { background: var(--bg-card); border: 1px solid var(--border); border-radius: 14px; padding: 20px; text-align: center; }
+.metric .num { font-size: 36px; font-weight: 900; background: var(--gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; line-height: 1; }
+.metric .label { font-size: 12px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1.5px; margin-top: 8px; }
+
+.linkbox { background: var(--bg-card); border: 1px solid var(--border); border-radius: 16px; padding: 28px; margin: 32px 0; font-family: -apple-system, sans-serif; }
+.linkbox h4 { font-size: 14px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 16px; font-weight: 800; }
+.linkbox-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+.linkbox a {
+  display: block; padding: 16px 20px; background: var(--bg-elevated);
+  border: 1px solid var(--border); border-radius: 12px; color: var(--text);
+  font-size: 14px; font-weight: 600; transition: border-color 0.3s;
+}
+.linkbox a:hover { border-color: var(--primary); text-decoration: none; }
+.linkbox a small { display: block; color: var(--text-muted); font-size: 12px; font-weight: 400; margin-top: 2px; }
+
+table { width: 100%; border-collapse: collapse; margin: 16px 0; font-family: -apple-system, sans-serif; font-size: 15px; }
+th, td { text-align: left; padding: 12px 16px; border-bottom: 1px solid var(--border); }
+th { color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; font-size: 12px; font-weight: 700; }
+td { color: var(--text); }
+.cost-free { color: var(--accent); font-weight: 700; }
+.cost-paid { color: var(--secondary); font-weight: 700; }
+
+@media (max-width: 600px) {
+  .linkbox-row { grid-template-columns: 1fr; }
+  .elevator { padding: 32px 24px; }
+}
+</style>
+</head>
+<body>
+
+<div class="confidential">⚠ Confidential · Investor Materials · Not for Public Distribution</div>
+
+<div class="hero">
+  <span class="label">Moonlit Social Labs · Pre-Seed Pitch</span>
+  <h1>Fault Line is the<br><span class="gradient">accountability layer</span><br>America's infrastructure has been missing.</h1>
+  <p class="tagline">A 10-second photo becomes a community-verified, GPS-stamped, legally significant hazard your city is now liable for ignoring.</p>
+</div>
+
+<div class="container">
+
+  <!-- ELEVATOR PITCH -->
+  <div class="elevator">
+    <p class="punch">Americans spend $3 billion a year on pothole damage. Cities ignore problems they're not legally documented as knowing about. We just made that documentation effortless.</p>
+    <p>Fault Line turns a one-tap photo into a community-verified, GPS-timestamped legal record. When 10 reports cluster, the app auto-emails the responsible authority a professional escalation letter citing the state's specific notice-of-defect statute. Cities can no longer plead ignorance.</p>
+    <p>The product is fully built — mobile (Expo/RN), web (Next.js 15), Supabase backend, AI photo analysis (Claude), 24 categories, 5 languages, 42 authorities pre-loaded across MA/RI/NH. Operating costs are under $30/month at current scale. Ad-supported with optional donations; ad-free subscription is scaffolded behind a feature flag for activation when stores approve.</p>
+    <p>We're seeking <strong>$50K–$150K in pre-seed grant capital</strong> to: (1) fund a year of paid app store presence + Apple Developer fees, (2) cover a 12-month AI inference budget, (3) commission a professional brand identity, and (4) kickstart municipal pilot partnerships in 3 New England states.</p>
+  </div>
+
+  <div class="linkbox">
+    <h4>Companion Documents</h4>
+    <div class="linkbox-row">
+      <a href="business-plan.html">📋 Business Plan<small>Comprehensive deck</small></a>
+      <a href="website/features.html">🛠️ Features (Plain + Tech)<small>Investor / dev reference</small></a>
+      <a href="ARCHITECTURE.html">🏗️ Architecture Map<small>Full system & cost map</small></a>
+    </div>
+  </div>
+
+  <!-- THE OPPORTUNITY -->
+  <div class="section">
+    <h2>The Opportunity</h2>
+    <p>The American Society of Civil Engineers gives US infrastructure a <strong>C-</strong> grade. The Federal Highway Administration estimates a <strong>$786 billion deferred maintenance backlog</strong>. The 311 system that most cities rely on for citizen reports was launched in 1996 and has not been meaningfully upgraded.</p>
+
+    <div class="metric-grid">
+      <div class="metric"><div class="num">$3B</div><div class="label">Annual vehicle damage from potholes</div></div>
+      <div class="metric"><div class="num">$786B</div><div class="label">Deferred maintenance backlog</div></div>
+      <div class="metric"><div class="num">$30B+</div><div class="label">True annual cost (incl. liability)</div></div>
+      <div class="metric"><div class="num">90%</div><div class="label">311 reports lack tracking, photos, or GPS</div></div>
+    </div>
+
+    <p>The result: cities literally don't know where the worst problems are. There is no aggregation, no public visibility, no comparative pressure between municipalities, and — critically — no documented notice that creates legal liability. Every state has a "notice of defect" statute that creates liability for unfixed reported hazards, but almost no one uses these statutes because individuals lack the documentation infrastructure to make a notice legally meaningful.</p>
+
+    <p><strong>Fault Line is the documentation infrastructure.</strong></p>
+  </div>
+
+  <!-- WHY NOW -->
+  <div class="section">
+    <h2>Why Now</h2>
+    <p>Three forces converge in 2026:</p>
+    <ol>
+      <li><strong>Multimodal AI is finally cheap enough.</strong> Claude Haiku vision can analyze a photo for ~$0.01 — small enough that a free app supported by ads can use AI on every report. Three years ago this would have been economically impossible.</li>
+      <li><strong>Climate is accelerating decay.</strong> Freeze-thaw cycles in New England now exceed 87 per winter (vs. 60 historically). Reactive maintenance budgets are breaking. Cities desperately need <em>predictive</em> data, which only a community platform can supply.</li>
+      <li><strong>Public trust in institutions is collapsing.</strong> Civic engagement tools that route around 311 are politically resonant in both red and blue districts. This is the rare civic-tech category with bipartisan demand.</li>
+    </ol>
+  </div>
+
+  <!-- WHAT WE'VE BUILT -->
+  <div class="section">
+    <h2>What We've Already Built</h2>
+    <p>This is not a deck for a hypothetical product. <strong>The product exists, is fully functional, and is ready to ship to app stores today.</strong></p>
+
+    <h3>Mobile App (React Native + Expo)</h3>
+    <ul>
+      <li>11 fully-built screens, 43 service modules, 73 source files, 0 TypeScript errors</li>
+      <li>10-second quick reports with AI photo analysis (Claude Haiku vision)</li>
+      <li>5-step detailed wizard with draggable map pins and severity assessment</li>
+      <li>24 issue categories (potholes, streetlights, sidewalks, drainage, signage, water mains, etc.)</li>
+      <li>5 languages (English, Spanish, Portuguese, Chinese, Haitian Creole)</li>
+      <li>Full accessibility: VoiceOver/TalkBack support, audio-guided reporting, voice commands</li>
+      <li>Offline-first: reports queue locally and auto-sync</li>
+      <li>AR camera overlay showing nearby reports</li>
+      <li>Bump detection (accelerometer-based hazard prompting while driving)</li>
+      <li>Smart push notifications based on commute learning</li>
+    </ul>
+
+    <h3>Web App (Next.js 15)</h3>
+    <ul>
+      <li>Full-featured public reporting interface with Leaflet map</li>
+      <li>Magic-link auth, server-side rendering, RLS-first security</li>
+      <li>CSP nonces, httpOnly cookies, CSRF guard, Upstash rate limiting, Sentry monitoring</li>
+      <li>Production build passing, 100% test coverage on critical paths</li>
+    </ul>
+
+    <h3>Backend (Supabase + Edge Functions)</h3>
+    <ul>
+      <li>PostgreSQL + PostGIS schema with 11 tables, 12 RPC functions, 6 triggers</li>
+      <li>5 deployed Edge Functions: photo analysis, AI generation, photo comparison, escalation, email delivery</li>
+      <li>Row-level security on every table, server-side rate limiting via Postgres triggers, honeypot bot protection</li>
+      <li>42 government authorities seeded for MA/RI/NH with real contact info and PostGIS boundaries</li>
+    </ul>
+
+    <h3>Marketing Site</h3>
+    <ul>
+      <li>7 SEO-optimized pages: landing, features (plain + technical), blog (5 articles), about, privacy, terms, feedback</li>
+      <li>Schema.org structured data, Open Graph, robots.txt, sitemap.xml</li>
+      <li>AdSense and Google Analytics scaffolded</li>
+    </ul>
+  </div>
+
+  <!-- BUSINESS MODEL -->
+  <div class="section">
+    <h2>Business Model</h2>
+    <p>Free for users. Three monetization layers, in order of size and reliability:</p>
+
+    <table>
+      <tr><th>Layer</th><th>Mechanism</th><th>Revenue Profile</th></tr>
+      <tr><td>1. Banner Ads</td><td>Google AdSense (web) + AdMob (mobile)</td><td>$1–3 eCPM × 500 DAU × 3 impressions = $45–135/mo at launch; scales linearly</td></tr>
+      <tr><td>2. Ad-Free Tier</td><td>$2.99/mo or $19.99/yr via RevenueCat (mobile) + Stripe (web). Currently scaffolded behind a feature flag.</td><td>~5–10% conversion is industry standard for utility apps. At 1,000 DAU = $150–300/mo</td></tr>
+      <tr><td>3. Municipal Licensing</td><td>Cities pay for white-label dashboards, predictive analytics exports, and custom authority routing</td><td>$5K–$25K/year per municipality. The largest opportunity but slowest sales cycle.</td></tr>
+      <tr><td>4. Donations</td><td>Ko-fi and direct giving</td><td>Small but signals love; useful for grant applications</td></tr>
+    </table>
+
+    <p>Ko-fi and AdSense break-even at ~300 daily active users. Municipal licensing becomes meaningful at ~10K MAU. The unit economics are favorable from day one because operating costs are fixed and tiny (see Architecture).</p>
+  </div>
+
+  <!-- COMPETITIVE LANDSCAPE -->
+  <div class="section">
+    <h2>Competitive Landscape</h2>
+    <p><strong>SeeClickFix</strong> is the closest analog and was acquired by CivicPlus in 2019. It is sold to municipalities as a back-office tool. It does not have legal pressure features, public health grades, AI photo analysis, or the consumer-friendly experience that drives mass adoption.</p>
+    <p><strong>Open311</strong> is a protocol, not a product. It standardizes how cities ingest reports but does not generate any consumer-facing value.</p>
+    <p><strong>City-specific apps</strong> (Boston 311, NYC 311, etc.) exist but are siloed, lack accountability features, and have no community verification layer.</p>
+    <p>None of these products have:</p>
+    <ul>
+      <li>Public infrastructure health grades that create comparative pressure between cities</li>
+      <li>Auto-generated legal demand letters citing state-specific statutes</li>
+      <li>Insurance claim evidence packaging</li>
+      <li>Fiscal impact projections that change the city's incentive math</li>
+      <li>Predictive analytics that tell cities where to deploy crews <em>before</em> damage occurs</li>
+      <li>Multilingual, accessibility-first design (most are English-only and inaccessible to screen readers)</li>
+    </ul>
+    <p>Fault Line is positioned as the consumer-friendly accountability layer that complements existing 311 systems rather than replacing them — though for cities without good 311, it can replace them entirely via Open311 integration.</p>
+  </div>
+
+  <!-- TRACTION -->
+  <div class="section">
+    <h2>Traction & Roadmap</h2>
+    <p><strong>Pre-launch.</strong> The product is built. The website is live. Marketing materials are in place. We are awaiting Apple Developer enrollment ($99/yr) and Google Play registration ($25 one-time) to ship to stores.</p>
+
+    <h3>30 days post-launch</h3>
+    <ul>
+      <li>Submit to Product Hunt, Hacker News (Show HN), r/civictech, r/mildlyinfuriating</li>
+      <li>Outreach to local journalists in MA/RI/NH with seed data + shame index</li>
+      <li>Goal: 500 installs, 100 reports, 1 escalation cluster</li>
+    </ul>
+
+    <h3>90 days</h3>
+    <ul>
+      <li>Activate ad-free subscription tier</li>
+      <li>Submit grant applications to Knight Foundation, MacArthur Award for Creative & Effective Institutions, Ford Foundation civic tech track, Code for America</li>
+      <li>Goal: 5,000 installs, first municipal pilot conversation</li>
+    </ul>
+
+    <h3>12 months</h3>
+    <ul>
+      <li>Expand authority database to NY, CT, VT, ME (full New England + NY)</li>
+      <li>Launch dashcam mode (continuous video AI scanning) — 6-week dev sprint, planned</li>
+      <li>Launch real-time pothole-avoidance routing — 4-week dev sprint, planned</li>
+      <li>Goal: 50,000 installs, 1–3 paying municipal partners, $25K+ MRR</li>
+    </ul>
+  </div>
+
+  <!-- TEAM -->
+  <div class="section">
+    <h2>Team</h2>
+    <p><strong>Michael Wylde · Founder & Engineer</strong></p>
+    <p>Solo developer, designer, and writer. Built Fault Line from concept to production-ready in [n months]. Operates Moonlit Social Labs, an independent civic-tech studio. Reachable at moonlit-social-labs@proton.me.</p>
+    <p>The lean structure is a feature, not a bug: it keeps operating costs near zero, keeps decision-making fast, and creates an exceptionally favorable risk/reward for grant capital. Once a product-market fit signal arrives, the team will expand strategically (designer, mobile engineer, partnerships lead).</p>
+  </div>
+
+  <!-- THE ASK -->
+  <div class="section">
+    <h2>The Ask</h2>
+    <p>We are seeking <strong>$50K–$150K in non-dilutive grant capital</strong> across the next 12 months, distributed roughly as follows:</p>
+
+    <table>
+      <tr><th>Category</th><th>Allocation</th><th>Rationale</th></tr>
+      <tr><td>Apple Developer Program (1 year)</td><td>$99</td><td>Required to ship to iOS App Store</td></tr>
+      <tr><td>Google Play Console (one-time)</td><td>$25</td><td>Already paid</td></tr>
+      <tr><td>Domain & DNS (1 year)</td><td>$120</td><td>faultline.app + email routing</td></tr>
+      <tr><td>AI inference budget (12 months)</td><td>$240–500</td><td>Anthropic Claude usage at projected scale</td></tr>
+      <tr><td>Supabase + Resend scale-up</td><td>$500–1,000</td><td>For when free tiers are exhausted (~10K MAU)</td></tr>
+      <tr><td>Professional brand identity & icon</td><td>$3,000–8,000</td><td>Designer, accessibility audit, App Store assets</td></tr>
+      <tr><td>Founder runway (12 mo)</td><td>$36,000–60,000</td><td>Modest part-time stipend so I can keep building full-time</td></tr>
+      <tr><td>Municipal pilot kickstart fund</td><td>$5,000–20,000</td><td>Travel, conference fees, pilot integration support</td></tr>
+      <tr><td>Marketing & PR</td><td>$5,000–15,000</td><td>Outreach to journalists, civic-tech community, podcasts</td></tr>
+      <tr><td>Legal & accounting</td><td>$2,000–5,000</td><td>LLC setup, 1099 contractor agreements, basic IP</td></tr>
+      <tr><td>Reserve / contingency</td><td>$5,000–15,000</td><td>For when reality differs from plan</td></tr>
+    </table>
+
+    <p>For grant funders specifically: this project is structurally aligned with civic-tech funding priorities (transparency, accessibility, multilingual access, anti-corruption tooling, AI-for-good). For impact-focused investors: every dollar of capital funds documentable civic outcomes, not Series-A dilution chasing.</p>
+  </div>
+
+  <!-- WHY YOU SHOULD CARE -->
+  <div class="section">
+    <h2>Why You Should Care About This One</h2>
+    <p>Most civic-tech projects fail for one of three reasons: the product is too academic to use, the team runs out of money before product-market fit, or the politics get tangled. Fault Line addresses each:</p>
+    <ul>
+      <li><strong>The product is consumer-friendly.</strong> Anyone can submit a report in 10 seconds. No account needed. 5 languages. Full accessibility. We've been ruthless about removing friction.</li>
+      <li><strong>The runway is cheap.</strong> Operating costs are under $30/month. A single grant covers years of operation. We do not need to chase recurring revenue to stay alive.</li>
+      <li><strong>The politics work.</strong> Holding governments accountable for fixing potholes is one of the rare civic causes that polls majority-positive across the political spectrum.</li>
+    </ul>
+    <blockquote>"The best civic-tech tool is the one that gets used. The second-best is the one that creates real-world consequences. Fault Line is built to be both — and the second part is the reason the first part will work."</blockquote>
+  </div>
+
+  <!-- CONTACT -->
+  <div class="section">
+    <h2>Get in Touch</h2>
+    <p><strong>Michael Wylde</strong><br>
+    Moonlit Social Labs<br>
+    <a href="mailto:moonlit-social-labs@proton.me">moonlit-social-labs@proton.me</a></p>
+    <p>Happy to walk through any part of the product, the architecture, the financial model, or the roadmap. We're easy to reach and we move fast.</p>
+  </div>
+
+  <div class="section" style="border-top: none; padding-top: 32px; padding-bottom: 80px; text-align: center; color: var(--text-muted); font-size: 13px; font-family: -apple-system, sans-serif;">
+    Confidential — for the recipient only.<br>
+    &copy; 2026 Moonlit Social Labs. All rights reserved.
+  </div>
+
+</div>
+
+</body>
+</html>

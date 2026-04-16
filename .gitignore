@@ -1,14 +1,89 @@
 # ============================================================
-# Only the website/ directory belongs in this git repo.
-# Everything else is the native app, managed separately.
+# Fault Line (mobile + marketing site) — private repo
+# ============================================================
+# This repo contains the Expo/RN mobile app source, the static
+# marketing site, Supabase migrations, store metadata, and all
+# project docs. The `.env` file is excluded so real keys never
+# end up in git — use `.env.example` as the template instead.
 # ============================================================
 
-# Ignore everything by default
-*
+# Dependencies
+node_modules/
+.pnp
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/versions
 
-# Allow website directory
-!website/
-!website/**
+# Expo
+.expo/
+.expo-shared/
+expo-env.d.ts
 
-# Allow this gitignore
-!.gitignore
+# Build outputs
+dist/
+web-build/
+build/
+*.tsbuildinfo
+
+# Native build folders
+android/.gradle/
+android/build/
+android/app/build/
+android/captures/
+ios/build/
+ios/Pods/
+ios/*.xcworkspace
+ios/*.xcuserdata/
+
+# Native credentials — NEVER commit
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision
+*.keystore
+
+# Env files — NEVER commit real keys
+.env
+.env.local
+.env.*.local
+.env.production
+
+# `.env.example` IS tracked (it's the template)
+!.env.example
+
+# EAS
+.easignore
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+*.log
+
+# IDE / editor
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
+!.vscode/launch.json
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Playwright / Vitest (from sibling fault-line-web — safety net)
+test-results/
+playwright-report/
+playwright/.cache/
+coverage/
+
+# Temporary
+*.tmp
+tmp/

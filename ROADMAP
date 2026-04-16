@@ -1,0 +1,101 @@
+# FAULT LINE — ROADMAP
+# Everything that needs to happen, in order of priority.
+# ================================================
+
+
+## 1. DEPLOY (do these to go live)
+
+### Domain & Email
+- Buy domain (faultline.app, faultline.io, faultline.dev, or faultline.org — ~$12/yr)
+- Point DNS to GitHub Pages (or Vercel/Netlify)
+- Replace all GitHub Pages URLs in website/*.html with real domain
+- Add domain to Resend dashboard, configure DNS records (2 TXT + 1 MX)
+- Update FROM_EMAIL in Supabase Edge Function secrets to reports@yourdomain
+
+### Supabase Edge Functions
+- Deploy: supabase functions deploy escalate-clusters
+- Deploy: supabase functions deploy analyze-photo
+- Deploy: supabase functions deploy ai-generate
+- Deploy: supabase functions deploy ai-compare-photos
+- Deploy: supabase functions deploy send-report-email
+- Set secrets: RESEND_API_KEY, FROM_EMAIL, ANTHROPIC_API_KEY, CRON_SECRET
+- Set up daily cron for escalate-clusters
+
+### App Stores
+- Google Play ($25 one-time): play.google.com/console
+  - Build: npx eas build --platform android --profile production
+  - Data Safety form: store-metadata/google-data-safety.md
+  - Content Rating: store-metadata/content-rating.md
+  - Description: store-metadata/description.md
+  - Privacy Policy URL: https://yourdomain/privacy.html
+  - Take 8 screenshots (listed in store-metadata/description.md)
+- Apple App Store ($99/yr): developer.apple.com
+  - Build: npx eas build --platform ios --profile production
+  - Submit: npx eas submit --platform ios
+  - Privacy Labels: store-metadata/apple-privacy-labels.md
+  - Fill eas.json submit.production.ios with Apple ID, ASC App ID, Team ID
+
+### SEO & Analytics
+- Submit sitemap to Google Search Console + Bing Webmaster Tools
+- Create 1200x630px OG social share image, add og:image tags to all pages
+- Add Google Analytics 4 or Plausible Analytics to website
+
+
+## 2. ACTIVATE (do these when ready — app works without them)
+
+### AdMob (revenue)
+- Create account: admob.google.com
+- Create Android + iOS apps, generate banner ad unit IDs
+- Install: npx expo install react-native-google-mobile-ads
+- Replace AdBanner.tsx placeholder with real integration
+- Plug IDs into .env
+
+### Sentry (crash reporting)
+- Create free account: sentry.io (5K errors/month free)
+- Create React Native project, copy DSN
+- Add SENTRY_DSN to .env
+- Verify crashes appear in dashboard
+
+### Professional App Icon
+- Current icon is auto-generated SVG→PNG — functional but basic
+- Hire a designer or use AI generation
+- Replace PNGs in /assets/
+
+
+## 3. PARTNERSHIPS (need external relationships)
+
+### Damage Lawsuit Connector
+- Partner with personal injury attorneys who work on contingency
+- App matches damaged drivers with lawyers, pre-packages evidence
+- Needs: legal partnerships, state bar compliance review, referral agreements
+- Start with a directory of infrastructure damage attorneys per state
+- Evidence package (insurance claim service) already generates the docs lawyers need
+
+
+## 4. FUTURE FEATURES (significant dev effort)
+
+### Real-Time Pothole Avoidance Routing
+- "Avoid potholes" turn-by-turn navigation
+- Routing engine: OSRM, Mapbox Directions, or Google Directions API
+- Overlay reported hazards as avoidance waypoints
+- Real-time route recalculation as new reports come in
+- Needs: routing API costs, background location, battery optimization
+- Effort: 3-4 weeks
+
+### Dashcam Mode
+- Continuous video recording while driving
+- AI frame-by-frame analysis detecting road damage
+- Auto-pause/resume based on speed (accelerometer + GPS)
+- On-device ML model (TFLite or CoreML)
+- Auto-create draft reports for detected issues
+- Privacy: must blur pedestrians/license plates
+- Effort: 6-8 weeks
+
+
+## 5. POST-LAUNCH MARKETING
+
+- Submit to Product Hunt, Hacker News, r/civictech
+- Reach out to local news in MA/RI/NH with shame index data
+- Submit to app review sites
+- Write blog posts for backlinks
+- Create Google Business Profile

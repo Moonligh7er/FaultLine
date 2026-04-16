@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fault Line — Architecture & Services Map</title>
+<style>
+:root { --bg: #0a0a0a; --card: #141414; --elevated: #1a1a1a; --text: #f0f0f0; --dim: #999; --muted: #555; --border: #2a2a2a; --blue: #1E88E5; --orange: #FF6F00; --green: #00C853; --red: #F44336; --purple: #9C27B0; }
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, monospace; background: var(--bg); color: var(--text); line-height: 1.7; padding: 40px 24px; }
+h1 { font-size: 28px; font-weight: 900; margin-bottom: 4px; }
+h1 span { color: var(--blue); }
+.subtitle { color: var(--muted); font-size: 14px; margin-bottom: 32px; }
+h2 { font-size: 20px; font-weight: 700; margin: 40px 0 16px; padding-bottom: 8px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 8px; }
+h2 .dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+h3 { font-size: 16px; font-weight: 600; color: var(--dim); margin: 20px 0 8px; }
+p, li { font-size: 14px; color: var(--dim); }
+a { color: var(--blue); }
+ul { padding-left: 20px; margin-bottom: 12px; }
+li { margin-bottom: 6px; }
+code { background: var(--elevated); padding: 2px 6px; border-radius: 4px; font-size: 13px; color: var(--text); }
+
+/* Tabs */
+.tabs { display: flex; gap: 8px; margin-bottom: 24px; }
+.tab { padding: 8px 20px; border-radius: 100px; font-size: 14px; font-weight: 600; cursor: pointer; border: 1px solid var(--border); background: var(--card); color: var(--dim); }
+.tab.active { background: var(--blue); color: #fff; border-color: var(--blue); }
+.tab-content { display: none; }
+.tab-content.active { display: block; }
+
+/* Cards */
+.card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 20px; margin-bottom: 16px; }
+.card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+.card-title { font-size: 16px; font-weight: 700; }
+.badge { font-size: 11px; font-weight: 600; padding: 3px 10px; border-radius: 100px; text-transform: uppercase; letter-spacing: 0.5px; }
+.badge-free { background: rgba(0,200,83,0.15); color: var(--green); }
+.badge-paid { background: rgba(255,111,0,0.15); color: var(--orange); }
+.badge-optional { background: rgba(30,136,229,0.15); color: var(--blue); }
+.badge-required { background: rgba(244,67,54,0.15); color: var(--red); }
+.link-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px; }
+.link { font-size: 12px; padding: 4px 10px; border-radius: 6px; background: var(--elevated); border: 1px solid var(--border); color: var(--dim); text-decoration: none; }
+.link:hover { border-color: var(--blue); color: var(--text); }
+.key-example { background: var(--bg); border: 1px solid var(--border); border-radius: 6px; padding: 8px 12px; font-family: monospace; font-size: 12px; color: var(--muted); margin-top: 8px; }
+
+/* Cost table */
+table { width: 100%; border-collapse: collapse; margin: 16px 0; }
+th, td { text-align: left; padding: 10px 12px; font-size: 14px; border-bottom: 1px solid var(--border); }
+th { color: var(--dim); font-weight: 600; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; }
+td { color: var(--text); }
+.cost-free { color: var(--green); font-weight: 600; }
+.cost-paid { color: var(--orange); font-weight: 600; }
+.total-row td { font-weight: 700; border-top: 2px solid var(--border); font-size: 16px; }
+
+/* Flow diagram */
+.flow { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin: 16px 0; }
+.flow-node { background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 8px 14px; font-size: 13px; font-weight: 600; }
+.flow-arrow { color: var(--muted); font-size: 18px; }
+.flow-node.highlight { border-color: var(--blue); color: var(--blue); }
+
+@media (max-width: 600px) { body { padding: 20px 12px; } }
+</style>
+</head>
+<body>
+
+<h1>Fault <span>Line</span> — Architecture Map</h1>
+<p class="subtitle">Complete system architecture, external services, accounts, API keys, and maintenance costs. Gitignored — not committed.</p>
+
+<div class="tabs">
+  <div class="tab active" onclick="switchTab('plain')">Plain Language</div>
+  <div class="tab" onclick="switchTab('tech')">Technical</div>
+</div>
+
+<!-- ============================================================
+     PLAIN LANGUAGE TAB
+     ============================================================ -->
+<div class="tab-content active" id="tab-plain">
+
+<h2><span class="dot" style="background:var(--blue)"></span> How the App is Built</h2>
+<p>Fault Line is a mobile app (Android + iPhone) that talks to a cloud database. Users create reports on their phone, the app sends them to the cloud, and the cloud stores everything, sends emails, and runs AI analysis. Here's every piece:</p>
+
+<div class="flow">
+  <div class="flow-node">User's Phone</div>
+  <div class="flow-arrow">→</div>
+  <div class="flow-node highlight">Fault Line App</div>
+  <div class="flow-arrow">→</div>
+  <div class="flow-node highlight">Supabase (Cloud Database)</div>
+  <div class="flow-arrow">→</div>
+  <div class="flow-node">Edge Functions (Server Code)</div>
+  <div class="flow-arrow">→</div>
+  <div class="flow-node">Claude AI / Resend Email</div>
+</div>
+
+<h2><span class="dot" style="background:var(--green)"></span> The App Itself</h2>
+<div class="card">
+  <div class="card-header">
+    <div class="card-title">React Native + Expo</div>
+    <span class="badge badge-free">Free</span>
+  </div>
+  <p>The app is built with React Native (makes one codebase work on both Android and iPhone) using Expo (a toolkit that handles building, testing, and publishing). Written in TypeScript.</p>
+  <p>Think of it like: React Native is the engine, Expo is the car body, TypeScript is the language the blueprints are written in.</p>
+  <div class="link-row">
+    <a class="link" href="https://reactnative.dev" target="_blank">React Native Docs</a>
+    <a class="link" href="https://expo.dev" target="_blank">Expo Dashboard</a>
+    <a class="link" href="https://docs.expo.dev/eas/" target="_blank">EAS Build Service</a>
+  </div>
+  <p style="margin-top:8px;"><strong>Account needed:</strong> Expo account (free) at <a href="https://expo.dev/signup">expo.dev/signup</a></p>
+  <p><strong>Build command:</strong> <code>npx eas build --platform android</code></p>
+</div>
+
+<h2><span class="dot" style="background:var(--purple)"></span> Cloud Database & Backend</h2>
+<div class="card">
+  <div class="card-header">
+    <div class="card-title">Supabase</div>
+    <span class="badge badge-free">Free Tier</span>
+  </div>
+  <p>Supabase is where ALL the data lives — every report, user profile, authority, cluster, vote, escalation log, AI cache, and feedback submission. It also handles user login (magic link emails), file storage (photos/videos), and real-time notifications.</p>
+  <p>Think of it as: the filing cabinet, the security guard, and the postal service all in one.</p>
+  <div class="link-row">
+    <a class="link" href="https://supabase.com/dashboard" target="_blank">Supabase Dashboard</a>
+    <a class="link" href="https://supabase.com/docs" target="_blank">Docs</a>
+    <a class="link" href="https://supabase.com/dashboard/project/_/settings/api" target="_blank">API Keys</a>
+    <a class="link" href="https://supabase.com/dashboard/project/_/storage" target="_blank">File Storage</a>
+    <a class="link" href="https://supabase.com/dashboard/project/_/functions" target="_blank">Edge Functions</a>
+  </div>
+  <p style="margin-top:8px;"><strong>Account:</strong> Already created. Project URL: <code>https://dzewklljiksyivsfpunt.supabase.co</code></p>
+  <div class="key-example">
+    SUPABASE_URL=https://your-project.supabase.co<br>
+    SUPABASE_ANON_KEY=sb_publishable_xxxxxxxxxxxxxxxxxxxx (safe for app)<br>
+    SUPABASE_SERVICE_ROLE_KEY=sb_secret_xxxxxxxxxxxxxxxxxxxx (ONLY in edge functions)
+  </div>
+  <h3>What's stored in Supabase:</h3>
+  <ul>
+    <li><strong>reports</strong> — every infrastructure report (GPS, category, severity, photos, status)</li>
+    <li><strong>profiles</strong> — user accounts (display name, points, badges, push token)</li>
+    <li><strong>authorities</strong> — 42 government departments with contact info (MA, RI, NH)</li>
+    <li><strong>report_clusters</strong> — groups of nearby reports about the same issue</li>
+    <li><strong>cluster_reports</strong> — links reports to their clusters</li>
+    <li><strong>report_votes</strong> — upvotes and confirmations</li>
+    <li><strong>escalation_log</strong> — record of every email sent to authorities</li>
+    <li><strong>feedback</strong> — user feedback and feature requests from website</li>
+    <li><strong>ai_cache</strong> — saved AI analysis results for learning</li>
+    <li><strong>submission_log</strong> — abuse detection logging</li>
+    <li><strong>report-media bucket</strong> — all uploaded photos and videos</li>
+  </ul>
+  <h3>Free tier limits:</h3>
+  <ul>
+    <li>500 MB database</li>
+    <li>1 GB file storage</li>
+    <li>50,000 monthly active users</li>
+    <li>500,000 edge function invocations/month</li>
+    <li>2 GB bandwidth</li>
+  </ul>
+</div>
+
+<h2><span class="dot" style="background:var(--orange)"></span> Server-Side Code (Edge Functions)</h2>
+<div class="card">
+  <div class="card-header">
+    <div class="card-title">Supabase Edge Functions (Deno)</div>
+    <span class="badge badge-free">Included in Supabase</span>
+  </div>
+  <p>These are small programs that run on Supabase's servers (not on the user's phone). They handle things that need secret keys — like sending emails and calling the AI.</p>
+  <p>Think of it as: a private office in the back that handles sensitive paperwork the public can't access.</p>
+  <h3>Functions:</h3>
+  <ul>
+    <li><strong>escalate-clusters</strong> — runs daily, finds clusters with 10+ reports over 30 days, sends emails to authorities via Resend</li>
+    <li><strong>analyze-photo</strong> — receives a photo, sends it to Claude AI for analysis, returns damage assessment</li>
+    <li><strong>ai-generate</strong> — handles all text AI tasks (descriptions, legal letters, emails, summaries, notifications). Routes to Haiku or Sonnet depending on task</li>
+    <li><strong>ai-compare-photos</strong> — compares two infrastructure photos to check if they show the same issue</li>
+    <li><strong>send-report-email</strong> — sends individual report emails to authorities via Resend</li>
+  </ul>
+  <h3>Secrets stored in Supabase Edge Function settings:</h3>
+  <div class="key-example">
+    RESEND_API_KEY=re_xxxxxxxxxxxxxxxxxxxxxxxxxxxx<br>
+    FROM_EMAIL=reports@yourdomain.com<br>
+    ANTHROPIC_API_KEY=sk-ant-xxxxxxxxxxxxxxxxxxxxxxxxxxxx<br>
+    CRON_SECRET=any-random-string-you-choose
+  </div>
+  <div class="link-row">
+    <a class="link" href="https://supabase.com/dashboard/project/_/functions" target="_blank">Manage Functions</a>
+    <a class="link" href="https://supabase.com/dashboard/project/_/settings/vault" target="_blank">Manage Secrets</a>
+  </div>
+</div>
+
+<h2><span class="dot" style="background:var(--red)"></span> External Services</h2>
+
+<div class="card">
+  <div class="card-header">
+    <div class="card-title">Anthropic (Claude AI)</div>
+    <span class="badge badge-paid">Pay per use</span>
+  </div>
+  <p>Powers all AI features: photo analysis, auto-descriptions, legal letter enhancement, escalation emails, notification copy, report summaries, photo comparison, and feedback triage.</p>
+  <p>Uses two models: <strong>Haiku 4.5</strong> (fast/cheap) for descriptions and notifications, <strong>Sonnet 4.6</strong> (accurate/quality) for legal letters and escalation emails.</p>
+  <div class="key-example">ANTHROPIC_API_KEY=sk-ant-api03-xxxxxxxxxxxxxxxxxxxxxxxxxxxx</div>
+  <div class="link-row">
+    <a class="link" href="https://console.anthropic.com" target="_blank">Anthropic Console</a>
+    <a class="link" href="https://console.anthropic.com/settings/keys" target="_blank">API Keys</a>
+    <a class="link" href="https://docs.anthropic.com/en/docs/about-claude/models" target="_blank">Model Pricing</a>
+  </div>
+  <p style="margin-top:8px;"><strong>Cost:</strong> Haiku ~$0.25/1M input tokens. Sonnet ~$3/1M input. Photo analysis ~$0.01/photo. Estimated $5-20/month at moderate usage.</p>
+</div>
+
+<div class="card">
+  <div class="card-header">
+    <div class="card-title">Resend (Email)</div>
+    <span class="badge badge-free">3,000 emails/month free</span>
+  </div>
+  <p>Sends all emails: escalation reports to government authorities, individual report submissions, and demand letter deliveries.</p>
+  <div class="key-example">RESEND_API_KEY=re_xxxxxxxxxxxxxxxxxxxxxxxxxxxx</div>
+  <div class="link-row">
+    <a class="link" href="https://resend.com/overview" target="_blank">Resend Dashboard</a>
+    <a class="link" href="https://resend.com/api-keys" target="_blank">API Keys</a>
+    <a class="link" href="https://resend.com/domains" target="_blank">Domain Settings</a>
+  </div>
+  <p style="margin-top:8px;"><strong>Currently sending from:</strong> onboarding@resend.dev (test). Switch to your domain when purchased.</p>
+</div>
+
+<div class="card">
+  <div class="card-header">
+    <div class="card-title">Google AdMob (Ads)</div>
+    <span class="badge badge-optional">Not yet configured</span>
+  </div>
+  <p>Banner ads that generate revenue to keep the app free. Currently placeholder — app works without it. When ready, install <code>react-native-google-mobile-ads</code> and plug in IDs.</p>
+  <div class="key-example">
+    ADMOB_APP_ID_ANDROID=ca-app-pub-xxxxxxxxxxxxxxxx~yyyyyyyyyy<br>
+    ADMOB_BANNER_ID_ANDROID=ca-app-pub-xxxxxxxxxxxxxxxx/zzzzzzzzzz
+  </div>
+  <div class="link-row">
+    <a class="link" href="https://admob.google.com" target="_blank">AdMob Dashboard</a>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-header">
+    <div class="card-title">Sentry (Crash Reporting)</div>
+    <span class="badge badge-optional">Not yet configured</span>
+  </div>
+  <p>Catches app crashes and sends reports so you can fix bugs. Free tier: 5,000 errors/month. App works without it — you just won't see crashes.</p>
+  <div class="key-example">SENTRY_DSN=https://xxxxxxxxxxxx@o000000.ingest.sentry.io/000000</div>
+  <div class="link-row">
+    <a class="link" href="https://sentry.io" target="_blank">Sentry Dashboard</a>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-header">
+    <div class="card-title">GitHub Pages (Website)</div>
+    <span class="badge badge-free">Free</span>
+  </div>
+  <p>Hosts the public website: landing page, features, blog, privacy policy, terms, and feedback page. Currently at <code>moonligh7er.github.io/FaultLine</code>.</p>
+  <div class="link-row">
+    <a class="link" href="https://github.com/Moonligh7er/FaultLine" target="_blank">GitHub Repo</a>
+    <a class="link" href="https://moonligh7er.github.io/FaultLine/" target="_blank">Live Site</a>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-header">
+    <div class="card-title">Ko-fi (Donations)</div>
+    <span class="badge badge-free">Free</span>
+  </div>
+  <p>Accepts community donations to support development. Button on all website pages.</p>
+  <div class="link-row">
+    <a class="link" href="https://ko-fi.com/moonlitsociallabs" target="_blank">Ko-fi Page</a>
+  </div>
+</div>
+
+<h2><span class="dot" style="background:var(--blue)"></span> Free APIs (No Account Needed)</h2>
+<div class="card">
+  <ul>
+    <li><strong>OpenStreetMap tiles</strong> — free map tiles for offline caching. No key. <a href="https://tile.openstreetmap.org">tile.openstreetmap.org</a></li>
+    <li><strong>Census Bureau Geocoder</strong> — maps GPS to election districts. No key. <a href="https://geocoding.geo.census.gov">geocoding.geo.census.gov</a></li>
+    <li><strong>Google Maps (native)</strong> — used by react-native-maps. Free for native mobile apps. No key needed.</li>
+    <li><strong>Apple Maps (iOS)</strong> — automatic on iPhone. No key.</li>
+  </ul>
+</div>
+
+<h2><span class="dot" style="background:var(--green)"></span> App Store Accounts</h2>
+<div class="card">
+  <ul>
+    <li><strong>Google Play Console</strong> — $25 one-time. <a href="https://play.google.com/console">play.google.com/console</a></li>
+    <li><strong>Apple Developer Program</strong> — $99/year. <a href="https://developer.apple.com">developer.apple.com</a></li>
+    <li><strong>Expo (EAS)</strong> — free tier, 30 builds/month. <a href="https://expo.dev">expo.dev</a></li>
+  </ul>
+</div>
+
+<h2><span class="dot" style="background:var(--orange)"></span> Monthly & Annual Costs</h2>
+
+<table>
+  <tr><th>Service</th><th>Monthly</th><th>Annual</th><th>Notes</th></tr>
+  <tr><td>Supabase</td><td class="cost-free">$0</td><td class="cost-free">$0</td><td>Free tier (500MB DB, 1GB storage, 50K users)</td></tr>
+  <tr><td>Resend</td><td class="cost-free">$0</td><td class="cost-free">$0</td><td>Free tier (3,000 emails/month)</td></tr>
+  <tr><td>Anthropic (Claude AI)</td><td class="cost-paid">~$5–20</td><td class="cost-paid">~$60–240</td><td>Pay per use. Scales with report volume</td></tr>
+  <tr><td>GitHub Pages</td><td class="cost-free">$0</td><td class="cost-free">$0</td><td>Free for public repos</td></tr>
+  <tr><td>Expo (EAS)</td><td class="cost-free">$0</td><td class="cost-free">$0</td><td>Free tier (30 builds/month)</td></tr>
+  <tr><td>Google Play</td><td class="cost-free">$0</td><td class="cost-free">$0</td><td>$25 one-time (already paid)</td></tr>
+  <tr><td>Apple Developer</td><td class="cost-paid">~$8.25</td><td class="cost-paid">$99</td><td>Annual subscription</td></tr>
+  <tr><td>Domain</td><td class="cost-paid">~$1</td><td class="cost-paid">~$12</td><td>When purchased</td></tr>
+  <tr><td>AdMob</td><td class="cost-free">$0</td><td class="cost-free">$0</td><td>Free — generates revenue</td></tr>
+  <tr><td>Sentry</td><td class="cost-free">$0</td><td class="cost-free">$0</td><td>Free tier (5K errors/month)</td></tr>
+  <tr><td>Ko-fi</td><td class="cost-free">$0</td><td class="cost-free">$0</td><td>Free — receives donations</td></tr>
+  <tr class="total-row"><td>TOTAL</td><td class="cost-paid">~$14–29/mo</td><td class="cost-paid">~$171–351/yr</td><td>Mostly AI costs. Everything else is free tier.</td></tr>
+</table>
+
+<p><strong>Break-even:</strong> With AdMob banner ads averaging $1-3 eCPM and even moderate daily active users (~500), ad revenue would cover all costs. Ko-fi donations are bonus.</p>
+
+<h2><span class="dot" style="background:var(--purple)"></span> Scaling Costs (When You Outgrow Free Tiers)</h2>
+<table>
+  <tr><th>Trigger</th><th>What Happens</th><th>Cost</th></tr>
+  <tr><td>500MB database</td><td>Upgrade Supabase to Pro</td><td>$25/mo</td></tr>
+  <tr><td>1GB file storage</td><td>Included in Supabase Pro</td><td>—</td></tr>
+  <tr><td>3,000 emails/month</td><td>Upgrade Resend</td><td>$20/mo (50K emails)</td></tr>
+  <tr><td>5K crash reports</td><td>Upgrade Sentry</td><td>$26/mo</td></tr>
+  <tr><td>30 builds/month</td><td>Upgrade EAS</td><td>$15/mo</td></tr>
+</table>
+
+</div>
+
+<!-- ============================================================
+     TECHNICAL TAB
+     ============================================================ -->
+<div class="tab-content" id="tab-tech">
+
+<h2><span class="dot" style="background:var(--blue)"></span> Stack Overview</h2>
+<div class="card">
+  <pre style="font-size:13px;color:var(--dim);line-height:1.6;overflow-x:auto;">
+┌─────────────────────────────────────────────────────────┐
+│                    CLIENT (Mobile App)                    │
+│  React Native 0.76 + Expo SDK 55 + TypeScript            │
+│  73 source files | 11 screens | 10 components             │
+│  43 service modules | 5 hooks | 3 stores                  │
+├─────────────────────────────────────────────────────────┤
+│                         ↕ HTTPS                          │
+├─────────────────────────────────────────────────────────┤
+│               BACKEND (Supabase Cloud)                    │
+│  PostgreSQL 15 + PostGIS 3.4 | Row Level Security         │
+│  11 tables | 12 RPC functions | 6 triggers                │
+│  Auth (magic link) | Storage (report-media bucket)        │
+│  Realtime (WebSocket subscriptions)                       │
+├─────────────────────────────────────────────────────────┤
+│            EDGE FUNCTIONS (Deno Runtime)                   │
+│  5 functions | Authenticated | Rate-limited               │
+│  escalate-clusters | analyze-photo | ai-generate          │
+│  ai-compare-photos | send-report-email                    │
+├─────────────────────────────────────────────────────────┤
+│              EXTERNAL APIs                                │
+│  Anthropic Claude (Haiku 4.5 + Sonnet 4.6)               │
+│  Resend (transactional email)                             │
+│  Census Bureau Geocoder (election districts)              │
+│  OpenStreetMap (offline tile cache)                       │
+│  Open311 / SeeClickFix (bidirectional 311 sync)          │
+└─────────────────────────────────────────────────────────┘
+  </pre>
+</div>
+
+<h2><span class="dot" style="background:var(--green)"></span> Client Architecture</h2>
+<div class="card">
+  <h3>Build System</h3>
+  <ul>
+    <li><code>app.config.js</code> — Expo config with dotenv. Reads .env at build time via <code>require('dotenv').config()</code></li>
+    <li><code>eas.json</code> — EAS Build profiles: development (APK), preview (internal), production (auto-increment)</li>
+    <li>Bundle ID: <code>com.faultline.app</code> (both platforms)</li>
+    <li>TypeScript strict mode. Zero errors.</li>
+  </ul>
+  <h3>Navigation</h3>
+  <ul>
+    <li>React Navigation v6: NativeStackNavigator (stack) + BottomTabNavigator (tabs)</li>
+    <li>Deep linking: <code>faultline://report/:reportId</code>, <code>faultline://dashboard</code></li>
+    <li>5 tabs: Home, Report, Map, Dashboard, Profile</li>
+    <li>Stack screens: ReportDetail, ARView, Features, PrivacyPolicy, TermsOfService, Onboarding</li>
+  </ul>
+  <h3>State Management</h3>
+  <ul>
+    <li>No Redux/MobX — Supabase client + React state + AsyncStorage persistence</li>
+    <li>ThemeProvider (React Context): light/dark/system with AsyncStorage persistence</li>
+    <li>expo-constants reads config.extra for env vars at runtime</li>
+  </ul>
+  <h3>Key Dependencies</h3>
+  <ul>
+    <li><code>@supabase/supabase-js</code> — DB client with RLS-enforced queries</li>
+    <li><code>react-native-maps</code> — MapView with Markers, Callouts, draggable pins</li>
+    <li><code>expo-camera</code> — CameraView for AR overlay</li>
+    <li><code>expo-image-picker</code> — photo/video capture and gallery selection</li>
+    <li><code>expo-location</code> — GPS, reverse geocoding, heading for AR</li>
+    <li><code>expo-sensors</code> — Accelerometer for bump detection</li>
+    <li><code>expo-speech-recognition</code> — native STT for voice commands</li>
+    <li><code>expo-speech</code> — TTS for audio-guided reporting</li>
+    <li><code>expo-notifications</code> — push notifications with 3 Android channels</li>
+    <li><code>expo-haptics</code> — tactile feedback on all interactions</li>
+    <li><code>@expo/vector-icons</code> — MaterialCommunityIcons throughout</li>
+    <li><code>@sentry/react-native</code> — crash reporting (disabled until DSN configured)</li>
+    <li><code>i18n-js</code> — 5 locales (en, es, pt, zh, ht)</li>
+  </ul>
+</div>
+
+<h2><span class="dot" style="background:var(--purple)"></span> Database Schema</h2>
+<div class="card">
+  <pre style="font-size:12px;color:var(--dim);line-height:1.5;overflow-x:auto;">
+reports (PostGIS)
+├── id UUID PK
+├── user_id UUID FK→profiles (nullable for anonymous)
+├── category TEXT (24 enum values)
+├── latitude/longitude DOUBLE PRECISION
+├── location_point GEOGRAPHY(POINT,4326) — auto-set by trigger
+├── address, city, state, zip TEXT
+├── description TEXT
+├── size_rating, hazard_level, urgency, condition_level TEXT
+├── media JSONB[] — [{id, uri, uploadedUrl, thumbnailUrl, type}]
+├── resolved_media JSONB[] — before/after photos
+├── vehicle_damage JSONB
+├── status TEXT (draft|submitted|acknowledged|in_progress|resolved|closed|rejected)
+├── authority_id UUID FK→authorities
+├── cluster_id UUID FK→report_clusters
+├── upvote_count, confirm_count INTEGER
+├── is_anonymous, sensor_detected, offline_queued, is_quick_report BOOLEAN
+├── _hp TEXT — honeypot (bot detection)
+└── created_at, updated_at, resolved_at TIMESTAMPTZ
+
+profiles
+├── id UUID PK FK→auth.users
+├── display_name, avatar_url, push_token TEXT
+├── total_reports, total_upvotes, total_confirms, points INTEGER
+├── badges JSONB[]
+└── created_at, updated_at TIMESTAMPTZ
+
+authorities (42 seeded for MA/RI/NH)
+├── id UUID PK
+├── name, level (federal|state|county|city|town), state, city, county TEXT
+├── submission_methods JSONB[] — [{method, endpoint, priority, notes}]
+├── boundary_geojson JSONB
+├── response_time_avg_days, fix_rate_percent REAL
+└── is_active BOOLEAN
+
+report_clusters
+├── id UUID PK
+├── category TEXT, centroid_lat/lng, centroid_point GEOGRAPHY
+├── report_count, unique_reporters INTEGER
+├── max_hazard_level, status TEXT
+├── authority_id UUID FK→authorities
+├── city, state, address TEXT
+└── first_reported_at, last_reported_at, submitted_at, escalated_at TIMESTAMPTZ
+
+report_votes (UNIQUE: report_id + user_id + vote_type)
+escalation_log (cluster_id, method, recipient, subject, body, status)
+feedback (type, name, email, subject, message, status, votes)
+ai_cache (report_id, task_type, result JSONB, model)
+submission_log (user_id, ip_address, user_agent)
+cluster_reports (cluster_id, report_id — link table)
+  </pre>
+  <h3>Key Triggers</h3>
+  <ul>
+    <li><code>set_report_point</code> — BEFORE INSERT/UPDATE: auto-creates PostGIS geography point from lat/lng</li>
+    <li><code>auto_cluster_on_insert</code> — AFTER INSERT: assigns report to nearest cluster (50m radius, same category) or creates new cluster</li>
+    <li><code>enforce_rate_limit</code> — BEFORE INSERT: rejects if user has 10+ reports in last hour</li>
+    <li><code>reject_honeypot</code> — BEFORE INSERT: rejects if _hp field is populated (bot detection)</li>
+    <li><code>handle_new_user</code> — AFTER INSERT on auth.users: auto-creates profile row</li>
+  </ul>
+  <h3>Key RPC Functions</h3>
+  <ul>
+    <li><code>get_nearby_reports(lat, lng, radius_km)</code> — PostGIS ST_DWithin query</li>
+    <li><code>get_nearby_clusters(lat, lng, radius_km)</code> — same for clusters</li>
+    <li><code>assign_report_to_cluster(report_id)</code> — clustering algorithm</li>
+    <li><code>get_clusters_ready_for_escalation()</code> — confirmed + 10 reports + 30 days</li>
+    <li><code>get_cluster_summary(cluster_id)</code> — full data for email generation</li>
+    <li><code>find_authority_by_point(lat, lng)</code> — PostGIS boundary lookup</li>
+    <li><code>award_points(user_id, points)</code> — gamification point system</li>
+    <li><code>increment_upvote/increment_confirm(report_id)</code> — atomic counter updates</li>
+  </ul>
+  <h3>RLS Policies</h3>
+  <ul>
+    <li>All tables: SELECT open to everyone (public data)</li>
+    <li>reports INSERT: <code>user_id IS NULL OR auth.uid() = user_id</code></li>
+    <li>reports UPDATE/DELETE: <code>auth.uid() = user_id</code></li>
+    <li>profiles UPDATE/DELETE: <code>auth.uid() = id</code></li>
+    <li>feedback INSERT: open (no auth required)</li>
+  </ul>
+</div>
+
+<h2><span class="dot" style="background:var(--orange)"></span> AI Model Routing</h2>
+<div class="card">
+  <table>
+    <tr><th>Task</th><th>Model</th><th>Reason</th><th>~Cost/call</th></tr>
+    <tr><td>Photo analysis</td><td>Haiku 4.5 (vision)</td><td>Fast, cheap, strong vision</td><td>$0.01</td></tr>
+    <tr><td>Photo comparison</td><td>Haiku 4.5 (vision)</td><td>Pattern matching, 2 images</td><td>$0.02</td></tr>
+    <tr><td>Descriptions</td><td>Haiku 4.5</td><td>Short output, frequent</td><td>$0.001</td></tr>
+    <tr><td>Notifications</td><td>Haiku 4.5</td><td>Short, latency-sensitive</td><td>$0.001</td></tr>
+    <tr><td>Summaries</td><td>Haiku 4.5</td><td>Short, straightforward</td><td>$0.001</td></tr>
+    <tr><td>Legal letters</td><td>Sonnet 4.6</td><td>Legal accuracy critical</td><td>$0.02</td></tr>
+    <tr><td>Escalation emails</td><td>Sonnet 4.6</td><td>Quality affects outcomes</td><td>$0.015</td></tr>
+    <tr><td>Feedback triage</td><td>Sonnet 4.6</td><td>Nuanced deduplication</td><td>$0.02</td></tr>
+  </table>
+  <p style="margin-top:8px;">System prompt provides full app context: 24 categories, 3 state statutes with notice periods, clustering thresholds, anti-hallucination rules.</p>
+</div>
+
+<h2><span class="dot" style="background:var(--red)"></span> Security Architecture</h2>
+<div class="card">
+  <ul>
+    <li><strong>Zero secrets in client</strong> — only Supabase publishable key (public by design, gated by RLS)</li>
+    <li><strong>Edge functions require auth</strong> — Bearer token validated via <code>supabase.auth.getUser()</code></li>
+    <li><strong>Server-side rate limiting</strong> — Postgres trigger, cannot bypass by decompiling app</li>
+    <li><strong>Bot honeypot</strong> — <code>_hp</code> column, BEFORE INSERT trigger rejects non-empty</li>
+    <li><strong>Domain whitelist</strong> — <code>createPinnedFetch()</code> wraps global.fetch, blocks non-whitelisted domains, enforces HTTPS</li>
+    <li><strong>File validation</strong> — magic byte checks (JPEG/PNG/GIF/WebP/BMP), 5MB limit</li>
+    <li><strong>Deep link validation</strong> — UUID regex before any DB query</li>
+    <li><strong>Root/jailbreak detection</strong> — logged, not blocked (civic app)</li>
+    <li><strong>CSP on all web pages</strong> — no external scripts, no frames, no objects</li>
+    <li><strong>Email obfuscation</strong> — JS runtime reconstruction, not in HTML source</li>
+  </ul>
+</div>
+
+<h2><span class="dot" style="background:var(--green)"></span> SQL Migrations (run in order)</h2>
+<div class="card">
+  <ol>
+    <li><code>supabase/schema.sql</code> — core tables, PostGIS, triggers, RLS, RPC functions</li>
+    <li><code>supabase/seed_authorities.sql</code> — 42 MA/RI/NH authorities with real contact info</li>
+    <li><code>supabase/clustering.sql</code> — cluster tables, auto-assign trigger, escalation functions</li>
+    <li><code>supabase/migration_001_add_missing_columns.sql</code> — urgency, condition, quick report, cluster_id, resolved_media, push_token</li>
+    <li><code>supabase/migration_002_missing_rpcs.sql</code> — award_points, get_nearby_clusters</li>
+    <li><code>supabase/migration_003_security_fixes.sql</code> — RLS: enforce user_id on insert, add DELETE policies</li>
+    <li><code>supabase/migration_004_server_rate_limit.sql</code> — rate limit trigger, honeypot, submission_log</li>
+    <li><code>supabase/migration_005_feedback.sql</code> — feedback table with RLS</li>
+    <li><code>supabase/migration_006_ai_cache.sql</code> — AI result cache table</li>
+  </ol>
+</div>
+
+<h2><span class="dot" style="background:var(--orange)"></span> Cost Analysis</h2>
+<div class="card">
+  <table>
+    <tr><th>Service</th><th>Free Tier</th><th>Monthly Cost</th><th>Annual Cost</th><th>Scale Trigger</th></tr>
+    <tr><td>Supabase</td><td>500MB DB, 1GB storage, 50K MAU</td><td class="cost-free">$0</td><td class="cost-free">$0</td><td>$25/mo at 500MB+</td></tr>
+    <tr><td>Anthropic</td><td>None (pay per use)</td><td class="cost-paid">$5–20</td><td class="cost-paid">$60–240</td><td>Scales linearly with volume</td></tr>
+    <tr><td>Resend</td><td>3,000 emails/mo</td><td class="cost-free">$0</td><td class="cost-free">$0</td><td>$20/mo at 3K+</td></tr>
+    <tr><td>Apple Developer</td><td>None</td><td class="cost-paid">$8.25</td><td class="cost-paid">$99</td><td>Fixed</td></tr>
+    <tr><td>Domain</td><td>None</td><td class="cost-paid">$1</td><td class="cost-paid">$12</td><td>Fixed</td></tr>
+    <tr><td>Expo EAS</td><td>30 builds/mo</td><td class="cost-free">$0</td><td class="cost-free">$0</td><td>$15/mo at 30+</td></tr>
+    <tr><td>GitHub Pages</td><td>Unlimited</td><td class="cost-free">$0</td><td class="cost-free">$0</td><td>Never</td></tr>
+    <tr><td>Sentry</td><td>5K errors/mo</td><td class="cost-free">$0</td><td class="cost-free">$0</td><td>$26/mo at 5K+</td></tr>
+    <tr><td>AdMob</td><td>N/A</td><td class="cost-free">Revenue</td><td class="cost-free">Revenue</td><td>Generates income</td></tr>
+    <tr class="total-row"><td>TOTAL</td><td></td><td class="cost-paid">$14–29</td><td class="cost-paid">$171–351</td><td></td></tr>
+  </table>
+  <p style="margin-top:12px;"><strong>One-time costs:</strong> Google Play $25. That's it.</p>
+  <p><strong>Revenue potential:</strong> Banner ads at $1-3 eCPM. 500 DAU × 3 impressions = 1,500/day = 45K/month = $45-135/month in ad revenue. Covers all costs at ~300 DAU.</p>
+</div>
+
+</div>
+
+<script>
+function switchTab(tab) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+  event.target.classList.add('active');
+  document.getElementById('tab-' + tab).classList.add('active');
+}
+</script>
+
+</body>
+</html>

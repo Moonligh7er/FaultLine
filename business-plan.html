@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Fault Line — Business Plan</title>
+<style>
+:root {
+  --bg: #050507;
+  --bg-card: #0f1014;
+  --bg-elevated: #16181f;
+  --text: #f6f6f9;
+  --text-secondary: #a8aab5;
+  --text-muted: #6b6d7a;
+  --border: #25272f;
+  --primary: #1E88E5;
+  --secondary: #FF6F00;
+  --accent: #00C853;
+  --danger: #F44336;
+  --gradient: linear-gradient(135deg, #1E88E5 0%, #00C853 100%);
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { font-family: 'Charter', 'Iowan Old Style', 'Sitka Text', Georgia, serif; background: var(--bg); color: var(--text); line-height: 1.75; font-size: 17px; }
+.sans { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+a { color: var(--primary); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+.confidential {
+  background: rgba(244,67,54,0.08); border-bottom: 1px solid rgba(244,67,54,0.2);
+  padding: 10px 24px; text-align: center; font-size: 12px; color: #ff6e6e;
+  font-family: -apple-system, sans-serif; text-transform: uppercase; letter-spacing: 1.5px; font-weight: 700;
+}
+
+.cover {
+  min-height: 70vh; display: flex; flex-direction: column; align-items: center; justify-content: center;
+  text-align: center; padding: 80px 24px;
+  background: radial-gradient(ellipse at center, rgba(30,136,229,0.1), transparent 70%);
+}
+.cover .label { font-family: -apple-system, sans-serif; font-size: 13px; color: var(--secondary); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 24px; }
+.cover h1 { font-family: -apple-system, sans-serif; font-size: clamp(40px, 7vw, 80px); font-weight: 900; letter-spacing: -2px; line-height: 1; margin-bottom: 16px; }
+.cover h1 .gradient { background: var(--gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+.cover h2 { font-family: -apple-system, sans-serif; font-size: 22px; font-weight: 600; color: var(--text-secondary); margin-bottom: 32px; letter-spacing: -0.5px; }
+.cover .meta { font-family: -apple-system, sans-serif; font-size: 13px; color: var(--text-muted); }
+
+.toc { max-width: 720px; margin: 40px auto 60px; padding: 0 24px; }
+.toc h3 { font-family: -apple-system, sans-serif; font-size: 13px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 16px; }
+.toc ol { list-style: none; counter-reset: toc; }
+.toc li {
+  counter-increment: toc; padding: 12px 0; border-bottom: 1px dashed var(--border);
+  display: flex; align-items: center; gap: 16px;
+  font-family: -apple-system, sans-serif; font-size: 16px;
+}
+.toc li::before {
+  content: counter(toc, decimal-leading-zero);
+  color: var(--text-muted); font-weight: 700; font-size: 13px;
+  font-family: -apple-system, sans-serif;
+}
+.toc a { color: var(--text); flex: 1; }
+.toc a:hover { color: var(--primary); text-decoration: none; }
+
+.container { max-width: 780px; margin: 0 auto; padding: 0 24px; }
+.section { padding: 80px 0; border-top: 1px solid var(--border); scroll-margin-top: 24px; }
+.section .number { font-family: -apple-system, sans-serif; font-size: 13px; color: var(--secondary); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 12px; font-weight: 800; display: block; }
+.section h2 { font-family: -apple-system, sans-serif; font-size: clamp(32px, 5vw, 48px); font-weight: 900; letter-spacing: -1.5px; line-height: 1.05; margin-bottom: 28px; }
+.section h3 { font-family: -apple-system, sans-serif; font-size: 22px; font-weight: 700; margin: 36px 0 12px; }
+.section h4 { font-family: -apple-system, sans-serif; font-size: 17px; font-weight: 700; margin: 24px 0 8px; color: var(--text); }
+.section p { color: var(--text-secondary); margin-bottom: 18px; }
+.section p strong { color: var(--text); font-weight: 600; }
+.section ul, .section ol { color: var(--text-secondary); padding-left: 24px; margin-bottom: 18px; }
+.section li { margin-bottom: 10px; }
+.section blockquote {
+  border-left: 4px solid var(--primary); padding: 20px 28px;
+  background: var(--bg-card); border-radius: 0 12px 12px 0;
+  margin: 28px 0; font-style: italic; color: var(--text);
+}
+
+table { width: 100%; border-collapse: collapse; margin: 24px 0; font-family: -apple-system, sans-serif; font-size: 15px; }
+th, td { text-align: left; padding: 14px 16px; border-bottom: 1px solid var(--border); }
+th { color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; font-size: 12px; font-weight: 800; }
+td { color: var(--text); }
+.cost-free { color: var(--accent); font-weight: 700; }
+.cost-paid { color: var(--secondary); font-weight: 700; }
+
+.metric-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px; margin: 24px 0; font-family: -apple-system, sans-serif; }
+.metric { background: var(--bg-card); border: 1px solid var(--border); border-radius: 14px; padding: 24px 20px; text-align: center; }
+.metric .num { font-size: 40px; font-weight: 900; background: var(--gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; line-height: 1; }
+.metric .label { font-size: 12px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1.5px; margin-top: 8px; }
+
+.linkbox { background: var(--bg-card); border: 1px solid var(--border); border-radius: 16px; padding: 24px; margin: 32px 0; font-family: -apple-system, sans-serif; }
+.linkbox h4 { font-size: 12px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 12px; font-weight: 800; }
+.linkbox a { color: var(--primary); font-size: 14px; font-weight: 600; }
+</style>
+</head>
+<body>
+
+<div class="confidential">⚠ Confidential · Business Plan · Not for Public Distribution</div>
+
+<!-- COVER -->
+<div class="cover">
+  <span class="label">Moonlit Social Labs</span>
+  <h1>Fault Line<br><span class="gradient">Business Plan</span></h1>
+  <h2>Community infrastructure accountability — for the next 36 months</h2>
+  <div class="meta">v1.0 · 2026 · Michael Wylde · moonlit-social-labs@proton.me</div>
+</div>
+
+<!-- TOC -->
+<div class="toc">
+  <h3>Table of Contents</h3>
+  <ol>
+    <li><a href="#executive">Executive Summary</a></li>
+    <li><a href="#problem">The Problem &amp; Why It Persists</a></li>
+    <li><a href="#solution">The Solution &amp; Product Vision</a></li>
+    <li><a href="#market">Market Analysis &amp; Sizing</a></li>
+    <li><a href="#competitive">Competitive Landscape</a></li>
+    <li><a href="#model">Business Model &amp; Pricing</a></li>
+    <li><a href="#operations">Operations &amp; Cost Structure</a></li>
+    <li><a href="#gtm">Go-to-Market Strategy</a></li>
+    <li><a href="#financials">Financial Projections</a></li>
+    <li><a href="#team">Team &amp; Org Structure</a></li>
+    <li><a href="#risks">Risk Analysis &amp; Mitigation</a></li>
+    <li><a href="#milestones">12 / 24 / 36 Month Milestones</a></li>
+    <li><a href="#funding">Use of Funds &amp; Capital Plan</a></li>
+    <li><a href="#exit">Exit / Sustainability Strategy</a></li>
+  </ol>
+</div>
+
+<div class="container">
+
+  <!-- 1. EXECUTIVE SUMMARY -->
+  <div class="section" id="executive">
+    <span class="number">01 · Executive Summary</span>
+    <h2>The accountability layer for America's broken infrastructure system.</h2>
+
+    <p>Fault Line is a free mobile and web app that turns one-tap photos of infrastructure problems — potholes, broken streetlights, sidewalk hazards, water main breaks, and 20 other categories — into community-verified, GPS-stamped, legally significant reports that automatically escalate to the responsible government authority.</p>
+
+    <p>The product is built around a simple insight: <strong>cities ignore problems they're not legally documented as knowing about</strong>. Every state in America has a "notice of defect" statute that creates legal liability when a municipality fails to fix a hazard it has been formally notified about. For 30 years, almost no one has used those statutes — because almost no one had the documentation. A 311 phone call is not documentation. A timestamped photo with GPS coordinates, a community of corroborating witnesses, and an auto-generated demand letter citing the specific state statute <strong>is</strong>.</p>
+
+    <p>Fault Line is the documentation infrastructure. The 10-second photo is what users see; the legal pressure is what cities feel.</p>
+
+    <div class="metric-grid">
+      <div class="metric"><div class="num">$3B</div><div class="label">Annual pothole damage</div></div>
+      <div class="metric"><div class="num">$786B</div><div class="label">US deferred maintenance</div></div>
+      <div class="metric"><div class="num">$30/mo</div><div class="label">Operating cost at launch</div></div>
+      <div class="metric"><div class="num">300 DAU</div><div class="label">Break-even point</div></div>
+    </div>
+
+    <p>The product is fully built and ready to ship. The mobile app (React Native + Expo) has 11 screens and 43 service modules. The web app (Next.js 15) has full reporting, magic-link auth, and a Leaflet map. The backend (Supabase + Postgres + 5 Edge Functions) is production-ready with row-level security, server-side rate limiting, and AI-powered photo analysis via Claude. 42 government authorities are pre-loaded for Massachusetts, Rhode Island, and New Hampshire. Operating costs are projected at under $30/month at launch and break-even at 300 daily active users via banner ads alone.</p>
+
+    <p>We seek <strong>$50K–$150K in pre-seed grant capital</strong> to fund a 12-month runway covering app store fees, AI inference, professional brand identity, founder stipend, and municipal pilot kickstarting.</p>
+  </div>
+
+  <!-- 2. PROBLEM -->
+  <div class="section" id="problem">
+    <span class="number">02 · The Problem &amp; Why It Persists</span>
+    <h2>America's infrastructure is failing — and the system designed to fix it is structurally broken.</h2>
+
+    <h3>The visible problem</h3>
+    <p>The American Society of Civil Engineers gives US infrastructure an overall grade of <strong>C-</strong>. The Federal Highway Administration estimates a <strong>$786 billion</strong> deferred maintenance backlog. AAA reports Americans spend <strong>$3 billion a year</strong> on vehicle damage from potholes alone. Add liability lawsuits, property depreciation, healthcare costs from cyclist/pedestrian injuries, and fuel waste — the real annual cost of infrastructure neglect <strong>exceeds $30 billion</strong>.</p>
+
+    <h3>The invisible problem</h3>
+    <p>The system designed to address this — 311 — was launched in 1996 and has not been meaningfully upgraded. Its five fatal flaws:</p>
+
+    <ol>
+      <li><strong>No tracking.</strong> A 311 call typically generates no ticket, no confirmation, no GPS, no photo. The city receives an oral description and the resident never knows what happened.</li>
+      <li><strong>No aggregation.</strong> When 15 people call about the same pothole, the system may create 15 separate records — or zero, depending on the operator. Severity is invisible to leadership.</li>
+      <li><strong>No accountability.</strong> Response time data is internal. Citizens cannot compare their city to neighbors or hold individual departments accountable.</li>
+      <li><strong>No legal evidence.</strong> A phone call is not documentation. There are no GPS coordinates, no photos, no timestamped proof of notification.</li>
+      <li><strong>No community.</strong> Each resident's frustration is siloed. There is no shared view, no collective action, no momentum.</li>
+    </ol>
+
+    <h3>The structural problem</h3>
+    <p>The reason 311 has not been fixed is that <strong>the incentives are wrong</strong>:</p>
+    <ul>
+      <li>For the city: a pothole costs $75 to patch today. Resurfacing the road costs $50,000. The patch wins every budget meeting — even though it'll need re-patching in six months. Reactive maintenance is cheaper this quarter.</li>
+      <li>For the citizen: complaining takes effort, gets ignored, and feels powerless. The path of least resistance is to drive around the problem.</li>
+      <li>For elected officials: invisible problems generate no political pressure. Without aggregated, public data, infrastructure decay is just a vague background grievance.</li>
+    </ul>
+
+    <p>Until a tool exists that aggregates citizen frustration into <em>legally and politically significant data</em>, the cycle continues forever.</p>
+  </div>
+
+  <!-- 3. SOLUTION -->
+  <div class="section" id="solution">
+    <span class="number">03 · The Solution &amp; Product Vision</span>
+    <h2>Make the documentation effortless. Make the consequences automatic.</h2>
+
+    <p>Fault Line is built around three principles, in order of priority:</p>
+
+    <h3>Principle 1: Friction is the enemy.</h3>
+    <p>Every second between "I see a pothole" and "I've reported the pothole" is a second the user can change their mind. We obsess about it. The Quick Report flow is one screen. No account. No login. No form fields except "tap the photo" and "tap submit." AI fills in everything else.</p>
+
+    <h3>Principle 2: Aggregation creates power.</h3>
+    <p>One person yelling about a pothole is easy to ignore. Three people pointing at the same pothole creates "community verification." Ten people creates an automatic legal escalation event. The math is the user's superpower.</p>
+
+    <h3>Principle 3: Consequences are mandatory.</h3>
+    <p>The app does not just report problems — it generates legal pressure. Auto-generated demand letters cite state-specific statutes. Insurance claim packages bundle GPS evidence with notification timestamps. Fiscal impact projections show authorities the math: <em>"Fix this for $75 today, or face $12,000 in liability next year."</em> Inaction becomes the expensive option.</p>
+
+    <h3>What the product actually does</h3>
+    <p>The product spans <strong>~50 individual features</strong> documented exhaustively at <a href="website/features.html">features.html</a> (plain + technical). The headline capabilities:</p>
+
+    <ul>
+      <li><strong>10-second quick report</strong> with AI photo analysis (Claude Haiku vision)</li>
+      <li><strong>5-step detailed wizard</strong> with draggable map pins, multi-photo upload, and adaptive severity assessment</li>
+      <li><strong>24 issue categories</strong> covering everything from potholes to water mains to abandoned vehicles</li>
+      <li><strong>Voice commands</strong> and <strong>fully audio-guided reporting</strong> for hands-free and accessibility use</li>
+      <li><strong>Bump detection</strong> using accelerometer (asks "Was that a pothole?" while driving)</li>
+      <li><strong>Community verification</strong> at 3 reports, automatic escalation at 10 reports over 30 days</li>
+      <li><strong>Witness Network</strong> pinging nearby users to confirm reported hazards</li>
+      <li><strong>Auto-escalation</strong> via professional emails to the responsible authority (42 pre-loaded for MA/RI/NH)</li>
+      <li><strong>Direct integration</strong> with Open311 and SeeClickFix APIs for cities that have them</li>
+      <li><strong>Legal demand letters</strong> auto-generated with state-specific statutes (M.G.L. c. 84 §15 in MA, etc.)</li>
+      <li><strong>Insurance claim packaging</strong> bundling GPS, photos, and notification history</li>
+      <li><strong>Fiscal impact projections</strong> calculating likely city liability per location</li>
+      <li><strong>Public infrastructure health grades</strong> A–F per city, updated in real time</li>
+      <li><strong>Cross-municipal shame index</strong> creating competitive pressure between neighbors</li>
+      <li><strong>Predictive analytics</strong> identifying where damage will occur before it happens</li>
+      <li><strong>5 languages</strong> (English, Spanish, Portuguese, Chinese, Haitian Creole)</li>
+      <li><strong>Full accessibility:</strong> screen reader, voice commands, dynamic text, high contrast, audio-guided mode</li>
+      <li><strong>Offline-first:</strong> reports queue locally and auto-sync</li>
+      <li><strong>Anonymous reporting:</strong> no account required ever</li>
+      <li><strong>AR camera mode:</strong> floating markers showing nearby reports in your live camera view</li>
+    </ul>
+
+    <p>For the complete technical architecture (database schema, edge functions, AI routing, security architecture, cost analysis), see <a href="ARCHITECTURE.html">ARCHITECTURE.html</a>.</p>
+  </div>
+
+  <!-- 4. MARKET -->
+  <div class="section" id="market">
+    <span class="number">04 · Market Analysis &amp; Sizing</span>
+    <h2>Three concentric markets — each meaningfully large on its own.</h2>
+
+    <h3>TAM — Total addressable market</h3>
+    <p>Every American with a smartphone who experiences infrastructure problems. Functionally, this is approximately <strong>240 million US adults</strong>, of whom roughly 95% carry smartphones. The actionable subset — people who would download a free, frictionless app to report local problems — is harder to size but conservatively numbers in the tens of millions.</p>
+
+    <h3>SAM — Serviceable addressable market</h3>
+    <p>People in jurisdictions where Fault Line has authority routing pre-loaded. Today this is <strong>Massachusetts (~6.9M residents), Rhode Island (~1.1M), and New Hampshire (~1.4M)</strong>, totaling ~9.4M. With each new state added (~3 weeks of authority research and seeding), SAM expands by the state's adult population.</p>
+
+    <h3>SOM — Serviceable obtainable market</h3>
+    <p>Realistic adoption in the next 36 months, given marketing budget, app store competition, and word-of-mouth dynamics. Civic-tech apps with a clear consumer benefit (Citizen, NextDoor, etc.) regularly reach 1–5% penetration in their target metros within 2 years. Targeting <strong>1% of SAM by month 24 = ~94,000 installs</strong>, with a stretch goal of 250,000 by month 36 as additional states come online.</p>
+
+    <h3>Adjacent markets</h3>
+    <ul>
+      <li><strong>Municipal licensing.</strong> ~89,000 local governments in the US. A typical SeeClickFix contract is reported at $5K–$50K/year per municipality. Capturing 0.1% (89 cities) at the low end of $5K/yr = $445K ARR.</li>
+      <li><strong>Insurance partnerships.</strong> Auto insurers pay for any tool that gives their claims adjusters better evidence. Fault Line's claim-evidence packaging is a natural integration point.</li>
+      <li><strong>Personal injury law.</strong> Attorneys representing pothole-damage and slip-and-fall victims need exactly the documentation Fault Line generates. This becomes a referral-revenue model in year 2+.</li>
+    </ul>
+  </div>
+
+  <!-- 5. COMPETITIVE -->
+  <div class="section" id="competitive">
+    <span class="number">05 · Competitive Landscape</span>
+    <h2>The category has incumbents — none of them are doing what we do.</h2>
+
+    <table>
+      <tr><th>Competitor</th><th>Audience</th><th>Strengths</th><th>Gaps</th></tr>
+      <tr><td>SeeClickFix (CivicPlus)</td><td>Sold to cities</td><td>Established, integrated with city back-office</td><td>No consumer brand, no legal pressure features, no public grades, no AI photo analysis, no community verification incentives</td></tr>
+      <tr><td>Open311 (protocol)</td><td>Cities</td><td>Open standard, allows interoperability</td><td>Just a protocol — not a product. Doesn't generate consumer value</td></tr>
+      <tr><td>Boston 311 / NYC 311 (city-specific)</td><td>City residents</td><td>Direct integration with that city's systems</td><td>Siloed, no cross-city visibility, no accountability layer, English-only</td></tr>
+      <tr><td>Citizen / NextDoor</td><td>Local communities</td><td>Brand recognition, social engagement</td><td>Not designed for infrastructure reporting; no escalation; no legal tools</td></tr>
+      <tr><td>City contact forms (default)</td><td>Anyone</td><td>Free, ubiquitous</td><td>No tracking, no accountability, no community, no data, no legal weight</td></tr>
+    </table>
+
+    <p>The competitive moat for Fault Line is not a single feature — it's the <strong>combination</strong>. Any one of these competitors could add legal demand letters or photo AI tomorrow. None of them will build the entire stack: 10-second reports + AI + community verification + auto-escalation + legal letters + insurance packages + public grades + predictive analytics + multilingual accessibility + bidirectional Open311 sync, all in one consumer-facing free app.</p>
+
+    <p>The reason none of them will is that the incentives don't align. SeeClickFix's customer is the city, so they will never build features that publicly embarrass the city. Boston 311 will never build cross-city comparisons. Citizen monetizes engagement, not problem-solving. The category is wide open for a <em>citizen-aligned</em> tool that takes the city's side only when the city is right.</p>
+  </div>
+
+  <!-- 6. BUSINESS MODEL -->
+  <div class="section" id="model">
+    <span class="number">06 · Business Model &amp; Pricing</span>
+    <h2>Free at the top of the funnel. Multiple monetization tiers below.</h2>
+
+    <p>Fault Line is and will remain free for individual users. The product's social mission depends on universal access. Monetization is layered and additive:</p>
+
+    <table>
+      <tr><th>Layer</th><th>Mechanism</th><th>Stage</th><th>Status</th></tr>
+      <tr><td>1. Banner ads</td><td>Google AdSense (web), Google AdMob (mobile). $1–3 eCPM.</td><td>From day 1</td><td>SDK installed; placeholder IDs; awaiting AdSense + AdMob approval</td></tr>
+      <tr><td>2. Ko-fi donations</td><td>Optional voluntary support</td><td>From day 1</td><td>Live (ko-fi.com/moonlitsociallabs)</td></tr>
+      <tr><td>3. Ad-free subscription</td><td>$2.99/mo or $19.99/yr via RevenueCat (mobile) + Stripe (web)</td><td>Month 3+</td><td>Scaffolded behind a feature flag; activates after store approval</td></tr>
+      <tr><td>4. Municipal licensing</td><td>White-label dashboards, custom routing, predictive analytics exports. $5K–$25K/year per city.</td><td>Month 6+</td><td>Pilot conversations TBD</td></tr>
+      <tr><td>5. Data licensing</td><td>Anonymized, aggregated infrastructure data sold to insurers, journalists, academic researchers</td><td>Year 2+</td><td>Future</td></tr>
+      <tr><td>6. Personal injury referrals</td><td>Routing damage-claim users to attorneys on a referral fee. Highly regulated, requires state bar review.</td><td>Year 2+</td><td>Future</td></tr>
+    </table>
+
+    <h3>Why this stack works</h3>
+    <p>Every layer is additive and non-cannibalizing. Banner ads keep the lights on. Donations build identity. The ad-free subscription monetizes the most loyal users without locking out new ones. Municipal licensing is the largest opportunity but takes months to close, so it's never the foundation. By year 3 the revenue mix is roughly 30% ads, 25% subscription, 35% municipal, 10% data/referrals.</p>
+
+    <h3>Pricing rationale</h3>
+    <p>The <strong>$2.99/mo</strong> ad-free price is anchored to comparable utility apps (weather, news, podcast players) and is below the threshold where most users will cancel after a month. It's <em>not</em> priced to maximize ARPU — it's priced to maximize the conversion rate among people who genuinely don't want ads but want to support the project. The annual price of $19.99/yr (44% discount vs. monthly) is designed to capture loyalty.</p>
+    <p>Municipal licensing pricing follows a tiered model: <strong>$5K/yr</strong> for a city under 50K residents, <strong>$15K/yr</strong> for 50K–250K, <strong>$25K/yr</strong> for 250K+. This is well below SeeClickFix's reported pricing, deliberately positioning Fault Line as the affordable consumer-friendly alternative.</p>
+  </div>
+
+  <!-- 7. OPERATIONS -->
+  <div class="section" id="operations">
+    <span class="number">07 · Operations &amp; Cost Structure</span>
+    <h2>Built deliberately to operate near zero — until success forces growth.</h2>
+
+    <p>Most civic-tech projects die from cost overruns long before they die from lack of users. Fault Line was architected from day one to be <em>durably cheap</em>. Every infrastructure choice optimizes for the free tier first.</p>
+
+    <table>
+      <tr><th>Service</th><th>Free tier</th><th>Monthly cost (launch)</th><th>Triggered upgrade</th></tr>
+      <tr><td>Supabase</td><td>500MB DB, 1GB storage, 50K MAU, 500K edge invocations</td><td class="cost-free">$0</td><td>$25/mo at 50K MAU</td></tr>
+      <tr><td>Anthropic Claude API</td><td>Pay per use (no free tier)</td><td class="cost-paid">$5–20</td><td>Scales linearly with photo upload volume</td></tr>
+      <tr><td>Resend (email)</td><td>3,000 emails/mo</td><td class="cost-free">$0</td><td>$20/mo at 3K+</td></tr>
+      <tr><td>Apple Developer</td><td>None</td><td class="cost-paid">$8.25</td><td>Fixed</td></tr>
+      <tr><td>Google Play</td><td>$25 one-time</td><td class="cost-free">$0</td><td>Already paid</td></tr>
+      <tr><td>Domain (faultline.app)</td><td>None</td><td class="cost-paid">$1</td><td>Fixed</td></tr>
+      <tr><td>GitHub Pages (marketing site)</td><td>Unlimited (public repo)</td><td class="cost-free">$0</td><td>Never</td></tr>
+      <tr><td>Vercel (Next.js web app)</td><td>Hobby tier</td><td class="cost-free">$0</td><td>$20/mo at moderate scale</td></tr>
+      <tr><td>Sentry (errors)</td><td>5K errors/mo</td><td class="cost-free">$0</td><td>$26/mo at 5K+</td></tr>
+      <tr><td>Upstash Redis (rate limit)</td><td>10K requests/day</td><td class="cost-free">$0</td><td>$10/mo at heavy use</td></tr>
+      <tr><td>Expo EAS (builds)</td><td>30 builds/mo</td><td class="cost-free">$0</td><td>$15/mo at 30+</td></tr>
+      <tr><td>AdMob / AdSense</td><td>N/A</td><td class="cost-free">Generates revenue</td><td>—</td></tr>
+      <tr><td><strong>TOTAL</strong></td><td></td><td class="cost-paid">$14–29/mo</td><td></td></tr>
+    </table>
+
+    <p>The cost structure is unusually favorable for a consumer app. <strong>$30/month operating costs.</strong> Break-even at ~300 daily active users via banner ads alone. Every additional user beyond break-even is contribution margin. The business does not need venture-scale growth to be self-sustaining; it just needs honest organic adoption.</p>
+
+    <h3>Where costs grow</h3>
+    <p>The two cost lines that scale with usage are <strong>Anthropic AI</strong> (pay-per-photo) and <strong>Supabase storage</strong> (photos and videos). Both have aggressive caching strategies in place — the AI cache table stores results so identical analyses are not re-run, and the photo pipeline downsamples and compresses before upload. At 10,000 daily reports, projected AI cost is approximately $100/month, easily covered by ad revenue at that volume.</p>
+  </div>
+
+  <!-- 8. GTM -->
+  <div class="section" id="gtm">
+    <span class="number">08 · Go-to-Market Strategy</span>
+    <h2>Earned distribution. Local press. Accountability content.</h2>
+
+    <p>Fault Line is not a category-creation play; it's a category-replacement play. The category already exists (city-specific 311 apps, SeeClickFix). Customers already feel the pain. The job is to be the <em>better</em> answer — and to get in front of people at the moment they're frustrated.</p>
+
+    <h3>Phase 1 — Launch (months 1–3)</h3>
+    <ul>
+      <li>Submit to <strong>Product Hunt</strong>, <strong>Show HN</strong>, <strong>r/civictech</strong>, <strong>r/mildlyinfuriating</strong>, <strong>r/boston</strong>, <strong>r/providence</strong>, <strong>r/newhampshire</strong>.</li>
+      <li>Press outreach to <strong>local journalists</strong> in MA/RI/NH covering infrastructure beats. Share the seed shame index data — comparative city grades make irresistible local stories.</li>
+      <li>Submit to <strong>app review sites</strong> (Lifehacker, The Verge, MIT Technology Review's civic tech beat).</li>
+      <li>Contact <strong>civic-tech podcasts</strong> (Code for America, Govlove, etc.) for founder interview slots.</li>
+    </ul>
+
+    <h3>Phase 2 — Content engine (months 3–9)</h3>
+    <ul>
+      <li>Publish the <strong>Fault Line blog</strong> as a research-grade infrastructure-accountability publication. Each post is a meta-analytic deep-dive on a specific topic (the $3B pothole; state defective-highway statutes; freeze-thaw economics; comparative city accountability). Goal: backlinks from .edu, .gov, and journalism domains.</li>
+      <li>Generate <strong>monthly state report cards</strong> as press releases. "Massachusetts cities ranked by infrastructure response time, October 2026." This is the single most clickable content the platform produces.</li>
+      <li>Activate <strong>SEO</strong> for high-intent queries: <em>report a pothole [city]</em>, <em>insurance claim pothole damage</em>, <em>file complaint with DPW</em>.</li>
+    </ul>
+
+    <h3>Phase 3 — Municipal pilots (months 6–18)</h3>
+    <ul>
+      <li>Direct outreach to <strong>3–5 cities</strong> that have already shown interest in civic tech (Cambridge, Somerville, Providence). Offer a free 6-month pilot of municipal licensing in exchange for a case study and testimonial.</li>
+      <li>Attend <strong>1–2 civic-tech conferences</strong> (Code for America Summit, Smart Cities Connect) to recruit pilot partners and connect with city CIOs.</li>
+      <li>Partner with <strong>Code for America brigades</strong> in target cities to spread the word in civic-tech communities.</li>
+    </ul>
+
+    <h3>Phase 4 — Network effects (months 12+)</h3>
+    <ul>
+      <li>Once cities have public health grades, the grades themselves become the marketing. Local journalists embed them. Local politicians weaponize them. Local residents share them on social media.</li>
+      <li>The <strong>cross-municipal shame index</strong> is the moat. It cannot be replicated by a competitor without an equivalent base of community reports. By the time anyone notices, we have a multi-year head start.</li>
+    </ul>
+  </div>
+
+  <!-- 9. FINANCIALS -->
+  <div class="section" id="financials">
+    <span class="number">09 · Financial Projections</span>
+    <h2>Conservative base case — break-even by month 9, profitable by month 18.</h2>
+
+    <table>
+      <tr><th>Metric</th><th>Month 3</th><th>Month 6</th><th>Month 12</th><th>Month 24</th><th>Month 36</th></tr>
+      <tr><td>Total installs</td><td>2,000</td><td>10,000</td><td>40,000</td><td>120,000</td><td>250,000</td></tr>
+      <tr><td>Daily active users</td><td>300</td><td>1,500</td><td>6,000</td><td>18,000</td><td>40,000</td></tr>
+      <tr><td>Reports / month</td><td>1,500</td><td>9,000</td><td>40,000</td><td>140,000</td><td>320,000</td></tr>
+      <tr><td>Ad revenue / month</td><td>$50</td><td>$300</td><td>$1,200</td><td>$3,600</td><td>$8,000</td></tr>
+      <tr><td>Subscription revenue</td><td>$0</td><td>$150</td><td>$900</td><td>$3,000</td><td>$8,000</td></tr>
+      <tr><td>Municipal revenue</td><td>$0</td><td>$0</td><td>$5,000</td><td>$30,000</td><td>$80,000</td></tr>
+      <tr><td>Total monthly revenue</td><td>$50</td><td>$450</td><td>$7,100</td><td>$36,600</td><td>$96,000</td></tr>
+      <tr><td>Operating cost / month</td><td>$30</td><td>$50</td><td>$150</td><td>$500</td><td>$1,200</td></tr>
+      <tr><td>Net contribution / month</td><td>$20</td><td>$400</td><td>$6,950</td><td>$36,100</td><td>$94,800</td></tr>
+    </table>
+
+    <p>Assumptions: 1 daily active user per ~7 installs, 5 reports per DAU per week (5% are heavy reporters who account for 80% of volume), 3% conversion rate to ad-free subscription at month 12+, 1 municipal pilot signed by month 6 and 1 per quarter thereafter. These are <em>conservative</em> — civic-tech tools with strong product-market fit have shown installs growing 2–3× faster.</p>
+
+    <h3>Sensitivity</h3>
+    <p>The plan is not dependent on any single revenue line. If municipal licensing is slow, ads + subscription alone reach $19,600/month by month 36 — still net-positive. If subscription conversion is lower (1.5% instead of 3%), total revenue at month 36 drops to ~$80K/month, still durable. The downside scenario is "no traction at all," which is bounded by the $30/month operating cost; even with zero revenue, the project can run for years on a small grant.</p>
+  </div>
+
+  <!-- 10. TEAM -->
+  <div class="section" id="team">
+    <span class="number">10 · Team &amp; Org Structure</span>
+    <h2>Today: one person who builds fast. Tomorrow: a small senior team.</h2>
+
+    <h3>Today</h3>
+    <p><strong>Michael Wylde — Founder, Engineer, Designer, Writer</strong></p>
+    <p>Solo developer who built Fault Line from concept to production-ready in [n months]. Operates Moonlit Social Labs, an independent civic-tech studio. Reachable at <a href="mailto:moonlit-social-labs@proton.me">moonlit-social-labs@proton.me</a>.</p>
+
+    <p>The lean structure is a feature for early-stage civic tech: low burn, fast decisions, no committee paralysis. Solo founders do not scale forever, but they ship faster and waste less capital than venture-padded teams.</p>
+
+    <h3>Year 1 hires (in priority order, when funding allows)</h3>
+    <ol>
+      <li><strong>Designer / Brand</strong> — accessibility-conscious illustrator and brand identity. Likely contract, ~$5K–10K.</li>
+      <li><strong>Mobile engineer</strong> — additional React Native + Swift/Kotlin capacity for store-specific issues, dashcam mode, routing engine.</li>
+      <li><strong>Partnerships lead</strong> — handles municipal sales and grant applications. Quarter-time at first.</li>
+    </ol>
+
+    <h3>Year 2+ hires</h3>
+    <p>Civic engagement specialist (community management, local press), data engineer (predictive analytics), legal counsel (state bar reviews for personal injury referrals).</p>
+  </div>
+
+  <!-- 11. RISKS -->
+  <div class="section" id="risks">
+    <span class="number">11 · Risk Analysis &amp; Mitigation</span>
+    <h2>Honest accounting of what could go wrong.</h2>
+
+    <h3>1. Adoption risk</h3>
+    <p>The biggest risk is that nobody installs the app. Civic-tech apps notoriously struggle with cold-start problems. Mitigation: aggressive local PR strategy, comparative city report cards as press hooks, and an extremely low-friction onboarding (no account required) that maximizes conversion of any traffic we can generate.</p>
+
+    <h3>2. Authority hostility</h3>
+    <p>Cities may resent being publicly graded and may attempt to discourage use of the app, intimidate users, or refuse to acknowledge reports. Mitigation: every report is anonymized when escalated; we never share user identities with authorities; the public health grades are based on the city's own response data and so are factually defensible; legal demand letters cite real statutes.</p>
+
+    <h3>3. Legal liability</h3>
+    <p>The legal demand letter feature could expose Moonlit Social Labs to claims from cities arguing that we misrepresent legal standing. Mitigation: every demand letter explicitly states "this is not legal advice" and recommends users consult an attorney for actual claims. The letters are templates citing real statutes, not legal opinions.</p>
+
+    <h3>4. Defamation / abuse risk</h3>
+    <p>Users could submit fake reports, defamatory descriptions, or photos of private property. Mitigation: server-side rate limiting (max 10 reports/hour/user), bot honeypot, content moderation queue for cluster-escalations, RLS-enforced ownership, ability to flag and remove reports.</p>
+
+    <h3>5. AI cost runaway</h3>
+    <p>If Anthropic raises Claude pricing significantly, AI costs could become a meaningful line item. Mitigation: AI cache table (identical analyses are not re-run), photo downsampling before upload, ability to swap AI providers (Gemini, OpenAI, local model) via the centralized AI service abstraction.</p>
+
+    <h3>6. App store rejection</h3>
+    <p>Apple or Google could reject the app for unspecified reasons. Mitigation: the product is conservatively designed (no novel APIs, no controversial content, no in-app purchases on launch), the metadata is professional, and we have multiple submission pathways (ad-supported, ad-free, web-only fallback).</p>
+
+    <h3>7. Founder bus factor</h3>
+    <p>One developer is the entire engineering team. Mitigation: code is well-documented (ARCHITECTURE.html), open-source where possible, commit history is public, secrets are managed in Supabase Vault and recoverable. A new engineer could ramp in days, not months.</p>
+  </div>
+
+  <!-- 12. MILESTONES -->
+  <div class="section" id="milestones">
+    <span class="number">12 · 12 / 24 / 36 Month Milestones</span>
+    <h2>Concrete checkpoints — what we promise vs. when.</h2>
+
+    <h3>Month 0 (today)</h3>
+    <ul>
+      <li>Product fully built (mobile + web + backend)</li>
+      <li>Marketing site live</li>
+      <li>42 authorities seeded for MA/RI/NH</li>
+      <li>Awaiting Apple Developer enrollment to ship to iOS</li>
+    </ul>
+
+    <h3>Month 3</h3>
+    <ul>
+      <li>Live on Apple App Store and Google Play Store</li>
+      <li>2,000 installs, 1,500 reports submitted</li>
+      <li>First community-verified cluster (3+ reports same location)</li>
+      <li>First automatic escalation to a city authority</li>
+      <li>5 blog posts published, 5+ press mentions</li>
+    </ul>
+
+    <h3>Month 6</h3>
+    <ul>
+      <li>10,000 installs, first ad revenue dollars</li>
+      <li>Ad-free subscription tier activated</li>
+      <li>First municipal pilot conversation</li>
+      <li>Authority database expanded to NY + CT</li>
+      <li>$450/month total revenue</li>
+    </ul>
+
+    <h3>Month 12</h3>
+    <ul>
+      <li>40,000 installs across 5 states</li>
+      <li>1 paying municipal customer</li>
+      <li>$7,100/month revenue (break-even achieved)</li>
+      <li>2–3 grants secured ($100K+ total)</li>
+      <li>First designer hire</li>
+    </ul>
+
+    <h3>Month 24</h3>
+    <ul>
+      <li>120,000 installs across 10 states</li>
+      <li>5 paying municipal customers</li>
+      <li>$36,600/month revenue, profitable</li>
+      <li>Dashcam mode launched</li>
+      <li>First mobile engineer hire</li>
+    </ul>
+
+    <h3>Month 36</h3>
+    <ul>
+      <li>250,000 installs across all 50 states</li>
+      <li>15+ municipal customers</li>
+      <li>$96,000/month revenue, sustainable</li>
+      <li>Pothole-avoidance routing launched</li>
+      <li>Insurance partnership pilot</li>
+      <li>Team of 3–4 full-time</li>
+    </ul>
+  </div>
+
+  <!-- 13. FUNDING -->
+  <div class="section" id="funding">
+    <span class="number">13 · Use of Funds &amp; Capital Plan</span>
+    <h2>$50K–$150K covers a 12-month runway with everything we need.</h2>
+
+    <table>
+      <tr><th>Line item</th><th>Year 1</th><th>Notes</th></tr>
+      <tr><td>Founder stipend (12 mo, part-time)</td><td>$36,000</td><td>$3K/mo — modest. Enables full-time focus on the project.</td></tr>
+      <tr><td>Apple Developer Program</td><td>$99</td><td>Required for iOS App Store</td></tr>
+      <tr><td>Google Play Console</td><td>$0</td><td>Already paid one-time fee</td></tr>
+      <tr><td>Domain &amp; DNS</td><td>$120</td><td>faultline.app + email routing</td></tr>
+      <tr><td>AI inference (Claude)</td><td>$300</td><td>Conservative estimate at projected scale</td></tr>
+      <tr><td>Supabase + Resend scale-up</td><td>$700</td><td>For when free tiers are exhausted at ~10K MAU</td></tr>
+      <tr><td>Professional brand identity</td><td>$5,000</td><td>Logo, app icon, color system, brand guidelines</td></tr>
+      <tr><td>Design contract work</td><td>$3,000</td><td>App store screenshots, marketing graphics, accessibility audit</td></tr>
+      <tr><td>Marketing &amp; PR</td><td>$8,000</td><td>Press kit, paid local-press placements, podcast sponsorships</td></tr>
+      <tr><td>Conferences &amp; travel</td><td>$3,000</td><td>Code for America Summit, civic-tech conferences for partnerships</td></tr>
+      <tr><td>Legal &amp; accounting</td><td>$2,500</td><td>LLC setup, contractor agreements, basic IP</td></tr>
+      <tr><td>Reserve / contingency</td><td>$10,000</td><td>~10% buffer for the unknown</td></tr>
+      <tr><td><strong>TOTAL (Year 1)</strong></td><td><strong>$68,719</strong></td><td>Mid-range case</td></tr>
+    </table>
+
+    <p>The mid-range Year 1 budget of <strong>~$70K</strong> is the realistic minimum for credible execution. The lean case (~$50K) cuts the founder stipend in half and trims the marketing line. The aggressive case (~$150K) doubles the founder stipend, adds a part-time mobile engineer for the second half of the year, and triples marketing.</p>
+
+    <p>Capital sources we are pursuing in priority order: <strong>Knight Foundation civic-tech grants</strong>, <strong>MacArthur Award for Creative &amp; Effective Institutions</strong>, <strong>Ford Foundation civic engagement</strong>, <strong>Code for America grants</strong>, <strong>local/state civic innovation programs</strong>, and finally <strong>impact-focused angel investors</strong> if grant capital is insufficient. We are not pursuing traditional venture capital because the company structure (long-term sustainability, low burn, no high-growth obligations) is misaligned with VC return expectations.</p>
+  </div>
+
+  <!-- 14. EXIT -->
+  <div class="section" id="exit">
+    <span class="number">14 · Exit / Sustainability Strategy</span>
+    <h2>Built to last, not built to flip.</h2>
+
+    <p>Most startups optimize for an exit. Fault Line is built for the opposite: <strong>indefinite sustainable operation</strong> on lean revenue, with no acquisition pressure. The cost structure, the funding sources, and the founder mission all push in the same direction.</p>
+
+    <p>That said, a few realistic outcomes:</p>
+    <ol>
+      <li><strong>Long-term sustainable independence.</strong> The most likely outcome. Lean operation, organic growth, multiple small revenue streams, no equity dilution. The founder retains creative and political independence indefinitely.</li>
+      <li><strong>Acquisition by a civic-tech company.</strong> CivicPlus (which owns SeeClickFix), Tyler Technologies, Granicus, OpenGov — any of these could find Fault Line strategically interesting if it reaches meaningful adoption. An acquisition would be considered only if the acquirer commits to the free consumer tier in writing.</li>
+      <li><strong>Acquisition by a media or insurance company.</strong> Local news chains (Gannett, Lee Enterprises) could use Fault Line data as a content engine. Auto insurers could use the claim-evidence packaging as a customer perk.</li>
+      <li><strong>Spin-off into a nonprofit.</strong> If the project succeeds and the founder eventually steps back, the natural transition is to a 501(c)(3) civic-tech nonprofit with a board of advisors. The product would continue under public-interest stewardship.</li>
+    </ol>
+
+    <p>Whatever the path, the design constraint is the same: <strong>the consumer-facing app must remain free and uncompromised</strong>. Every other commercial decision is downstream of that.</p>
+  </div>
+
+  <div class="section" style="border-top: none; padding-top: 32px; padding-bottom: 80px; text-align: center; color: var(--text-muted); font-size: 13px; font-family: -apple-system, sans-serif;">
+    Confidential — for the recipient only.<br>
+    &copy; 2026 Moonlit Social Labs. All rights reserved.<br>
+    <a href="investorlanding.html" style="color: var(--text-muted);">← back to pitch</a>
+  </div>
+
+</div>
+
+</body>
+</html>

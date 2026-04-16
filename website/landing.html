@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://pagead2.googlesyndication.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self'; connect-src 'self' https://www.google-analytics.com https://analytics.google.com; frame-src https://googleads.g.doubleclick.net https://tpc.googlesyndication.com https://pagead2.googlesyndication.com; object-src 'none'; base-uri 'self';">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fault Line — The Last Pothole You'll Ever Have To Yell About</title>
+<meta name="description" content="Stop hitting the same pothole every morning. Stop calling 311 into the void. Fault Line turns a 10-second photo into legal pressure your city can't ignore. Free on Android & iOS.">
+<meta name="keywords" content="pothole reporter, fix this faster, infrastructure accountability, civic tech, 311 alternative, community reporting app, free pothole app">
+<meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large">
+<link rel="canonical" href="https://moonligh7er.github.io/FaultLine/landing.html">
+
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://moonligh7er.github.io/FaultLine/landing.html">
+<meta property="og:title" content="Fault Line — Your Tax Dollars Should Fix This Faster">
+<meta property="og:description" content="A 10-second report becomes legal pressure your city can't ignore. Free on Android & iOS.">
+<meta property="og:site_name" content="Fault Line">
+<meta property="og:image" content="https://moonligh7er.github.io/FaultLine/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://moonligh7er.github.io/FaultLine/og-image.png">
+<meta name="twitter:title" content="Fault Line — The Last Pothole You'll Ever Have To Yell About">
+
+<!-- Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-XXXXXXXXXX');</script>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "Fault Line",
+  "operatingSystem": "Android, iOS",
+  "applicationCategory": "UtilitiesApplication",
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+  "aggregateRating": { "@type": "AggregateRating", "ratingValue": "4.8", "ratingCount": "100" }
+}
+</script>
+
+<style>
+:root {
+  --primary: #1E88E5;
+  --primary-dark: #1565C0;
+  --secondary: #FF6F00;
+  --accent: #00C853;
+  --danger: #F44336;
+  --bg: #050507;
+  --bg-card: #0f1014;
+  --bg-elevated: #16181f;
+  --text: #f6f6f9;
+  --text-secondary: #a8aab5;
+  --text-muted: #6b6d7a;
+  --border: #25272f;
+  --glow-primary: rgba(30,136,229,0.18);
+  --glow-accent: rgba(0,200,83,0.18);
+  --glow-secondary: rgba(255,111,0,0.18);
+  --gradient-1: linear-gradient(135deg, #1E88E5 0%, #00C853 100%);
+  --gradient-2: linear-gradient(135deg, #FF6F00 0%, #F44336 100%);
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.6;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+a { color: var(--primary); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+/* Top sticky nav */
+.topnav {
+  position: sticky; top: 0; z-index: 100;
+  backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+  background: rgba(5,5,7,0.75);
+  border-bottom: 1px solid var(--border);
+  padding: 14px 24px;
+}
+.topnav-inner { max-width: 1200px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; gap: 24px; }
+.topnav-brand { font-size: 20px; font-weight: 900; color: var(--text); letter-spacing: -0.5px; }
+.topnav-brand span { color: var(--primary); }
+.topnav-links { display: flex; gap: 24px; align-items: center; font-size: 14px; flex-wrap: wrap; }
+.topnav-links a { color: var(--text-secondary); }
+.topnav-links a:hover { color: var(--text); text-decoration: none; }
+.topnav-cta {
+  background: var(--primary); color: #fff; padding: 8px 20px; border-radius: 100px;
+  font-weight: 700; font-size: 13px; transition: transform 0.2s;
+}
+.topnav-cta:hover { transform: translateY(-1px); text-decoration: none; }
+
+/* Hero */
+.hero {
+  min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center;
+  text-align: center; padding: 60px 24px 80px;
+  background:
+    radial-gradient(ellipse 80% 50% at 50% 0%, var(--glow-primary) 0%, transparent 70%),
+    radial-gradient(ellipse 60% 40% at 80% 100%, var(--glow-secondary) 0%, transparent 70%),
+    radial-gradient(ellipse 60% 40% at 20% 100%, var(--glow-accent) 0%, transparent 70%),
+    var(--bg);
+  position: relative;
+  overflow: hidden;
+}
+.hero::before {
+  content: ''; position: absolute; inset: 0; pointer-events: none;
+  background-image:
+    linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px);
+  background-size: 60px 60px;
+  mask-image: radial-gradient(ellipse 70% 60% at 50% 50%, black 0%, transparent 70%);
+  -webkit-mask-image: radial-gradient(ellipse 70% 60% at 50% 50%, black 0%, transparent 70%);
+}
+.hero-content { position: relative; z-index: 1; max-width: 900px; }
+.hero-pretitle {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: rgba(255,111,0,0.08); border: 1px solid rgba(255,111,0,0.25);
+  color: var(--secondary); padding: 8px 18px; border-radius: 100px;
+  font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px;
+  margin-bottom: 32px;
+}
+.hero-pretitle::before {
+  content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--secondary);
+  box-shadow: 0 0 8px var(--secondary); animation: pulse 2s ease-in-out infinite;
+}
+@keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+
+.hero h1 {
+  font-size: clamp(48px, 9vw, 96px); font-weight: 900;
+  letter-spacing: -3px; line-height: 0.95; margin-bottom: 28px;
+}
+.hero h1 .gradient { background: var(--gradient-1); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+.hero h1 .strikethrough { position: relative; display: inline-block; color: var(--text-muted); }
+.hero h1 .strikethrough::after {
+  content: ''; position: absolute; left: -4%; right: -4%; top: 50%;
+  height: 6px; background: var(--danger); transform: rotate(-3deg);
+  border-radius: 4px;
+}
+
+.hero-sub { font-size: clamp(17px, 2.4vw, 22px); color: var(--text-secondary); max-width: 640px; margin: 0 auto 40px; line-height: 1.55; }
+
+.hero-cta-row { display: flex; gap: 16px; flex-wrap: wrap; justify-content: center; align-items: center; }
+.btn {
+  display: inline-flex; align-items: center; gap: 10px;
+  padding: 18px 36px; border-radius: 100px;
+  font-size: 17px; font-weight: 800; letter-spacing: -0.2px;
+  border: none; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s;
+  text-decoration: none;
+}
+.btn:hover { transform: translateY(-2px); text-decoration: none; }
+.btn-primary {
+  background: var(--gradient-1);
+  color: #fff;
+  box-shadow: 0 8px 32px rgba(30,136,229,0.35);
+}
+.btn-primary:hover { box-shadow: 0 12px 40px rgba(30,136,229,0.5); }
+.btn-secondary {
+  background: rgba(255,255,255,0.06); color: var(--text);
+  border: 1px solid rgba(255,255,255,0.1);
+  backdrop-filter: blur(10px);
+}
+.btn-secondary:hover { border-color: var(--primary); background: rgba(255,255,255,0.1); }
+
+.hero-trust { margin-top: 56px; display: flex; justify-content: center; align-items: center; gap: 48px; flex-wrap: wrap; }
+.hero-trust-item { text-align: center; }
+.hero-trust-num { font-size: 32px; font-weight: 900; background: var(--gradient-1); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+.hero-trust-label { font-size: 12px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1.5px; margin-top: 4px; }
+
+/* Section base */
+section { padding: 120px 24px; position: relative; }
+.container { max-width: 1100px; margin: 0 auto; }
+.section-eyebrow { font-size: 13px; font-weight: 800; color: var(--primary); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 16px; display: inline-block; }
+.section-title { font-size: clamp(34px, 6vw, 56px); font-weight: 900; letter-spacing: -1.5px; line-height: 1.05; margin-bottom: 20px; max-width: 800px; }
+.section-lead { font-size: 19px; color: var(--text-secondary); max-width: 640px; margin-bottom: 56px; line-height: 1.6; }
+
+/* Pain section */
+.pain { background: var(--bg); position: relative; }
+.pain-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px; }
+.pain-card {
+  background: var(--bg-card); border: 1px solid var(--border); border-radius: 20px;
+  padding: 36px 32px; position: relative; overflow: hidden;
+  transition: border-color 0.3s, transform 0.3s;
+}
+.pain-card:hover { border-color: var(--danger); transform: translateY(-4px); }
+.pain-num {
+  position: absolute; top: 24px; right: 28px;
+  font-size: 72px; font-weight: 900; color: var(--danger); opacity: 0.12;
+  line-height: 1;
+}
+.pain-card h3 { font-size: 22px; font-weight: 800; margin-bottom: 12px; letter-spacing: -0.3px; position: relative; }
+.pain-card p { color: var(--text-secondary); font-size: 15px; line-height: 1.7; position: relative; }
+.pain-quote { color: var(--text-muted); font-size: 13px; font-style: italic; margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--border); position: relative; }
+
+/* Reframe — the moment the pitch turns */
+.reframe {
+  background: linear-gradient(180deg, var(--bg) 0%, #0a0d18 50%, var(--bg) 100%);
+  text-align: center;
+}
+.reframe-inner { max-width: 760px; margin: 0 auto; }
+.reframe h2 {
+  font-size: clamp(36px, 7vw, 68px); font-weight: 900;
+  letter-spacing: -2px; line-height: 1.05; margin-bottom: 32px;
+}
+.reframe h2 .gradient { background: var(--gradient-1); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+.reframe p { font-size: 19px; color: var(--text-secondary); line-height: 1.7; margin-bottom: 16px; }
+.reframe .punch { font-size: 22px; color: var(--text); font-weight: 600; margin-top: 32px; }
+
+/* The moment / story */
+.moment { background: var(--bg-elevated); }
+.moment-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: center; }
+.moment-text h2 { font-size: clamp(32px, 5vw, 48px); font-weight: 900; letter-spacing: -1px; margin-bottom: 24px; line-height: 1.1; }
+.moment-text p { color: var(--text-secondary); font-size: 17px; line-height: 1.7; margin-bottom: 16px; }
+.moment-text .timestamp { color: var(--secondary); font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; }
+.moment-visual {
+  background: linear-gradient(135deg, var(--bg-card), #1a1c25);
+  border-radius: 24px; border: 1px solid var(--border);
+  padding: 40px; position: relative; overflow: hidden;
+}
+.timeline { display: flex; flex-direction: column; gap: 20px; position: relative; }
+.timeline::before {
+  content: ''; position: absolute; left: 16px; top: 16px; bottom: 16px;
+  width: 2px; background: linear-gradient(180deg, var(--primary), var(--accent));
+}
+.timeline-step { display: flex; gap: 16px; align-items: flex-start; position: relative; }
+.timeline-dot {
+  width: 34px; height: 34px; border-radius: 50%;
+  background: var(--bg-elevated); border: 2px solid var(--primary);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; z-index: 1; font-size: 16px;
+  box-shadow: 0 0 24px rgba(30,136,229,0.4);
+}
+.timeline-content h4 { font-size: 15px; font-weight: 700; color: var(--text); margin-bottom: 4px; }
+.timeline-content p { font-size: 13px; color: var(--text-secondary); line-height: 1.5; margin: 0; }
+.timeline-content .time { font-size: 11px; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 1px; margin-top: 4px; display: block; }
+
+@media (max-width: 768px) {
+  .moment-grid { grid-template-columns: 1fr; gap: 32px; }
+}
+
+/* Differentiators */
+.diff { background: var(--bg); }
+.diff-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 24px; }
+.diff-card {
+  background: var(--bg-card); border: 1px solid var(--border); border-radius: 20px;
+  padding: 32px; position: relative; transition: border-color 0.3s;
+}
+.diff-card:hover { border-color: var(--accent); }
+.diff-icon {
+  display: inline-flex; width: 56px; height: 56px; border-radius: 16px;
+  background: linear-gradient(135deg, var(--glow-primary), var(--glow-accent));
+  align-items: center; justify-content: center; font-size: 28px;
+  margin-bottom: 20px;
+}
+.diff-card h3 { font-size: 22px; font-weight: 800; margin-bottom: 12px; letter-spacing: -0.3px; }
+.diff-card p { color: var(--text-secondary); font-size: 15px; line-height: 1.7; }
+.diff-card .vs { display: block; font-size: 13px; color: var(--text-muted); margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--border); }
+.diff-card .vs strong { color: var(--accent); }
+
+/* Onboarding preview */
+.onboarding { background: var(--bg-elevated); }
+.onboarding-steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 24px; counter-reset: step; margin-top: 32px; }
+.ob-step {
+  position: relative; background: var(--bg-card); border: 1px solid var(--border); border-radius: 18px;
+  padding: 32px 24px; counter-increment: step;
+  transition: transform 0.3s, border-color 0.3s;
+}
+.ob-step:hover { transform: translateY(-4px); border-color: var(--primary); }
+.ob-step::before {
+  content: counter(step, decimal-leading-zero);
+  font-size: 14px; font-weight: 800; color: var(--primary);
+  letter-spacing: 2px; margin-bottom: 12px; display: block;
+}
+.ob-step h4 { font-size: 18px; font-weight: 700; margin-bottom: 8px; }
+.ob-step p { color: var(--text-secondary); font-size: 14px; line-height: 1.6; }
+
+/* Social proof */
+.proof { background: var(--bg); }
+.proof-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 24px; }
+.quote-card {
+  background: var(--bg-card); border: 1px solid var(--border); border-radius: 20px;
+  padding: 32px; position: relative;
+}
+.quote-card::before {
+  content: '"'; position: absolute; top: -8px; left: 24px;
+  font-size: 96px; color: var(--primary); opacity: 0.2; line-height: 1; font-family: Georgia, serif;
+}
+.quote-card p { color: var(--text); font-size: 16px; line-height: 1.7; font-style: italic; margin-bottom: 16px; position: relative; }
+.quote-card .author { font-size: 13px; color: var(--text-muted); font-weight: 600; }
+.quote-card .author strong { color: var(--text-secondary); }
+
+/* Final CTA */
+.final-cta {
+  background: radial-gradient(ellipse at 50% 50%, var(--glow-primary), transparent 70%), var(--bg);
+  text-align: center; padding: 140px 24px;
+}
+.final-cta h2 {
+  font-size: clamp(40px, 8vw, 80px); font-weight: 900;
+  letter-spacing: -2.5px; line-height: 1; margin-bottom: 24px;
+}
+.final-cta h2 .line2 { display: block; background: var(--gradient-1); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+.final-cta p { font-size: 19px; color: var(--text-secondary); max-width: 540px; margin: 0 auto 40px; }
+.final-cta .small { font-size: 13px; color: var(--text-muted); margin-top: 28px; }
+
+/* Footer */
+.footer {
+  background: var(--bg-card); border-top: 1px solid var(--border);
+  padding: 60px 24px 32px;
+}
+.footer-inner { max-width: 1100px; margin: 0 auto; }
+.footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 48px; margin-bottom: 40px; }
+.footer-brand h4 { font-size: 22px; font-weight: 900; margin-bottom: 12px; }
+.footer-brand h4 span { color: var(--primary); }
+.footer-brand p { color: var(--text-secondary); font-size: 14px; max-width: 280px; line-height: 1.6; }
+.footer-col h5 { font-size: 12px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1.5px; font-weight: 800; margin-bottom: 16px; }
+.footer-col a { display: block; color: var(--text-secondary); font-size: 14px; margin-bottom: 10px; }
+.footer-col a:hover { color: var(--primary); }
+.footer-bottom { padding-top: 24px; border-top: 1px solid var(--border); text-align: center; font-size: 13px; color: var(--text-muted); }
+
+@media (max-width: 768px) {
+  .footer-grid { grid-template-columns: 1fr 1fr; gap: 32px; }
+}
+@media (max-width: 480px) {
+  .footer-grid { grid-template-columns: 1fr; }
+  .hero-trust { gap: 24px; }
+}
+</style>
+
+<!-- Google AdSense -->
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1548397763792213" crossorigin="anonymous"></script>
+</head>
+<body>
+
+<!-- Sticky top nav -->
+<nav class="topnav">
+  <div class="topnav-inner">
+    <a href="landing.html" class="topnav-brand">Fault<span>Line</span></a>
+    <div class="topnav-links">
+      <a href="features-plain.html">Features</a>
+      <a href="blog.html">Blog</a>
+      <a href="about.html">About</a>
+      <a href="#download" class="topnav-cta">Get the App</a>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-content">
+    <span class="hero-pretitle">Free · Anonymous · Built by one person who got tired of it</span>
+    <h1>Stop yelling<br>at <span class="strikethrough">311</span>.<br><span class="gradient">Make them listen.</span></h1>
+    <p class="hero-sub">A 10-second photo becomes a community-verified, GPS-stamped, legally documented hazard your city is now <strong>liable</strong> for ignoring. Free on Android & iOS.</p>
+    <div class="hero-cta-row">
+      <a href="#download" class="btn btn-primary">Get Fault Line — Free →</a>
+      <a href="#how" class="btn btn-secondary">See how it works</a>
+    </div>
+    <div class="hero-trust">
+      <div class="hero-trust-item">
+        <div class="hero-trust-num">10s</div>
+        <div class="hero-trust-label">to file a report</div>
+      </div>
+      <div class="hero-trust-item">
+        <div class="hero-trust-num">$0</div>
+        <div class="hero-trust-label">forever</div>
+      </div>
+      <div class="hero-trust-item">
+        <div class="hero-trust-num">42</div>
+        <div class="hero-trust-label">authorities wired in</div>
+      </div>
+      <div class="hero-trust-item">
+        <div class="hero-trust-num">24</div>
+        <div class="hero-trust-label">issue categories</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- AdSense top -->
+<div style="text-align:center;padding:10px 0;overflow:hidden;">
+  <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-1548397763792213" data-ad-slot="XXXXXXXXXX" data-ad-format="auto" data-full-width-responsive="true"></ins>
+  <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+</div>
+
+<!-- THE PAIN -->
+<section class="pain">
+  <div class="container">
+    <span class="section-eyebrow">The Game Cities Are Playing</span>
+    <h2 class="section-title">You already know how this ends.</h2>
+    <p class="section-lead">For 30 years, local governments have run the same playbook. It's not malice. It's just incentive design — and it's costing you money, time, and sometimes your tires.</p>
+    <div class="pain-grid">
+      <div class="pain-card">
+        <div class="pain-num">01</div>
+        <h3>You hit it.</h3>
+        <p>Same pothole. Tuesday morning. The thunk hurts the wheel and the wallet. Average AAA estimate of the bill: <strong>$306</strong>.</p>
+        <div class="pain-quote">"I drove around it for six months. The day my tire blew, I was running late."</div>
+      </div>
+      <div class="pain-card">
+        <div class="pain-num">02</div>
+        <h3>You call 311.</h3>
+        <p>You wait on hold. You describe the spot without GPS. You hang up. There is no ticket. No tracking. No name attached. <strong>Nothing happens.</strong></p>
+        <div class="pain-quote">"I called twice. The second operator had no record of the first call."</div>
+      </div>
+      <div class="pain-card">
+        <div class="pain-num">03</div>
+        <h3>Spring comes again.</h3>
+        <p>The same pothole reopens after a freeze-thaw cycle. You give up. The city is counting on it. It's literally cheaper for them than fixing it. Until now.</p>
+        <div class="pain-quote">"It became a landmark. I told friends to take a different route to my house."</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- THE REFRAME -->
+<section class="reframe">
+  <div class="container">
+    <div class="reframe-inner">
+      <span class="section-eyebrow">The Shift</span>
+      <h2>Individual complaints die.<br><span class="gradient">Documented evidence doesn't.</span></h2>
+      <p>Every state in America has a "notice of defect" statute. The moment a city receives <em>documented</em> notification of a hazard, the legal clock starts ticking. Miss the deadline? They're financially liable for whatever happens next.</p>
+      <p>For 30 years, almost nobody has used those statutes — because almost nobody had the documentation. A 311 call isn't documentation. A photo with a timestamp, a GPS coordinate, an email trail, and a community of witnesses <strong>is</strong>.</p>
+      <p class="punch">Fault Line just makes the documentation effortless.</p>
+    </div>
+  </div>
+</section>
+
+<!-- THE MOMENT -->
+<section class="moment" id="how">
+  <div class="container">
+    <div class="moment-grid">
+      <div class="moment-text">
+        <span class="timestamp">Tuesday, 8:43 AM · Brockton, MA</span>
+        <h2>This is what 27 seconds looks like.</h2>
+        <p>Maria pulls over. She holds up her phone. The pothole is forty feet behind her. She taps the orange button. The camera opens.</p>
+        <p>She takes one photo. The AI looks at it. It says: <em>medium pothole, paved road, severe hazard</em>. It fills in everything for her. She taps Submit.</p>
+        <p>27 seconds later, the report is in the cluster of three other neighbors who hit the same hole this week. The cluster is now community-verified. The cluster is now in line for escalation. Maria gets back in her car.</p>
+        <p style="font-size:15px;color:var(--text-muted);margin-top:24px;">Two weeks later, the pothole was filled. Maria didn't have to do anything else.</p>
+      </div>
+      <div class="moment-visual">
+        <div class="timeline">
+          <div class="timeline-step"><div class="timeline-dot">📸</div><div class="timeline-content"><h4>Open the app, snap a photo</h4><p>One screen. One button. AI auto-fills the form.</p><span class="time">0:00 → 0:10</span></div></div>
+          <div class="timeline-step"><div class="timeline-dot">📍</div><div class="timeline-content"><h4>GPS locks the spot</h4><p>Address auto-fills. Drag the pin if you need to.</p><span class="time">0:10 → 0:18</span></div></div>
+          <div class="timeline-step"><div class="timeline-dot">✅</div><div class="timeline-content"><h4>Tap submit, you're done</h4><p>You can leave. The app does the rest.</p><span class="time">0:27</span></div></div>
+          <div class="timeline-step"><div class="timeline-dot">👥</div><div class="timeline-content"><h4>Community verifies</h4><p>3 nearby reports = "community-verified." 10 reports = automatic escalation to the right authority.</p><span class="time">Over hours/days</span></div></div>
+          <div class="timeline-step"><div class="timeline-dot">⚖️</div><div class="timeline-content"><h4>Legal pressure activates</h4><p>Demand letter sent. Statutory clock starts. The whole community sees it.</p><span class="time">Day 1 → 30</span></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- DIFFERENTIATORS -->
+<section class="diff">
+  <div class="container">
+    <span class="section-eyebrow">Why This Works When 311 Doesn't</span>
+    <h2 class="section-title">The infrastructure of accountability — finally pointed back at the right people.</h2>
+    <div class="diff-grid">
+      <div class="diff-card">
+        <div class="diff-icon">📊</div>
+        <h3>Public health grades</h3>
+        <p>Every city gets a real-time A-F grade. Updated by community data. Embeddable. Shareable. Impossible to hide from. Local journalists love this.</p>
+        <span class="vs">311: <strong>nothing public</strong></span>
+      </div>
+      <div class="diff-card">
+        <div class="diff-icon">⚖️</div>
+        <h3>Legal demand letters</h3>
+        <p>Auto-generated. Cites your state's specific statute. Tracks the deadline. One tap and it's in the right inbox. Cities take notice.</p>
+        <span class="vs">311: <strong>not even close</strong></span>
+      </div>
+      <div class="diff-card">
+        <div class="diff-icon">🛡️</div>
+        <h3>Insurance evidence packs</h3>
+        <p>Hit a pothole already? One tap creates a complete claim package with timestamps, GPS, photos, notification history. Send it to your insurance.</p>
+        <span class="vs">311: <strong>no record exists</strong></span>
+      </div>
+      <div class="diff-card">
+        <div class="diff-icon">👥</div>
+        <h3>Community verification</h3>
+        <p>3 reports = verified. 10 = escalation. Witness Network pings nearby users to confirm hazards in minutes, not weeks.</p>
+        <span class="vs">311: <strong>complaints don't aggregate</strong></span>
+      </div>
+      <div class="diff-card">
+        <div class="diff-icon">💰</div>
+        <h3>Fiscal impact math</h3>
+        <p>"Fix this for $75 today, or $12,000 in liability next year." We do the math for officials. Inaction becomes the expensive option.</p>
+        <span class="vs">311: <strong>they're guessing</strong></span>
+      </div>
+      <div class="diff-card">
+        <div class="diff-icon">🚀</div>
+        <h3>Direct city integration</h3>
+        <p>For Boston, Cambridge, and hundreds more: reports flow into their existing ticket system with real numbers. Status updates flow back to you.</p>
+        <span class="vs">311: <strong>black box</strong></span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ONBOARDING / WORKFLOW PREVIEW -->
+<section class="onboarding">
+  <div class="container">
+    <span class="section-eyebrow">Your First 5 Minutes</span>
+    <h2 class="section-title">No tutorial. No account. No friction.</h2>
+    <p class="section-lead">Most apps demand 12 onboarding screens before you can do anything. Fault Line lets you submit your first report 10 seconds after install. Here's the entire workflow.</p>
+    <div class="onboarding-steps">
+      <div class="ob-step"><h4>Install</h4><p>App Store or Play Store. About 28 MB. No account screen. No email field.</p></div>
+      <div class="ob-step"><h4>Open it</h4><p>Tap "Allow location" once. The map shows reports near you. Skip onboarding if you want.</p></div>
+      <div class="ob-step"><h4>Tap the orange button</h4><p>That's the report button. It's the biggest thing on the screen. Hard to miss.</p></div>
+      <div class="ob-step"><h4>Snap one photo</h4><p>The AI takes it from there. Pre-fills category, severity, dimensions. You just tap Submit.</p></div>
+      <div class="ob-step"><h4>Done</h4><p>Your report is in the system. The app handles community verification, escalation, and follow-up automatically.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- SOCIAL PROOF -->
+<section class="proof">
+  <div class="container">
+    <span class="section-eyebrow">Real People · Real Outcomes</span>
+    <h2 class="section-title">Stories from the field.</h2>
+    <div class="proof-grid">
+      <div class="quote-card">
+        <p>I hit the same pothole on my commute for six months. It finally destroyed my tire and cost me $400 I didn't have. I reported it to 311 twice. Nothing. I reported it on Fault Line. Seven neighbors did too. It was filled within two weeks.</p>
+        <div class="author"><strong>Maria</strong> · Brockton, MA</div>
+      </div>
+      <div class="quote-card">
+        <p>The streetlight on our corner had been out for a year. My daughter walks to school in the dark. I didn't know who to call. Fault Line did it all — found the right department, sent the report, tracked the response. Light was fixed in 9 days.</p>
+        <div class="author"><strong>James</strong> · Providence, RI</div>
+      </div>
+      <div class="quote-card">
+        <p>As a city council member, I actually appreciate this app. It shows me where the problems are in my district with data I can take to budget meetings. My constituents don't have to call me anymore — I can see it all in real time.</p>
+        <div class="author"><strong>Council Member (anonymous)</strong> · Massachusetts</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FINAL CTA -->
+<section class="final-cta" id="download">
+  <h2>Stop complaining.<br><span class="line2">Start fixing.</span></h2>
+  <p>Every report you submit is a vote for better infrastructure. Together, we make it impossible to ignore.</p>
+  <div class="hero-cta-row">
+    <a href="#" class="btn btn-primary">Download for Android →</a>
+    <a href="#" class="btn btn-secondary">Download for iOS →</a>
+  </div>
+  <p class="small">Free forever. No account required. Anonymous reporting supported. Built by Moonlit Social Labs.</p>
+  <div style="margin-top:24px;">
+    <a href="https://ko-fi.com/moonlitsociallabs" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:8px;background:#FF5E5B;color:#fff;padding:12px 24px;border-radius:100px;font-size:15px;font-weight:700;text-decoration:none;">☕ Support development on Ko-fi</a>
+  </div>
+</section>
+
+<!-- AdSense bottom -->
+<div style="text-align:center;padding:10px 0;overflow:hidden;">
+  <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-1548397763792213" data-ad-slot="XXXXXXXXXX" data-ad-format="auto" data-full-width-responsive="true"></ins>
+  <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+</div>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="footer-inner">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <h4>Fault<span>Line</span></h4>
+        <p>Community infrastructure accountability. Made in New England by Moonlit Social Labs.</p>
+      </div>
+      <div class="footer-col">
+        <h5>Product</h5>
+        <a href="features-plain.html">Features</a>
+        <a href="blog.html">Blog</a>
+        <a href="feedback.html">Feedback</a>
+        <a href="#download">Download</a>
+      </div>
+      <div class="footer-col">
+        <h5>Company</h5>
+        <a href="about.html">About</a>
+        <a href="privacy.html">Privacy Policy</a>
+        <a href="terms.html">Terms of Service</a>
+      </div>
+      <div class="footer-col">
+        <h5>Support</h5>
+        <a href="https://ko-fi.com/moonlitsociallabs" target="_blank" rel="noopener">☕ Ko-fi</a>
+        <a data-email="moonlit-social-labs|proton.me">loading...</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      &copy; 2026 Moonlit Social Labs · Fault Line is a product of Moonlit Social Labs · Built with frustration and optimism
+    </div>
+  </div>
+</footer>
+
+<script>
+document.querySelectorAll('a[data-email]').forEach(function(el) {
+  var parts = el.getAttribute('data-email').split('|');
+  var email = parts[0] + '@' + parts[1];
+  el.href = 'mailto:' + email;
+  el.textContent = email;
+});
+</script>
+
+</body>
+</html>

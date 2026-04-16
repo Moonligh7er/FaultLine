@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="432" height="432" viewBox="0 0 432 432">
+  <!-- Pin icon centered in safe zone -->
+  <circle cx="216" cy="172.8" r="77.75999999999999" fill="#FFFFFF"/>
+  <circle cx="216" cy="172.8" r="34.56" fill="#1E88E5"/>
+  <polygon points="177.11999999999998,224.64000000000001 216,280.8 254.88,224.64000000000001" fill="#FFFFFF"/>
+  <text x="216" y="181.44" font-family="Arial Black, sans-serif" font-size="21.6" font-weight="900" fill="#1E88E5" text-anchor="middle" dominant-baseline="middle">FTF</text>
+</svg>

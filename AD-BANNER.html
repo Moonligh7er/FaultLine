@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fault Line — Ad Banner Kit</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #111; color: #eee; padding: 40px 24px; }
+h1 { font-size: 32px; font-weight: 900; margin-bottom: 8px; }
+h1 span { color: #1E88E5; }
+.subtitle { color: #888; margin-bottom: 48px; }
+h2 { font-size: 22px; font-weight: 700; margin: 48px 0 8px; color: #ccc; border-bottom: 1px solid #333; padding-bottom: 8px; }
+h3 { font-size: 16px; font-weight: 600; color: #999; margin: 24px 0 12px; }
+.banner-wrap { display: inline-block; margin: 0 0 24px; background: #1a1a1a; border: 1px solid #333; border-radius: 8px; overflow: hidden; }
+.banner-label { font-size: 12px; color: #666; padding: 8px 12px; background: #0d0d0d; font-family: monospace; }
+.code-block { background: #0d0d0d; border: 1px solid #333; border-radius: 6px; padding: 16px; margin: 12px 0 24px; overflow-x: auto; font-family: monospace; font-size: 13px; color: #aaa; white-space: pre; line-height: 1.5; }
+.copy-hint { font-size: 11px; color: #555; margin-top: -20px; margin-bottom: 24px; }
+.grid { display: flex; flex-wrap: wrap; gap: 24px; }
+
+/* ============================================================
+   SHARED BANNER STYLES — used by all banner sizes
+   ============================================================ */
+.ftf-banner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  position: relative;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+.ftf-banner * { margin: 0; padding: 0; box-sizing: border-box; }
+
+/* Gradient background */
+.ftf-bg {
+  position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+  background: linear-gradient(135deg, #0d1b2a 0%, #1b2838 40%, #1E88E5 100%);
+}
+.ftf-bg::after {
+  content: ''; position: absolute; top: -50%; right: -20%; width: 60%; height: 200%;
+  background: radial-gradient(ellipse, rgba(30,136,229,0.2) 0%, transparent 70%);
+}
+
+/* Content layer */
+.ftf-content { position: relative; z-index: 1; display: flex; height: 100%; width: 100%; }
+
+/* Accent stripe */
+.ftf-stripe {
+  position: absolute; left: 0; top: 0; bottom: 0; width: 4px;
+  background: linear-gradient(180deg, #FF6F00, #00C853);
+}
+
+/* Text styles */
+.ftf-headline { font-weight: 900; color: #fff; letter-spacing: -0.5px; line-height: 1.15; }
+.ftf-subtext { color: rgba(255,255,255,0.75); line-height: 1.4; }
+.ftf-stat { font-weight: 800; color: #64B5F6; }
+.ftf-cta {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: #FF6F00; color: #fff; font-weight: 700;
+  border-radius: 100px; border: none; cursor: pointer;
+  text-decoration: none; white-space: nowrap;
+}
+.ftf-cta:hover { background: #E65100; }
+.ftf-logo { font-weight: 900; color: #fff; white-space: nowrap; }
+.ftf-logo span { color: #64B5F6; }
+.ftf-badge {
+  display: inline-block; background: rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.15); border-radius: 100px;
+  color: rgba(255,255,255,0.7); font-weight: 600;
+  text-transform: uppercase; letter-spacing: 1px;
+}
+</style>
+</head>
+<body>
+
+<h1>Fault<span>Line</span> — Ad Banner Kit</h1>
+<p class="subtitle">All banner sizes for web, mobile, Facebook, and Instagram advertising. Copy the HTML or screenshot for image ads.</p>
+
+<!-- ============================================================
+     WEB BANNERS
+     ============================================================ -->
+<h2>Web Banners</h2>
+
+<!-- Leaderboard 728x90 -->
+<h3>Leaderboard — 728 × 90 (Google Ads, website headers)</h3>
+<div class="banner-wrap">
+<div class="banner-label">728 × 90</div>
+<div class="ftf-banner" style="width:728px;height:90px;">
+  <div class="ftf-bg"></div>
+  <div class="ftf-stripe"></div>
+  <div class="ftf-content" style="align-items:center;padding:0 24px;gap:20px;">
+    <div style="flex:1;">
+      <div class="ftf-headline" style="font-size:20px;">Hit a pothole? <span class="ftf-stat">Report it. Get it fixed.</span></div>
+      <div class="ftf-subtext" style="font-size:12px;margin-top:2px;">3 reports = community verified. 10 = authorities notified automatically.</div>
+    </div>
+    <a class="ftf-cta" style="padding:10px 24px;font-size:14px;" href="https://moonligh7er.github.io/faultline/">Download Free →</a>
+    <div class="ftf-logo" style="font-size:14px;">Fault<span>Line</span></div>
+  </div>
+</div>
+</div>
+
+<!-- Medium Rectangle 300x250 -->
+<h3>Medium Rectangle — 300 × 250 (Sidebar, in-article)</h3>
+<div class="banner-wrap">
+<div class="banner-label">300 × 250</div>
+<div class="ftf-banner" style="width:300px;height:250px;">
+  <div class="ftf-bg"></div>
+  <div class="ftf-stripe"></div>
+  <div class="ftf-content" style="flex-direction:column;align-items:center;justify-content:center;padding:24px;text-align:center;gap:12px;">
+    <div class="ftf-badge" style="font-size:10px;padding:4px 12px;">Free App</div>
+    <div class="ftf-headline" style="font-size:22px;">Your pothole.<br>Their problem.</div>
+    <div class="ftf-subtext" style="font-size:13px;">Report infrastructure issues in 10 seconds. When your community speaks up, authorities can't look away.</div>
+    <a class="ftf-cta" style="padding:10px 28px;font-size:14px;margin-top:4px;" href="https://moonligh7er.github.io/faultline/">Download Free →</a>
+    <div class="ftf-logo" style="font-size:12px;margin-top:4px;">Fault<span>Line</span></div>
+  </div>
+</div>
+</div>
+
+<!-- Skyscraper 160x600 -->
+<h3>Wide Skyscraper — 160 × 600 (Sidebar)</h3>
+<div class="banner-wrap">
+<div class="banner-label">160 × 600</div>
+<div class="ftf-banner" style="width:160px;height:600px;">
+  <div class="ftf-bg"></div>
+  <div class="ftf-stripe"></div>
+  <div class="ftf-content" style="flex-direction:column;align-items:center;justify-content:center;padding:20px;text-align:center;gap:16px;">
+    <div class="ftf-logo" style="font-size:16px;">Fault<span>Line</span></div>
+    <div style="font-size:48px;">🕳️</div>
+    <div class="ftf-headline" style="font-size:18px;">Tired of potholes?</div>
+    <div class="ftf-subtext" style="font-size:12px;">Report it. Community verifies. Authorities notified.</div>
+    <div style="border-top:1px solid rgba(255,255,255,0.15);width:80%;"></div>
+    <div class="ftf-stat" style="font-size:28px;">10s</div>
+    <div class="ftf-subtext" style="font-size:11px;">to report</div>
+    <div class="ftf-stat" style="font-size:28px;">3</div>
+    <div class="ftf-subtext" style="font-size:11px;">people to verify</div>
+    <div class="ftf-stat" style="font-size:28px;">24</div>
+    <div class="ftf-subtext" style="font-size:11px;">issue categories</div>
+    <div style="border-top:1px solid rgba(255,255,255,0.15);width:80%;"></div>
+    <a class="ftf-cta" style="padding:10px 20px;font-size:13px;" href="https://moonligh7er.github.io/faultline/">Get the App</a>
+  </div>
+</div>
+</div>
+
+<!-- Mobile Banner 320x50 -->
+<h3>Mobile Banner — 320 × 50 (In-app, mobile web)</h3>
+<div class="banner-wrap">
+<div class="banner-label">320 × 50</div>
+<div class="ftf-banner" style="width:320px;height:50px;">
+  <div class="ftf-bg"></div>
+  <div class="ftf-stripe"></div>
+  <div class="ftf-content" style="align-items:center;padding:0 12px;gap:10px;">
+    <div class="ftf-logo" style="font-size:12px;">Fault<span>Line</span></div>
+    <div class="ftf-headline" style="font-size:12px;flex:1;">Report potholes → Get them fixed</div>
+    <a class="ftf-cta" style="padding:6px 14px;font-size:11px;" href="https://moonligh7er.github.io/faultline/">Free</a>
+  </div>
+</div>
+</div>
+
+<!-- Mobile Interstitial 320x480 -->
+<h3>Mobile Interstitial — 320 × 480</h3>
+<div class="banner-wrap">
+<div class="banner-label">320 × 480</div>
+<div class="ftf-banner" style="width:320px;height:480px;">
+  <div class="ftf-bg"></div>
+  <div class="ftf-stripe"></div>
+  <div class="ftf-content" style="flex-direction:column;align-items:center;justify-content:center;padding:32px;text-align:center;gap:16px;">
+    <div class="ftf-badge" style="font-size:10px;padding:4px 14px;">Free on Android & iOS</div>
+    <div style="font-size:56px;">🕳️</div>
+    <div class="ftf-headline" style="font-size:26px;">Stop dodging.<br>Start fixing.</div>
+    <div class="ftf-subtext" style="font-size:14px;max-width:260px;">Report infrastructure issues in 10 seconds. AI analyzes your photo. Community verifies. Authorities are automatically notified.</div>
+    <div style="display:flex;gap:24px;margin:8px 0;">
+      <div style="text-align:center;"><div class="ftf-stat" style="font-size:24px;">24</div><div class="ftf-subtext" style="font-size:10px;">Categories</div></div>
+      <div style="text-align:center;"><div class="ftf-stat" style="font-size:24px;">42</div><div class="ftf-subtext" style="font-size:10px;">Authorities</div></div>
+      <div style="text-align:center;"><div class="ftf-stat" style="font-size:24px;">5</div><div class="ftf-subtext" style="font-size:10px;">Languages</div></div>
+    </div>
+    <a class="ftf-cta" style="padding:14px 36px;font-size:16px;margin-top:8px;" href="https://moonligh7er.github.io/faultline/">Download Free →</a>
+    <div class="ftf-logo" style="font-size:14px;margin-top:8px;">Fault<span>Line</span></div>
+  </div>
+</div>
+</div>
+
+<!-- ============================================================
+     SOCIAL MEDIA
+     ============================================================ -->
+<h2>Facebook & Instagram</h2>
+
+<!-- FB/IG Feed 1080x1080 -->
+<h3>Feed Post — 1080 × 1080 (Facebook & Instagram)</h3>
+<div class="banner-wrap">
+<div class="banner-label">1080 × 1080 (shown at 540px)</div>
+<div class="ftf-banner" style="width:540px;height:540px;">
+  <div class="ftf-bg"></div>
+  <div class="ftf-stripe" style="width:6px;"></div>
+  <div class="ftf-content" style="flex-direction:column;align-items:center;justify-content:center;padding:48px;text-align:center;gap:20px;">
+    <div class="ftf-badge" style="font-size:12px;padding:6px 16px;">Your Tax Dollars Should</div>
+    <div class="ftf-headline" style="font-size:42px;">Fault<br>Line</div>
+    <div style="width:60px;height:3px;background:linear-gradient(90deg,#FF6F00,#00C853);border-radius:2px;"></div>
+    <div class="ftf-subtext" style="font-size:16px;max-width:400px;">Report potholes & infrastructure issues in 10 seconds. Community-verified. Authorities notified automatically.</div>
+    <div style="display:flex;gap:32px;margin:12px 0;">
+      <div style="text-align:center;"><div class="ftf-stat" style="font-size:32px;">10s</div><div class="ftf-subtext" style="font-size:12px;">To report</div></div>
+      <div style="text-align:center;"><div class="ftf-stat" style="font-size:32px;">3</div><div class="ftf-subtext" style="font-size:12px;">To verify</div></div>
+      <div style="text-align:center;"><div class="ftf-stat" style="font-size:32px;">0</div><div class="ftf-subtext" style="font-size:12px;">Excuses left</div></div>
+    </div>
+    <a class="ftf-cta" style="padding:14px 36px;font-size:16px;" href="https://moonligh7er.github.io/faultline/">Download Free →</a>
+    <div class="ftf-logo" style="font-size:16px;margin-top:8px;">Fault<span>Line</span></div>
+  </div>
+</div>
+</div>
+
+<!-- IG Story 1080x1920 -->
+<h3>Story / Reel — 1080 × 1920 (Instagram & Facebook Stories)</h3>
+<div class="banner-wrap">
+<div class="banner-label">1080 × 1920 (shown at 270 × 480)</div>
+<div class="ftf-banner" style="width:270px;height:480px;">
+  <div class="ftf-bg"></div>
+  <div class="ftf-stripe" style="width:4px;"></div>
+  <div class="ftf-content" style="flex-direction:column;align-items:center;justify-content:center;padding:24px;text-align:center;gap:14px;">
+    <div class="ftf-logo" style="font-size:14px;">Fault<span>Line</span></div>
+    <div style="font-size:48px;">🕳️➡️✅</div>
+    <div class="ftf-headline" style="font-size:24px;">Report it.<br>They fix it.</div>
+    <div class="ftf-subtext" style="font-size:12px;">Snap a photo. AI detects the issue. Community verifies. Authorities are notified with legal accountability.</div>
+    <div style="width:40px;height:2px;background:#FF6F00;border-radius:1px;"></div>
+    <div class="ftf-subtext" style="font-size:11px;">✓ Legal demand letters<br>✓ Insurance claim packaging<br>✓ Government response tracking<br>✓ Infrastructure grades A–F</div>
+    <a class="ftf-cta" style="padding:12px 28px;font-size:14px;margin-top:8px;" href="https://moonligh7er.github.io/faultline/">Download Free</a>
+    <div class="ftf-subtext" style="font-size:10px;">Free forever. No account required.</div>
+  </div>
+</div>
+</div>
+
+<!-- FB Link Preview 1200x628 -->
+<h3>Link Preview / OG Image — 1200 × 628 (Facebook, LinkedIn, Slack, iMessage)</h3>
+<div class="banner-wrap">
+<div class="banner-label">1200 × 628 (shown at 600 × 314)</div>
+<div class="ftf-banner" style="width:600px;height:314px;">
+  <div class="ftf-bg"></div>
+  <div class="ftf-stripe" style="width:5px;"></div>
+  <div class="ftf-content" style="align-items:center;padding:32px 40px;gap:32px;">
+    <div style="flex:1;">
+      <div class="ftf-badge" style="font-size:10px;padding:4px 12px;margin-bottom:12px;">Free App</div>
+      <div class="ftf-headline" style="font-size:28px;">Your tax dollars<br>should fix this faster.</div>
+      <div class="ftf-subtext" style="font-size:14px;margin-top:8px;max-width:320px;">Report potholes & infrastructure issues. Community-verified. Authorities notified automatically with legal accountability.</div>
+      <a class="ftf-cta" style="padding:10px 24px;font-size:14px;margin-top:16px;" href="https://moonligh7er.github.io/faultline/">Download Free →</a>
+    </div>
+    <div style="text-align:center;">
+      <div style="font-size:64px;margin-bottom:8px;">🕳️</div>
+      <div class="ftf-logo" style="font-size:18px;">Fault<span>Line</span></div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ============================================================
+     EMBED CODE
+     ============================================================ -->
+<h2>Embed Code</h2>
+
+<h3>HTML Embed (copy & paste for any website)</h3>
+<div class="code-block">&lt;a href="https://moonligh7er.github.io/faultline/" target="_blank" rel="noopener"
+   style="display:inline-flex;align-items:center;gap:12px;background:linear-gradient(135deg,#0d1b2a,#1E88E5);
+   padding:12px 24px;border-radius:12px;text-decoration:none;color:#fff;font-family:system-ui,sans-serif;
+   border-left:4px solid #FF6F00;max-width:400px;"&gt;
+  &lt;div&gt;
+    &lt;div style="font-size:18px;font-weight:900;"&gt;Fault&lt;span style="color:#64B5F6"&gt;Line&lt;/span&gt;&lt;/div&gt;
+    &lt;div style="font-size:13px;opacity:0.8;"&gt;Report potholes. Get them fixed. Free.&lt;/div&gt;
+  &lt;/div&gt;
+  &lt;div style="background:#FF6F00;padding:8px 16px;border-radius:100px;font-size:13px;font-weight:700;"&gt;
+    Download
+  &lt;/div&gt;
+&lt;/a&gt;</div>
+<p class="copy-hint">Copy the HTML above to embed a banner on any website.</p>
+
+<h3>Markdown Link (for GitHub, Reddit, forums)</h3>
+<div class="code-block">[![Fault Line — Report potholes, get them fixed](https://moonligh7er.github.io/faultline/og-image.jpg)](https://moonligh7er.github.io/faultline/)</div>
+
+<h3>UTM Tracking Links</h3>
+<div class="code-block">Facebook:  https://moonligh7er.github.io/faultline/?utm_source=facebook&utm_medium=paid&utm_campaign=launch
+Instagram: https://moonligh7er.github.io/faultline/?utm_source=instagram&utm_medium=paid&utm_campaign=launch
+Google:    https://moonligh7er.github.io/faultline/?utm_source=google&utm_medium=cpc&utm_campaign=launch
+Reddit:    https://moonligh7er.github.io/faultline/?utm_source=reddit&utm_medium=organic&utm_campaign=launch
+Email:     https://moonligh7er.github.io/faultline/?utm_source=email&utm_medium=newsletter&utm_campaign=launch</div>
+
+<h3>Ad Copy Variants (for Facebook/Instagram/Google Ads)</h3>
+<div class="code-block">VARIANT A — Problem/Solution
+Headline: "That pothole on your commute? 10 seconds to report it."
+Body: "Fault Line: snap a photo, AI identifies the issue, community verifies, authorities are notified automatically. Free forever."
+CTA: Download Now
+
+VARIANT B — Anger/Empowerment
+Headline: "Your city ignores potholes. We make that impossible."
+Body: "Legal demand letters. Insurance claim packaging. Public accountability scores. Fault Line turns complaints into consequences."
+CTA: Get the App
+
+VARIANT C — Social Proof
+Headline: "3 neighbors. 1 pothole. Fixed in 2 weeks."
+Body: "When 3 people report the same issue, authorities get a professional report with GPS evidence, photos, and fiscal impact projections. They can't ignore it."
+CTA: Join Your Community
+
+VARIANT D — Stats
+Headline: "$3 billion in pothole damage every year. Yours doesn't have to be next."
+Body: "Fault Line: AI-powered reporting, legal accountability tools, and government response tracking. Free. 10 seconds. 24 categories."
+CTA: Download Free</div>
+
+<!-- ============================================================
+     SIZES REFERENCE
+     ============================================================ -->
+<h2>Size Reference</h2>
+<div class="code-block">WEB BANNERS
+├── Leaderboard:        728 × 90    (Google Ads, website headers)
+├── Medium Rectangle:   300 × 250   (Sidebar, in-article)
+├── Wide Skyscraper:    160 × 600   (Sidebar)
+├── Mobile Banner:      320 × 50    (In-app, mobile web)
+└── Mobile Interstitial: 320 × 480  (Full-screen mobile)
+
+SOCIAL MEDIA
+├── FB/IG Feed Post:    1080 × 1080 (Square — screenshot at 2x)
+├── IG/FB Story:        1080 × 1920 (9:16 — screenshot at 4x)
+└── OG/Link Preview:    1200 × 628  (Facebook, LinkedIn, Slack — screenshot at 2x)
+
+TO EXPORT AS IMAGES:
+1. Open this file in Chrome
+2. Right-click any banner → Inspect → select the .ftf-banner div
+3. In DevTools console: copy(document.querySelector('.ftf-banner').outerHTML)
+4. Or screenshot each banner at the correct resolution
+5. For 2x exports (retina), use Chrome DevTools device toolbar at 2x scale</div>
+
+</body>
+</html>
