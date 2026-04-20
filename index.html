@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self'; connect-src 'self'; frame-src 'none'; object-src 'none'; base-uri 'self';">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://pagead2.googlesyndication.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self'; connect-src 'self' https://www.google-analytics.com https://analytics.google.com; frame-src https://googleads.g.doubleclick.net https://tpc.googlesyndication.com https://pagead2.googlesyndication.com; object-src 'none'; base-uri 'self';">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Fault Line — Report Potholes & Infrastructure Issues | Free App</title>
 <meta name="description" content="Report potholes, broken streetlights, and infrastructure problems in 10 seconds. Community-verified reports automatically escalate to government authorities. Free for Android & iOS.">
@@ -18,11 +18,13 @@
 <meta property="og:description" content="Report infrastructure issues in 10 seconds. When 3 people report the same problem, authorities are notified automatically. Free app with AI analysis, legal tools, and government accountability tracking.">
 <meta property="og:site_name" content="Fault Line">
 <meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://moonligh7er.github.io/FaultLine/og-image.png">
 
 <!-- Twitter -->
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Fault Line — Your Tax Dollars Should Fix This Faster">
 <meta name="twitter:description" content="Report potholes & infrastructure issues. Community-verified. Authorities notified automatically. Free on Android & iOS.">
+<meta name="twitter:image" content="https://moonligh7er.github.io/FaultLine/og-image.png">
 
 <!-- Structured Data: SoftwareApplication -->
 <script type="application/ld+json">
@@ -47,17 +49,19 @@
 }
 </script>
 
-<!-- Structured Data: Organization -->
+<!-- Structured Data: Organization (publisher of Fault Line) -->
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
   "@type": "Organization",
-  "name": "Fault Line",
+  "name": "Moonlit Social Labs",
+  "alternateName": "Fault Line",
   "url": "https://moonligh7er.github.io/FaultLine",
-  "description": "Community infrastructure accountability platform",
+  "founder": { "@type": "Person", "name": "Michael Wylde" },
+  "description": "Independent civic-tech studio building community accountability tools. Publisher of Fault Line.",
   "contactPoint": {
     "@type": "ContactPoint",
-    "email": "hello@faultline.app",
+    "email": "moonlit-social-labs@proton.me",
     "contactType": "customer support"
   }
 }
@@ -112,6 +116,10 @@
   ]
 }
 </script>
+
+<!-- Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-XXXXXXXXXX');</script>
 
 <style>
 :root {
@@ -237,6 +245,9 @@ footer { background: var(--bg-card); border-top: 1px solid var(--border); paddin
   .btn { width: 100%; max-width: 300px; justify-content: center; }
 }
 </style>
+
+<!-- Google AdSense -->
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1548397763792213" crossorigin="anonymous"></script>
 </head>
 <body>
 
@@ -247,7 +258,7 @@ footer { background: var(--bg-card); border-top: 1px solid var(--border); paddin
   <p>Report potholes, broken streetlights, and crumbling infrastructure in 10 seconds. When your community speaks up together, authorities can't look away.</p>
   <div class="hero-cta">
     <a href="#download" class="btn btn-primary">Download Free</a>
-    <a href="features.html" class="btn btn-outline">See All Features</a>
+    <a href="features-plain.html" class="btn btn-outline">See All Features</a>
   </div>
   <div class="hero-stats">
     <div class="hero-stat">
@@ -264,6 +275,17 @@ footer { background: var(--bg-card); border-top: 1px solid var(--border); paddin
     </div>
   </div>
 </section>
+
+<!-- AdSense: top banner — create an ad unit in AdSense and replace XXXXXXXXXX with its slot ID -->
+<div style="text-align:center;padding:10px 0;overflow:hidden;">
+  <ins class="adsbygoogle"
+       style="display:block"
+       data-ad-client="ca-pub-1548397763792213"
+       data-ad-slot="XXXXXXXXXX"
+       data-ad-format="auto"
+       data-full-width-responsive="true"></ins>
+  <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+</div>
 
 <!-- THE PROBLEM -->
 <section class="problem">
@@ -464,7 +486,7 @@ footer { background: var(--bg-card); border-top: 1px solid var(--border); paddin
       <span class="pill">Commute Learning</span>
       <span class="pill">Offline Map Caching</span>
     </div>
-    <a href="features.html" class="btn btn-outline" style="margin-top: 16px;">See All Features &rarr;</a>
+    <a href="features-plain.html" class="btn btn-outline" style="margin-top: 16px;">See All Features &rarr;</a>
   </div>
 </section>
 
@@ -507,21 +529,33 @@ footer { background: var(--bg-card); border-top: 1px solid var(--border); paddin
   <p style="font-size: 14px; color: var(--text-muted); margin-top: 24px;">Free forever. No account required. Anonymous reporting supported.</p>
 </section>
 
+<!-- AdSense: bottom banner — create an ad unit in AdSense and replace XXXXXXXXXX with its slot ID -->
+<div style="text-align:center;padding:10px 0;overflow:hidden;">
+  <ins class="adsbygoogle"
+       style="display:block"
+       data-ad-client="ca-pub-1548397763792213"
+       data-ad-slot="XXXXXXXXXX"
+       data-ad-format="auto"
+       data-full-width-responsive="true"></ins>
+  <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+</div>
+
 <!-- FOOTER -->
 <footer>
   <div class="footer-inner">
     <div class="footer-col">
       <h4>Fault Line</h4>
-      <p style="color: var(--text-secondary); font-size: 14px; max-width: 250px;">Community infrastructure accountability platform. Community infrastructure accountability platform.</p>
+      <p style="color: var(--text-secondary); font-size: 14px; max-width: 250px;">Community infrastructure accountability platform. Report it. Verify it. Hold them accountable.</p>
     </div>
     <div class="footer-col">
-      <h4>Legal</h4>
+      <h4>Company</h4>
+      <a href="about.html">About</a>
       <a href="privacy.html">Privacy Policy</a>
       <a href="terms.html">Terms of Service</a>
     </div>
     <div class="footer-col">
       <h4>Product</h4>
-      <a href="features.html">All Features</a>
+      <a href="features-plain.html">All Features</a>
       <a href="blog.html">Blog</a>
       <a href="feedback.html">Feedback</a>
       <a href="#download">Download</a>
@@ -530,12 +564,12 @@ footer { background: var(--bg-card); border-top: 1px solid var(--border); paddin
     </div>
     <div class="footer-col">
       <h4>Contact</h4>
-      <a data-email="hello|faultline.app">loading...</a>
-      <a data-email="privacy|faultline.app">loading...</a>
+      <a data-email="moonlit-social-labs|proton.me">loading...</a>
+      <p style="color:var(--text-muted);font-size:13px;margin-top:4px;">Michael Wylde<br>Moonlit Social Labs</p>
     </div>
   </div>
   <div class="footer-bottom">
-    &copy; 2026 Fault Line. Built with frustration and optimism.
+    &copy; 2026 Moonlit Social Labs. Built with frustration and optimism.
   </div>
 </footer>
 
