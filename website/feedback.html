@@ -2,249 +2,228 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://*.supabase.co https://www.googletagmanager.com https://pagead2.googlesyndication.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self'; connect-src 'self' https://*.supabase.co https://formspree.io https://www.google-analytics.com https://analytics.google.com; frame-src 'none'; object-src 'none'; base-uri 'self';">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://*.supabase.co https://www.googletagmanager.com https://pagead2.googlesyndication.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: https:; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://*.supabase.co https://formspree.io https://www.google-analytics.com https://analytics.google.com; frame-src 'none'; object-src 'none'; base-uri 'self';">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Feedback & Feature Requests — Fault Line</title>
+<title>Feedback &amp; Feature Requests — Fault Line</title>
 <meta name="description" content="Submit feedback, report bugs, or request features for Fault Line. Help shape the future of community infrastructure accountability.">
 <meta name="robots" content="index, follow">
 <link rel="canonical" href="https://moonligh7er.github.io/FaultLine/feedback.html">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://moonligh7er.github.io/FaultLine/feedback.html">
-<meta property="og:title" content="Feedback & Feature Requests — Fault Line">
-<meta property="og:description" content="Help shape the future of Fault Line. Submit feedback, report bugs, or request new features.">
-<meta property="og:site_name" content="Fault Line">
+<meta property="og:title" content="Feedback &amp; Feature Requests — Fault Line">
 <meta property="og:image" content="https://moonligh7er.github.io/FaultLine/og-image.png">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="https://moonligh7er.github.io/FaultLine/og-image.png">
 
-<!-- Google Analytics -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
 <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-XXXXXXXXXX');</script>
 
+<link rel="stylesheet" href="theme.css">
+
 <style>
-:root { --primary: #1E88E5; --secondary: #FF6F00; --accent: #00C853; --bg: #0a0a0a; --bg-card: #141414; --bg-elevated: #1a1a1a; --text: #f0f0f0; --text-secondary: #999; --text-muted: #666; --border: #2a2a2a; --success: #4CAF50; --error: #F44336; }
-* { margin: 0; padding: 0; box-sizing: border-box; }
-body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; }
-a { color: var(--primary); text-decoration: none; } a:hover { text-decoration: underline; }
+main { max-width: 860px; margin: 0 auto; padding: 60px 36px 80px; }
+.page-header { text-align: center; margin-bottom: 40px; }
+.page-header .active-dev-pill {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: rgba(70,195,122,0.08); border: 1px solid rgba(70,195,122,0.3);
+  color: var(--signal-green);
+  padding: 6px 16px 6px 12px; border-radius: 100px;
+  font-family: var(--ff-ui); font-size: 11px; font-weight: 600;
+  letter-spacing: 1.5px; text-transform: uppercase;
+  margin-bottom: 20px;
+}
+.page-header .active-dev-pill .nav-dot { width: 8px; height: 8px; }
+.page-header h1 { font-size: clamp(36px, 6vw, 56px); letter-spacing: -1.5px; margin-bottom: 10px; }
+.page-header h1 em { font-style: italic; color: var(--amber); }
+.page-header p { font-family: var(--ff-body); font-style: italic; font-size: 19px; color: var(--tile-dim); max-width: 500px; margin: 0 auto; line-height: 1.6; }
 
-/* Nav */
-.nav { padding: 16px 24px; border-bottom: 1px solid var(--border); max-width: 900px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; }
-.nav-brand { font-size: 20px; font-weight: 800; color: var(--text); text-decoration: none; } .nav-brand span { color: var(--primary); }
-.nav-links { display: flex; align-items: center; gap: 16px; font-size: 14px; }
-.nav-links a { color: var(--text-secondary); } .nav-links a:hover { color: var(--primary); text-decoration: none; }
-.nav-active { display: inline-flex; align-items: center; gap: 6px; background: rgba(0,200,83,0.08); border: 1px solid rgba(0,200,83,0.2); border-radius: 100px; padding: 4px 12px 4px 8px; font-size: 12px; font-weight: 600; color: var(--accent); text-decoration: none; }
-.nav-active:hover { text-decoration: none; background: rgba(0,200,83,0.12); }
-.nav-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 6px var(--accent); animation: pulse-dot 2s ease-in-out infinite; }
-@keyframes pulse-dot { 0%, 100% { opacity: 1; box-shadow: 0 0 6px var(--accent); } 50% { opacity: 0.6; box-shadow: 0 0 12px var(--accent); } }
+.tabs { display: flex; gap: 8px; justify-content: center; margin-bottom: 32px; flex-wrap: wrap; }
+.tab {
+  font-family: var(--ff-ui);
+  font-weight: 600; font-size: 13px;
+  letter-spacing: 2px; text-transform: uppercase;
+  padding: 12px 24px;
+  background: var(--tunnel-deep); color: var(--tile-dim);
+  border: 1px solid var(--rail); cursor: pointer;
+  transition: all 0.15s;
+}
+.tab:hover { border-color: var(--amber); color: var(--amber); }
+.tab.active { background: var(--amber); color: var(--tunnel-deep); border-color: var(--amber); }
 
-/* Page */
-.container { max-width: 900px; margin: 0 auto; padding: 0 24px; }
-.page-header { padding: 60px 0 32px; text-align: center; }
-.page-header h1 { font-size: clamp(28px, 5vw, 44px); font-weight: 900; letter-spacing: -1px; margin-bottom: 8px; }
-.page-header p { font-size: 17px; color: var(--text-secondary); max-width: 500px; margin: 0 auto; }
-
-/* Tabs */
-.tabs { display: flex; gap: 8px; margin-bottom: 32px; justify-content: center; }
-.tab { padding: 10px 24px; border-radius: 100px; font-size: 15px; font-weight: 600; cursor: pointer; border: 1px solid var(--border); background: var(--bg-card); color: var(--text-secondary); transition: all 0.2s; }
-.tab:hover { border-color: var(--primary); color: var(--text); }
-.tab.active { background: var(--primary); color: #fff; border-color: var(--primary); }
-
-/* Form */
+.form-card {
+  background: var(--tunnel-deep);
+  border: 1px solid var(--rail);
+  padding: 36px 32px; max-width: 620px; margin: 0 auto;
+  position: relative;
+}
+.form-card::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px;
+  background: repeating-linear-gradient(-45deg, var(--amber) 0 10px, var(--tunnel-deep) 10px 20px);
+}
+.form-card h2 {
+  font-family: var(--ff-display);
+  font-weight: 800; font-size: 26px; margin-bottom: 6px;
+}
+.form-card h2 em { font-style: italic; color: var(--amber); }
+.form-card .desc {
+  font-family: var(--ff-body); font-style: italic;
+  color: var(--tile-dim); margin-bottom: 24px;
+}
+.field { margin-bottom: 18px; }
+.optional { font-family: var(--ff-body); font-style: italic; color: var(--steel-light); text-transform: none; letter-spacing: 0; font-size: 11px; }
+.submit-btn {
+  width: 100%;
+  padding: 16px;
+  background: var(--amber); color: var(--tunnel-deep);
+  font-family: var(--ff-ui);
+  font-weight: 700; font-size: 13px;
+  letter-spacing: 2.5px; text-transform: uppercase;
+  border: 2px solid var(--amber);
+  cursor: pointer; transition: all 0.15s;
+}
+.submit-btn:hover {
+  background: var(--amber-bright); border-color: var(--amber-bright);
+  box-shadow: 0 0 0 6px var(--amber-glow);
+}
+.submit-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 .form-section { display: none; }
 .form-section.active { display: block; }
-.form-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 16px; padding: 32px; max-width: 600px; margin: 0 auto; }
-.form-card h2 { font-size: 22px; font-weight: 700; margin-bottom: 4px; }
-.form-card .form-desc { font-size: 14px; color: var(--text-muted); margin-bottom: 24px; }
-.field { margin-bottom: 20px; }
-.field label { display: block; font-size: 14px; font-weight: 600; color: var(--text-secondary); margin-bottom: 6px; }
-.field input, .field textarea, .field select {
-  width: 100%; padding: 12px 16px; background: var(--bg); border: 1px solid var(--border);
-  border-radius: 10px; color: var(--text); font-size: 15px; font-family: inherit;
-  transition: border-color 0.2s;
-}
-.field input:focus, .field textarea:focus, .field select:focus { outline: none; border-color: var(--primary); }
-.field textarea { min-height: 120px; resize: vertical; }
-.field select { appearance: none; cursor: pointer; }
-.field .optional { font-size: 12px; color: var(--text-muted); font-weight: 400; }
-.submit-btn {
-  width: 100%; padding: 14px; background: var(--primary); color: #fff; border: none;
-  border-radius: 10px; font-size: 16px; font-weight: 700; cursor: pointer; transition: all 0.2s;
-}
-.submit-btn:hover { background: #1565C0; transform: translateY(-1px); }
-.submit-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
 .success-msg { display: none; text-align: center; padding: 32px; }
 .success-msg .icon { font-size: 48px; margin-bottom: 12px; }
-.success-msg h3 { font-size: 20px; font-weight: 700; margin-bottom: 8px; color: var(--success); }
-.success-msg p { color: var(--text-secondary); font-size: 15px; }
+.success-msg h3 { font-size: 22px; font-weight: 800; margin-bottom: 8px; color: var(--signal-green); }
+.success-msg p { font-family: var(--ff-body); color: var(--tile-dim); font-size: 16px; }
 
-/* Existing submissions */
-.submissions { margin-top: 48px; padding-bottom: 60px; }
-.submissions h2 { font-size: 22px; font-weight: 700; margin-bottom: 16px; text-align: center; }
-.submission-list { max-width: 600px; margin: 0 auto; }
-.submission { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 20px; margin-bottom: 12px; transition: border-color 0.2s; }
-.submission:hover { border-color: var(--primary); }
-.submission-header { display: flex; justify-content: space-between; align-items: start; gap: 12px; margin-bottom: 8px; }
-.submission-subject { font-size: 16px; font-weight: 700; }
-.submission-badge { font-size: 11px; font-weight: 600; padding: 3px 10px; border-radius: 100px; text-transform: uppercase; letter-spacing: 0.5px; white-space: nowrap; }
-.badge-new { background: rgba(30,136,229,0.15); color: var(--primary); }
-.badge-planned { background: rgba(0,200,83,0.15); color: var(--accent); }
-.badge-reviewed { background: rgba(255,111,0,0.15); color: var(--secondary); }
-.badge-feature { background: rgba(156,39,176,0.15); color: #CE93D8; }
-.badge-feedback { background: rgba(30,136,229,0.15); color: #64B5F6; }
-.badge-bug { background: rgba(244,67,54,0.15); color: #EF5350; }
-.submission-body { font-size: 14px; color: var(--text-secondary); margin-bottom: 8px; }
-.submission-meta { font-size: 12px; color: var(--text-muted); }
-.empty-state { text-align: center; padding: 40px; color: var(--text-muted); font-size: 15px; }
-
-footer { border-top: 1px solid var(--border); padding: 24px; text-align: center; font-size: 13px; color: var(--text-muted); }
-footer a { color: var(--text-secondary); margin: 0 12px; }
-
-@media (max-width: 600px) {
-  .form-card { padding: 20px; }
-  .tabs { flex-direction: column; align-items: center; }
+.submissions { margin-top: 56px; padding-bottom: 40px; }
+.submissions h2 { font-family: var(--ff-display); font-size: 28px; font-weight: 800; margin-bottom: 20px; text-align: center; }
+.submissions h2 em { font-style: italic; color: var(--amber); }
+.submission-list { max-width: 620px; margin: 0 auto; }
+.submission {
+  background: var(--tunnel-deep); border: 1px solid var(--rail);
+  padding: 20px 24px; margin-bottom: 12px;
+  transition: border-color 0.2s;
 }
+.submission:hover { border-color: var(--amber); }
+.submission-header { display: flex; justify-content: space-between; align-items: start; gap: 12px; margin-bottom: 8px; flex-wrap: wrap; }
+.submission-subject { font-family: var(--ff-display); font-size: 17px; font-weight: 800; color: var(--tile); }
+.submission-badge {
+  font-family: var(--ff-mono); font-size: 10px; font-weight: 600;
+  padding: 3px 10px; text-transform: uppercase; letter-spacing: 1.5px;
+  white-space: nowrap;
+}
+.badge-new { background: rgba(244,184,50,0.15); color: var(--amber); }
+.badge-planned { background: rgba(70,195,122,0.15); color: var(--signal-green); }
+.badge-reviewed { background: rgba(244,184,50,0.15); color: var(--amber-bright); }
+.badge-feature { background: rgba(156,107,255,0.15); color: #CE93D8; }
+.badge-feedback { background: rgba(100,181,246,0.15); color: #64B5F6; }
+.badge-bug { background: rgba(232,70,62,0.15); color: var(--signal-red); }
+.submission-body { font-family: var(--ff-body); font-size: 14px; color: var(--tile-dim); margin-bottom: 6px; }
+.submission-meta { font-family: var(--ff-mono); font-size: 11px; color: var(--steel-light); letter-spacing: 1.5px; text-transform: uppercase; }
+.empty-state { text-align: center; padding: 40px; font-family: var(--ff-body); font-style: italic; color: var(--steel-light); }
 </style>
 </head>
 <body>
 
-<div class="nav">
-  <a href="index.html" class="nav-brand">Fault<span>Line</span></a>
+<div class="hazard"></div>
+
+<nav class="nav">
+  <a href="index.html" class="nav-brand">Fault<span>&nbsp;Line</span></a>
   <div class="nav-links">
     <a href="index.html">Home</a>
     <a href="features-plain.html">Features</a>
-    <a href="privacy.html">Privacy</a>
-    <a href="terms.html">Terms</a>
     <a href="blog.html">Blog</a>
-    <a href="feedback.html" class="nav-active"><span class="nav-dot"></span> Active Development</a>
+    <a href="about.html">About</a>
+    <a href="feedback.html" class="nav-active" aria-current="page"><span class="nav-dot"></span> Active Development</a>
+  </div>
+</nav>
+
+<main>
+<div class="page-header">
+  <span class="active-dev-pill"><span class="nav-dot"></span> Active Development</span>
+  <h1>Help <em>shape</em> Fault Line.</h1>
+  <p>We&apos;re actively building this app. Your feedback directly influences what we build next.</p>
+</div>
+
+<div class="tabs">
+  <div class="tab active" onclick="switchTab('feedback')">💬 Feedback</div>
+  <div class="tab" onclick="switchTab('feature')">💡 Feature Request</div>
+  <div class="tab" onclick="switchTab('bug')">🐛 Bug Report</div>
+</div>
+
+<div id="form-feedback" class="form-section active">
+  <div class="form-card">
+    <h2>Send <em>feedback</em></h2>
+    <p class="desc">Tell us what you think — what&apos;s working, what isn&apos;t, what could be better.</p>
+    <form onsubmit="submitForm(event, 'feedback')">
+      <div class="field"><label>Name <span class="optional">(optional)</span></label><input type="text" name="name" placeholder="Your name"></div>
+      <div class="field"><label>Email <span class="optional">(optional — for follow-up)</span></label><input type="email" name="email" placeholder="you@email.com"></div>
+      <div class="field"><label>Subject *</label><input type="text" name="subject" placeholder="What's on your mind?" required></div>
+      <div class="field"><label>Message *</label><textarea name="message" placeholder="Tell us more..." required rows="5"></textarea></div>
+      <button type="submit" class="submit-btn">Send Feedback</button>
+    </form>
+    <div class="success-msg" id="success-feedback">
+      <div class="icon">✅</div>
+      <h3>Thank you</h3>
+      <p>Your feedback has been recorded. We read every submission.</p>
+    </div>
   </div>
 </div>
 
-<div class="container">
-  <div class="page-header">
-    <h1>Help Shape Fault Line</h1>
-    <p>We're actively building this app. Your feedback directly influences what we build next.</p>
-  </div>
-
-  <!-- Tabs -->
-  <div class="tabs">
-    <div class="tab active" onclick="switchTab('feedback')">💬 Feedback</div>
-    <div class="tab" onclick="switchTab('feature')">💡 Feature Request</div>
-    <div class="tab" onclick="switchTab('bug')">🐛 Bug Report</div>
-  </div>
-
-  <!-- Feedback Form -->
-  <div id="form-feedback" class="form-section active">
-    <div class="form-card">
-      <h2>Send Feedback</h2>
-      <p class="form-desc">Tell us what you think — what's working, what isn't, what could be better.</p>
-      <form onsubmit="submitForm(event, 'feedback')">
-        <div class="field">
-          <label>Name <span class="optional">(optional)</span></label>
-          <input type="text" name="name" placeholder="Your name">
-        </div>
-        <div class="field">
-          <label>Email <span class="optional">(optional — for follow-up)</span></label>
-          <input type="email" name="email" placeholder="you@email.com">
-        </div>
-        <div class="field">
-          <label>Subject *</label>
-          <input type="text" name="subject" placeholder="What's on your mind?" required>
-        </div>
-        <div class="field">
-          <label>Message *</label>
-          <textarea name="message" placeholder="Tell us more..." required></textarea>
-        </div>
-        <button type="submit" class="submit-btn">Send Feedback</button>
-      </form>
-      <div class="success-msg" id="success-feedback">
-        <div class="icon">✅</div>
-        <h3>Thank you!</h3>
-        <p>Your feedback has been recorded. We read every submission.</p>
-      </div>
-    </div>
-  </div>
-
-  <!-- Feature Request Form -->
-  <div id="form-feature" class="form-section">
-    <div class="form-card">
-      <h2>Request a Feature</h2>
-      <p class="form-desc">What should Fault Line do that it doesn't yet? Dream big.</p>
-      <form onsubmit="submitForm(event, 'feature_request')">
-        <div class="field">
-          <label>Name <span class="optional">(optional)</span></label>
-          <input type="text" name="name" placeholder="Your name">
-        </div>
-        <div class="field">
-          <label>Email <span class="optional">(optional)</span></label>
-          <input type="email" name="email" placeholder="you@email.com">
-        </div>
-        <div class="field">
-          <label>Feature Title *</label>
-          <input type="text" name="subject" placeholder="e.g., Dark mode for the map" required>
-        </div>
-        <div class="field">
-          <label>Description *</label>
-          <textarea name="message" placeholder="Describe the feature, why it matters, and how you'd use it..." required></textarea>
-        </div>
-        <button type="submit" class="submit-btn">Submit Request</button>
-      </form>
-      <div class="success-msg" id="success-feature_request">
-        <div class="icon">💡</div>
-        <h3>Feature request received!</h3>
-        <p>We review every request. Popular ones get built first.</p>
-      </div>
-    </div>
-  </div>
-
-  <!-- Bug Report Form -->
-  <div id="form-bug" class="form-section">
-    <div class="form-card">
-      <h2>Report a Bug</h2>
-      <p class="form-desc">Found something broken? Help us fix it.</p>
-      <form onsubmit="submitForm(event, 'bug')">
-        <div class="field">
-          <label>Name <span class="optional">(optional)</span></label>
-          <input type="text" name="name" placeholder="Your name">
-        </div>
-        <div class="field">
-          <label>Email <span class="optional">(optional)</span></label>
-          <input type="email" name="email" placeholder="you@email.com">
-        </div>
-        <div class="field">
-          <label>Bug Summary *</label>
-          <input type="text" name="subject" placeholder="e.g., App crashes when taking photo" required>
-        </div>
-        <div class="field">
-          <label>Steps to Reproduce *</label>
-          <textarea name="message" placeholder="1. Open the app&#10;2. Tap 'Report'&#10;3. Take a photo&#10;4. App crashes" required></textarea>
-        </div>
-        <button type="submit" class="submit-btn">Submit Bug Report</button>
-      </form>
-      <div class="success-msg" id="success-bug">
-        <div class="icon">🐛</div>
-        <h3>Bug report filed!</h3>
-        <p>We'll investigate and fix it as soon as possible.</p>
-      </div>
-    </div>
-  </div>
-
-  <!-- Recent Submissions -->
-  <div class="submissions">
-    <h2>Community Feedback Board</h2>
-    <div class="submission-list" id="submission-list">
-      <div class="empty-state">Loading submissions...</div>
+<div id="form-feature" class="form-section">
+  <div class="form-card">
+    <h2>Request a <em>feature</em></h2>
+    <p class="desc">What should Fault Line do that it doesn&apos;t yet? Dream big.</p>
+    <form onsubmit="submitForm(event, 'feature_request')">
+      <div class="field"><label>Name <span class="optional">(optional)</span></label><input type="text" name="name" placeholder="Your name"></div>
+      <div class="field"><label>Email <span class="optional">(optional)</span></label><input type="email" name="email" placeholder="you@email.com"></div>
+      <div class="field"><label>Feature title *</label><input type="text" name="subject" placeholder="e.g. Dark mode for the map" required></div>
+      <div class="field"><label>Description *</label><textarea name="message" placeholder="Describe the feature, why it matters, and how you'd use it..." required rows="5"></textarea></div>
+      <button type="submit" class="submit-btn">Submit Request</button>
+    </form>
+    <div class="success-msg" id="success-feature_request">
+      <div class="icon">💡</div>
+      <h3>Feature request received</h3>
+      <p>We review every request. Popular ones get built first.</p>
     </div>
   </div>
 </div>
+
+<div id="form-bug" class="form-section">
+  <div class="form-card">
+    <h2>Report a <em>bug</em></h2>
+    <p class="desc">Found something broken? Help us fix it.</p>
+    <form onsubmit="submitForm(event, 'bug')">
+      <div class="field"><label>Name <span class="optional">(optional)</span></label><input type="text" name="name" placeholder="Your name"></div>
+      <div class="field"><label>Email <span class="optional">(optional)</span></label><input type="email" name="email" placeholder="you@email.com"></div>
+      <div class="field"><label>Bug summary *</label><input type="text" name="subject" placeholder="e.g. App crashes when taking photo" required></div>
+      <div class="field"><label>Steps to reproduce *</label><textarea name="message" placeholder="1. Open the app&#10;2. Tap 'Report'&#10;3. Take a photo&#10;4. App crashes" required rows="5"></textarea></div>
+      <button type="submit" class="submit-btn">Submit Bug Report</button>
+    </form>
+    <div class="success-msg" id="success-bug">
+      <div class="icon">🐛</div>
+      <h3>Bug report filed</h3>
+      <p>We&apos;ll investigate and fix it as soon as possible.</p>
+    </div>
+  </div>
+</div>
+
+<div class="submissions">
+  <h2>Community <em>feedback</em> board</h2>
+  <div class="submission-list" id="submission-list"><div class="empty-state">Loading submissions...</div></div>
+</div>
+</main>
 
 <footer>
-  <a href="index.html">Home</a> &middot; <a href="features-plain.html">Features</a> &middot; <a href="about.html">About</a> &middot; <a href="privacy.html">Privacy</a> &middot; <a href="terms.html">Terms</a> &middot; <a href="blog.html">Blog</a> &middot; <a href="https://ko-fi.com/moonlitsociallabs" target="_blank" rel="noopener">☕ Support</a>
+  <a href="index.html">Home</a> &middot;
+  <a href="features-plain.html">Features</a> &middot;
+  <a href="about.html">About</a> &middot;
+  <a href="privacy.html">Privacy</a> &middot;
+  <a href="terms.html">Terms</a> &middot;
+  <a href="blog.html">Blog</a> &middot;
+  <a href="https://ko-fi.com/moonlitsociallabs" target="_blank" rel="noopener">Ko-fi</a>
   <br><br>&copy; 2026 Moonlit Social Labs · Fault Line is a product of Moonlit Social Labs
 </footer>
 
 <script>
-// Form submissions go to Formspree (email delivery + spam filtering).
-// The public submission board still reads from Supabase for browsing.
 var FORMSPREE_ENDPOINT = 'https://formspree.io/f/mlgojojg';
 var SUPABASE_URL = 'https://dzewklljiksyivsfpunt.supabase.co';
 var SUPABASE_KEY = 'sb_publishable_Cbxqf9tfG8mpSgShyxEkwg_jr5T1Y3z';
@@ -260,9 +239,7 @@ async function submitForm(e, type) {
   e.preventDefault();
   var form = e.target;
   var btn = form.querySelector('.submit-btn');
-  btn.disabled = true;
-  btn.textContent = 'Submitting...';
-
+  btn.disabled = true; btn.textContent = 'Submitting...';
   var payload = {
     _subject: '[Fault Line ' + type + '] ' + form.subject.value,
     type: type,
@@ -271,16 +248,13 @@ async function submitForm(e, type) {
     subject: form.subject.value,
     message: form.message.value,
   };
-
   try {
     var res = await fetch(FORMSPREE_ENDPOINT, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
       body: JSON.stringify(payload),
     });
-
     if (res.ok) {
-      // Mirror to Supabase so the public board sees it (best-effort, non-blocking).
       fetch(SUPABASE_URL + '/rest/v1/feedback', {
         method: 'POST',
         headers: {
@@ -290,25 +264,19 @@ async function submitForm(e, type) {
           'Prefer': 'return=minimal',
         },
         body: JSON.stringify({
-          type: type,
-          name: form.name.value || null,
-          email: form.email.value || null,
-          subject: form.subject.value,
-          message: form.message.value,
+          type: type, name: form.name.value || null, email: form.email.value || null,
+          subject: form.subject.value, message: form.message.value,
         }),
       }).catch(function(){}).finally(function(){ loadSubmissions(); });
-
       form.style.display = 'none';
       document.getElementById('success-' + type).style.display = 'block';
     } else {
       alert('Something went wrong. Please try again.');
-      btn.disabled = false;
-      btn.textContent = 'Submit';
+      btn.disabled = false; btn.textContent = 'Submit';
     }
   } catch (err) {
     alert('Network error. Please check your connection.');
-    btn.disabled = false;
-    btn.textContent = 'Submit';
+    btn.disabled = false; btn.textContent = 'Submit';
   }
 }
 
@@ -319,31 +287,23 @@ async function loadSubmissions() {
     });
     var data = await res.json();
     var list = document.getElementById('submission-list');
-
     if (!data || data.length === 0) {
-      list.innerHTML = '<div class="empty-state">No submissions yet. Be the first!</div>';
+      list.innerHTML = '<div class="empty-state">No submissions yet. Be the first.</div>';
       return;
     }
-
     list.innerHTML = data.map(function(item) {
       var typeBadge = item.type === 'feature_request' ? '<span class="submission-badge badge-feature">Feature</span>'
         : item.type === 'bug' ? '<span class="submission-badge badge-bug">Bug</span>'
         : '<span class="submission-badge badge-feedback">Feedback</span>';
-
       var statusBadge = item.status === 'planned' ? '<span class="submission-badge badge-planned">Planned</span>'
         : item.status === 'reviewed' ? '<span class="submission-badge badge-reviewed">Reviewed</span>'
         : '<span class="submission-badge badge-new">New</span>';
-
       var date = new Date(item.created_at).toLocaleDateString();
-
-      return '<div class="submission">'
-        + '<div class="submission-header">'
+      return '<div class="submission"><div class="submission-header">'
         + '<div class="submission-subject">' + escapeHtml(item.subject) + '</div>'
-        + '<div>' + typeBadge + ' ' + statusBadge + '</div>'
-        + '</div>'
+        + '<div>' + typeBadge + ' ' + statusBadge + '</div></div>'
         + '<div class="submission-body">' + escapeHtml(item.message).substring(0, 200) + (item.message.length > 200 ? '...' : '') + '</div>'
-        + '<div class="submission-meta">' + (item.name ? escapeHtml(item.name) + ' · ' : '') + date + '</div>'
-        + '</div>';
+        + '<div class="submission-meta">' + (item.name ? escapeHtml(item.name) + ' · ' : '') + date + '</div></div>';
     }).join('');
   } catch (err) {
     document.getElementById('submission-list').innerHTML = '<div class="empty-state">Could not load submissions.</div>';
@@ -351,12 +311,9 @@ async function loadSubmissions() {
 }
 
 function escapeHtml(text) {
-  var div = document.createElement('div');
-  div.textContent = text;
-  return div.innerHTML;
+  var div = document.createElement('div'); div.textContent = text; return div.innerHTML;
 }
 
-// Load on page load
 loadSubmissions();
 </script>
 

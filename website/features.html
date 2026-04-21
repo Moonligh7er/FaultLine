@@ -35,39 +35,51 @@
 }
 </script>
 
+<link rel="stylesheet" href="theme.css">
 <style>
-:root {
-  --primary: #1E88E5; --secondary: #FF6F00; --accent: #00C853; --danger: #F44336;
-  --bg: #0a0a0a; --bg-card: #141414; --bg-elevated: #1a1a1a;
-  --text: #f0f0f0; --text-secondary: #999; --text-muted: #666; --border: #2a2a2a;
-}
-* { margin: 0; padding: 0; box-sizing: border-box; }
-body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; }
-a { color: var(--primary); text-decoration: none; } a:hover { text-decoration: underline; }
-.nav { padding: 20px 24px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; max-width: 1100px; margin: 0 auto; }
-.nav-brand { font-size: 20px; font-weight: 800; color: var(--text); }
-.nav-brand span { color: var(--primary); }
-.container { max-width: 1100px; margin: 0 auto; padding: 0 24px; }
-.page-header { padding: 80px 24px 48px; text-align: center; }
-.page-header h1 { font-size: clamp(32px, 5vw, 52px); font-weight: 900; letter-spacing: -1px; margin-bottom: 12px; }
-.page-header p { font-size: 18px; color: var(--text-secondary); max-width: 600px; margin: 0 auto; }
+.page-header { padding: 80px 36px 32px; text-align: center; max-width: 1100px; margin: 0 auto; }
+.page-header h1 { font-size: clamp(38px, 6vw, 64px); letter-spacing: -1.5px; margin-bottom: 14px; }
+.page-header h1 em { font-style: italic; color: var(--amber); }
+.page-header p { font-family: var(--ff-body); font-style: italic; font-size: 19px; color: var(--tile-dim); max-width: 640px; margin: 0 auto; line-height: 1.6; }
 
-.category { padding: 48px 0; border-bottom: 1px solid var(--border); }
+.category { padding: 56px 0; border-bottom: 1px solid var(--rail); }
 .category:last-child { border: none; }
-.cat-header { display: flex; align-items: center; gap: 12px; margin-bottom: 24px; }
-.cat-icon { font-size: 28px; width: 48px; height: 48px; display: flex; align-items: center; justify-content: center; background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; }
-.cat-title { font-size: 24px; font-weight: 800; }
-.cat-desc { color: var(--text-secondary); font-size: 15px; margin-bottom: 16px; }
+.cat-header { display: flex; align-items: center; gap: 18px; margin-bottom: 16px; }
+.cat-icon {
+  font-size: 28px; width: 56px; height: 56px;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--tunnel-deep); border: 1px solid var(--rail);
+}
+.cat-title { font-family: var(--ff-display); font-size: 30px; font-weight: 800; letter-spacing: -0.5px; }
+.cat-desc { font-family: var(--ff-body); font-style: italic; color: var(--tile-dim); font-size: 16px; margin-bottom: 20px; }
 
-.feature-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px; }
-.feature { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 20px; transition: border-color 0.3s; }
-.feature:hover { border-color: var(--primary); }
-.feature h4 { font-size: 16px; font-weight: 700; margin-bottom: 6px; display: flex; align-items: center; gap: 8px; }
-.feature h4 .fi { font-size: 18px; }
-.feature p { font-size: 14px; color: var(--text-secondary); }
+.feature-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 16px; }
+.feature {
+  background: var(--tunnel-deep); border: 1px solid var(--rail);
+  padding: 22px;
+  transition: border-color 0.2s;
+}
+.feature:hover { border-color: var(--amber); }
+.feature h4 {
+  font-family: var(--ff-display); font-size: 17px; font-weight: 800;
+  margin-bottom: 8px;
+  display: flex; align-items: center; gap: 10px; line-height: 1.2;
+}
+.feature h4 .fi { font-size: 20px; }
+.feature p {
+  font-family: var(--ff-body); font-size: 14.5px; color: var(--tile-dim);
+  line-height: 1.6; margin: 0;
+}
 
-footer { background: var(--bg-card); border-top: 1px solid var(--border); padding: 32px 24px; text-align: center; font-size: 13px; color: var(--text-muted); margin-top: 48px; }
-footer a { color: var(--text-secondary); margin: 0 12px; }
+/* The technical code-block callouts inside each feature */
+.feature > div[style*="background:#0d0d0d"],
+.feature > div[style*="background: #0d0d0d"] {
+  background: var(--tunnel) !important;
+  border: 1px solid var(--rail) !important;
+  border-left: 3px solid var(--amber) !important;
+  border-radius: 0 !important;
+  color: var(--steel-light) !important;
+}
 </style>
 
 <!-- Google AdSense -->
@@ -75,10 +87,18 @@ footer a { color: var(--text-secondary); margin: 0 12px; }
 </head>
 <body>
 
-<div class="nav">
-  <a href="index.html" class="nav-brand">Fault<span>Line</span></a>
-  <div><a href="index.html">Home</a> &nbsp;&middot;&nbsp; <a href="privacy.html">Privacy</a> &nbsp;&middot;&nbsp; <a href="terms.html">Terms</a> &nbsp;&middot;&nbsp; <a href="blog.html">Blog</a> &nbsp;&middot;&nbsp; <a href="feedback.html" style="display:inline-flex;align-items:center;gap:6px;background:rgba(0,200,83,0.08);border:1px solid rgba(0,200,83,0.2);border-radius:100px;padding:4px 12px 4px 8px;font-size:12px;font-weight:600;color:#00C853;text-decoration:none;"><span style="width:8px;height:8px;border-radius:50%;background:#00C853;box-shadow:0 0 6px #00C853;display:inline-block;"></span> Active Development</a></div>
-</div>
+<div class="hazard"></div>
+
+<nav class="nav">
+  <a href="index.html" class="nav-brand">Fault<span>&nbsp;Line</span></a>
+  <div class="nav-links">
+    <a href="index.html">Home</a>
+    <a href="features-plain.html">Plain</a>
+    <a href="blog.html">Blog</a>
+    <a href="about.html">About</a>
+    <a href="feedback.html" class="nav-active"><span class="nav-dot"></span> Active Development</a>
+  </div>
+</nav>
 
 <!-- AdSense: top banner — create an ad unit in AdSense and replace XXXXXXXXXX with its slot ID -->
 <div style="text-align:center;padding:10px 0;overflow:hidden;">
