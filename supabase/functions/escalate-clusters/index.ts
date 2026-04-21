@@ -21,6 +21,12 @@ const OPEN311_JURISDICTION_ID = Deno.env.get('OPEN311_JURISDICTION_ID') || '';
 const OPEN311_API_KEY = Deno.env.get('OPEN311_API_KEY') || '';
 const SEECLICKFIX_API_KEY = Deno.env.get('SEECLICKFIX_API_KEY') || '';
 
+// Modal-hosted Playwright worker for auto-submitting web forms.
+// When set, web_form authorities try the browser worker first; on failure
+// they fall through to `web_form_manual` for human follow-up.
+const WEB_FORM_WORKER_URL = Deno.env.get('WEB_FORM_WORKER_URL') || '';
+const WEB_FORM_WORKER_SECRET = Deno.env.get('WEB_FORM_WORKER_SECRET') || '';
+
 interface SubmissionMethod {
   method: 'api' | 'email' | 'web_form' | 'phone';
   endpoint: string;
@@ -121,7 +127,12 @@ Deno.serve(async (req) => {
     // 5. Try methods in priority order: api → email → web_form (manual)
     //    If the preferred method fails, fall back down the chain.
     const prioritized = prioritizeMethods(methods);
-    let sent: { method: string; recipient: string; ticketId?: string } | null = null;
+    let sent: {
+      method: string;
+      recipient: string;
+      ticketId?: string;
+      messageId?: string;
+    } | null = null;
     const attempts: string[] = [];
 
     for (const m of prioritized) {
@@ -140,15 +151,32 @@ Deno.serve(async (req) => {
         } else if (m.method === 'email') {
           const sendResult = await sendEmail(m.endpoint, subject, body);
           if (sendResult.ok) {
-            sent = { method: 'email', recipient: m.endpoint };
+            // Resend returns { id: "..." } — store it for webhook correlation.
+            const json = await sendResult.json().catch(() => null);
+            sent = {
+              method: 'email',
+              recipient: m.endpoint,
+              messageId: json?.id as string | undefined,
+            };
             break;
           }
           const errText = await sendResult.text().catch(() => 'unknown');
           attempts.push(`email → ${m.endpoint}: ${sendResult.status} ${errText}`);
         } else if (m.method === 'web_form') {
-          // We can't auto-submit arbitrary web forms from a server, but we CAN
-          // record the cluster as awaiting manual submission. The admin UI picks
-          // these up with the prepared subject/body for one-click copy-paste.
+          // Try the Modal Playwright worker first. If it's not configured
+          // OR the submission fails, fall through to web_form_manual so a
+          // human can take it from here.
+          if (WEB_FORM_WORKER_URL && WEB_FORM_WORKER_SECRET) {
+            const worker = await submitViaBrowser(m.endpoint, subject, body);
+            if (worker.ok) {
+              sent = {
+                method: `web_form_auto:${worker.adapter}`,
+                recipient: m.endpoint,
+              };
+              break;
+            }
+            attempts.push(`web_form_auto(${worker.adapter}): ${worker.error}`);
+          }
           sent = { method: 'web_form_manual', recipient: m.endpoint };
           attempts.push(`web_form: queued for manual submission at ${m.endpoint}`);
           break;
@@ -167,15 +195,18 @@ Deno.serve(async (req) => {
         p_subject: subject,
         p_body: body,
       });
-      // If the API returned a ticket ID, stash it on the just-written log
-      // row so the status-sync cron can poll for updates.
-      if (sent.ticketId) {
+      // Stash API ticket ID or Resend message ID on the log row for later
+      // correlation (status polling, bounce webhook lookup).
+      const patch: Record<string, unknown> = {};
+      if (sent.ticketId) patch.external_ticket_id = sent.ticketId;
+      if (sent.messageId) patch.external_message_id = sent.messageId;
+      if (Object.keys(patch).length > 0) {
         await supabase
           .from('escalation_log')
-          .update({ external_ticket_id: sent.ticketId })
+          .update(patch)
           .eq('cluster_id', cluster.id)
           .eq('method', sent.method)
-          .is('external_ticket_id', null);
+          .is(sent.ticketId ? 'external_ticket_id' : 'external_message_id', null);
       }
       results.push({
         clusterId: cluster.id,
@@ -183,6 +214,7 @@ Deno.serve(async (req) => {
         method: sent.method,
         recipient: sent.recipient,
         ticketId: sent.ticketId,
+        messageId: sent.messageId,
         attempts,
       });
     } else if (methods.length === 0) {
@@ -365,6 +397,44 @@ async function submitOpen311(
     return { ok: true, ticketId };
   } catch (err) {
     return { ok: false, error: `Open311 network error: ${String(err)}` };
+  }
+}
+
+/** Call the Modal-hosted Playwright worker to fill + submit a web form.
+ *  Returns { ok: true, adapter } on success, or { ok: false, error, adapter? }
+ *  so the caller can log which adapter was attempted. */
+async function submitViaBrowser(
+  url: string,
+  subject: string,
+  body: string,
+): Promise<{ ok: boolean; adapter?: string; error?: string }> {
+  try {
+    const res = await fetch(WEB_FORM_WORKER_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${WEB_FORM_WORKER_SECRET}`,
+      },
+      body: JSON.stringify({
+        url,
+        name: 'Fault Line Community Reports',
+        email: REPLY_TO || FROM_EMAIL,
+        subject,
+        message: body,
+      }),
+    });
+    if (!res.ok) {
+      const text = await res.text().catch(() => '');
+      return { ok: false, error: `worker HTTP ${res.status}: ${text.slice(0, 200)}` };
+    }
+    const json = await res.json().catch(() => null);
+    return {
+      ok: Boolean(json?.success),
+      adapter: json?.adapter ?? 'unknown',
+      error: json?.success ? undefined : json?.error || 'no confirmation marker',
+    };
+  } catch (err) {
+    return { ok: false, error: `worker network error: ${String(err)}` };
   }
 }
 
