@@ -129,11 +129,17 @@ Edge functions updated to include `reply_to` header and redeployed.
 
 ---
 
-## 9b. Buy a Domain and Verify in Resend (upgrade escalation email credibility)
+## 9b. Buy a Domain and Verify in Resend (HARD BLOCKER — not just credibility)
 
-**Status:** Not done. Escalation emails currently send from `onboarding@resend.dev` which looks amateur to city officials. Fix: own a real domain and verify it in Resend.
+**Status:** 🔴 **HARD BLOCKER for every email escalation.** Confirmed 2026-04-21 via live E2E test.
 
-**Why it matters:** The `escalate-clusters` function emails city officials with legal demand language. The sender address directly affects credibility — an `@resend.dev` sender gets flagged or ignored; a `reports@faultline.app` sender gets read.
+**What the E2E test found:** The escalation pipeline works perfectly — cron fires, dispatcher picks the right method, Supabase writes the escalation_log row, Resend API is called correctly. BUT Resend rejects every send to any recipient other than the account owner (`moonligh7er@gmail.com`) with HTTP 403 and the message:
+
+> *"You can only send testing emails to your own email address (moonligh7er@gmail.com). To send emails to other recipients, please verify a domain at resend.com/domains, and change the `from` address to an email using this domain."*
+
+This is Resend's sandbox mode. It's the default for unverified accounts. Until a domain is verified in Resend, NONE of the 36 authorities with verified emails across New England can actually receive escalation emails. The code is ready; the account isn't.
+
+**Not a blocker for API-based authorities** (Boston Open311, Cambridge/New Haven/Danbury/Portland ME SeeClickFix). Those 5 post directly to the city systems and don't route through Resend.
 
 **Cost:** ~$12-15/year for the domain. Resend verification is free.
 
