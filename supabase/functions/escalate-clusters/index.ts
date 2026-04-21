@@ -10,7 +10,8 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 
 const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY') || '';
-const FROM_EMAIL = Deno.env.get('FROM_EMAIL') || 'reports@faultline.app';
+const FROM_EMAIL = Deno.env.get('FROM_EMAIL') || 'onboarding@resend.dev';
+const REPLY_TO = Deno.env.get('REPLY_TO') || '';
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL') || '';
 const SUPABASE_SERVICE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') || '';
 
@@ -206,6 +207,7 @@ async function sendEmail(to: string, subject: string, body: string): Promise<Res
       to: [to],
       subject,
       text: body,
+      ...(REPLY_TO ? { reply_to: REPLY_TO } : {}),
     }),
   });
 }
