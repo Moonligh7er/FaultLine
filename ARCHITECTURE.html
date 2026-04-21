@@ -75,18 +75,19 @@ td { color: var(--text); }
 <div class="tab-content active" id="tab-plain">
 
 <h2><span class="dot" style="background:var(--blue)"></span> How the App is Built</h2>
-<p>Fault Line is a mobile app (Android + iPhone) that talks to a cloud database. Users create reports on their phone, the app sends them to the cloud, and the cloud stores everything, sends emails, and runs AI analysis. Here's every piece:</p>
+<p>Fault Line has three user-facing surfaces — a mobile app, a Next.js web app, and a marketing site — all backed by a single Supabase project. Users submit reports from the phone or the web, the database stores them, edge functions run AI analysis and send emails, and a daily cron escalates to authorities. Here's every piece:</p>
 
 <div class="flow">
-  <div class="flow-node">User's Phone</div>
+  <div class="flow-node">User's Phone / Browser</div>
   <div class="flow-arrow">→</div>
-  <div class="flow-node highlight">Fault Line App</div>
+  <div class="flow-node highlight">Mobile App (Expo)</div>
+  <div class="flow-node highlight">Web App (Next.js/Vercel)</div>
   <div class="flow-arrow">→</div>
-  <div class="flow-node highlight">Supabase (Cloud Database)</div>
+  <div class="flow-node highlight">Supabase (DB + Storage + Auth)</div>
   <div class="flow-arrow">→</div>
-  <div class="flow-node">Edge Functions (Server Code)</div>
+  <div class="flow-node">Edge Functions + pg_cron</div>
   <div class="flow-arrow">→</div>
-  <div class="flow-node">Claude AI / Resend Email</div>
+  <div class="flow-node">Claude AI · Resend · Modal Kokoro TTS</div>
 </div>
 
 <h2><span class="dot" style="background:var(--green)"></span> The App Itself</h2>
@@ -169,14 +170,54 @@ td { color: var(--text); }
   </ul>
   <h3>Secrets stored in Supabase Edge Function settings:</h3>
   <div class="key-example">
-    RESEND_API_KEY=re_xxxxxxxxxxxxxxxxxxxxxxxxxxxx<br>
-    FROM_EMAIL=reports@yourdomain.com<br>
-    ANTHROPIC_API_KEY=sk-ant-xxxxxxxxxxxxxxxxxxxxxxxxxxxx<br>
-    CRON_SECRET=any-random-string-you-choose
+    <strong>Set (verified via `supabase secrets list`):</strong><br>
+    ANTHROPIC_API_KEY=sk-ant-xxxx  (Claude Haiku + Sonnet)<br>
+    RESEND_API_KEY=re_xxxx  (transactional email)<br>
+    FROM_EMAIL=onboarding@resend.dev  (Resend test sender until domain is bought)<br>
+    REPLY_TO=moonlit-social-labs@proton.me  (replies route to founder inbox)<br>
+    CRON_SECRET=xxxx  (rotated 2026-04-20, used by pg_cron header)<br>
+    <br>
+    <strong>Auto-provided by Supabase:</strong><br>
+    SUPABASE_URL, SUPABASE_ANON_KEY, SUPABASE_SERVICE_ROLE_KEY, SUPABASE_DB_URL
   </div>
   <div class="link-row">
     <a class="link" href="https://supabase.com/dashboard/project/_/functions" target="_blank">Manage Functions</a>
     <a class="link" href="https://supabase.com/dashboard/project/_/settings/vault" target="_blank">Manage Secrets</a>
+  </div>
+</div>
+
+<h2><span class="dot" style="background:var(--blue)"></span> Next.js Web App</h2>
+<div class="card">
+  <div class="card-header">
+    <div class="card-title">fault-line-web (Next.js 15 on Vercel)</div>
+    <span class="badge badge-free">Free (Vercel Hobby)</span>
+  </div>
+  <p>A full-featured reporting interface in the browser. Shares the same Supabase backend as the mobile app — identical authentication, identical schema, identical RLS. Users can submit reports, browse the map, search, view dashboards, and manage their profile from any browser.</p>
+  <p>Think of it as: the second window into the same filing cabinet. Useful for desktop users, journalists, city officials, and anyone who doesn't want to install an app.</p>
+  <div class="link-row">
+    <a class="link" href="https://fault-line-web.vercel.app" target="_blank">Live Web App</a>
+    <a class="link" href="https://github.com/Moonligh7er/fault-line-web" target="_blank">Private Repo</a>
+    <a class="link" href="https://vercel.com/moonligh7er-3255s-projects/fault-line-web" target="_blank">Vercel Project</a>
+  </div>
+  <h3>Stack</h3>
+  <ul>
+    <li>Next.js 15 (App Router, Server Components), React 19, TypeScript strict mode</li>
+    <li>Supabase SSR (@supabase/ssr) for cookie-based auth</li>
+    <li>Leaflet + react-leaflet-cluster for the public map</li>
+    <li>Upstash Redis for rate limiting (free tier, fail-closed in prod)</li>
+    <li>Sentry for error monitoring (scaffolded, needs DSN)</li>
+    <li>CSP with per-request nonces + strict-dynamic, no unsafe-inline</li>
+  </ul>
+  <h3>Env vars (set in Vercel dashboard)</h3>
+  <div class="key-example">
+    NEXT_PUBLIC_APP_ORIGIN=https://fault-line-web.vercel.app<br>
+    NEXT_PUBLIC_SUPABASE_URL=https://dzewklljiksyivsfpunt.supabase.co<br>
+    NEXT_PUBLIC_SUPABASE_ANON_KEY=sb_publishable_xxxx<br>
+    SUPABASE_SERVICE_ROLE_KEY=sb_secret_xxxx<br>
+    CRON_SECRET=xxxx (matches Supabase cron secret)<br>
+    UPSTASH_REDIS_REST_URL=<br>
+    UPSTASH_REDIS_REST_TOKEN=<br>
+    KOKORO_TTS_URL=https://moons7onr--kokoro-tts-server-kokorotts-tts.modal.run
   </div>
 </div>
 
@@ -210,7 +251,39 @@ td { color: var(--text); }
     <a class="link" href="https://resend.com/api-keys" target="_blank">API Keys</a>
     <a class="link" href="https://resend.com/domains" target="_blank">Domain Settings</a>
   </div>
-  <p style="margin-top:8px;"><strong>Currently sending from:</strong> onboarding@resend.dev (test). Switch to your domain when purchased.</p>
+  <p style="margin-top:8px;"><strong>Currently sending from:</strong> onboarding@resend.dev (Resend test sender). <strong>Replies route to:</strong> moonlit-social-labs@proton.me (via REPLY_TO header). Switch FROM_EMAIL to reports@yourdomain once you buy the domain and verify it in Resend.</p>
+</div>
+
+<div class="card">
+  <div class="card-header">
+    <div class="card-title">Kokoro TTS (Modal-hosted GPU)</div>
+    <span class="badge badge-free">~$0.001/req</span>
+  </div>
+  <p>Text-to-speech server powering the audio-guided reporting mode in the mobile app and any AI-generated voice content on the web. Modal runs a private deployment of the Kokoro TTS model on a T4 GPU that scales to zero when idle.</p>
+  <p>Shared across the user's projects — same server handles TTS for every Moonlit Social Labs app, not just Fault Line. The mobile app posts text to the endpoint, receives audio/wav back, caches it to disk, and plays it via expo-av. Next.js proxies through /api/tts to avoid browser CORS.</p>
+  <div class="key-example">
+    KOKORO_TTS_URL=https://moons7onr--kokoro-tts-server-kokorotts-tts.modal.run<br>
+    (POST { text, voice, speed } → audio/wav · default voice: bf_emma)
+  </div>
+  <div class="link-row">
+    <a class="link" href="https://modal.com/apps/moons7onr/main/deployed/kokoro-tts-server" target="_blank">Modal Dashboard</a>
+    <a class="link" href="https://github.com/Moonligh7er/Kokoro-TTS-Server" target="_blank">Server Repo (private)</a>
+  </div>
+  <p style="margin-top:8px;"><strong>Cost:</strong> ~$0.001 per request. Scales to zero. First request after idle has a 10–15s cold start; subsequent requests are &lt;1s.</p>
+</div>
+
+<div class="card">
+  <div class="card-header">
+    <div class="card-title">Formspree (Feedback Forms)</div>
+    <span class="badge badge-free">50 submissions/month free</span>
+  </div>
+  <p>Handles feedback/feature-request/bug-report form submissions from the marketing site, Next.js web app, and mobile app. All three surfaces POST to the same endpoint; submissions are also mirrored to Supabase so the public submission board keeps working.</p>
+  <div class="key-example">
+    FORMSPREE_ENDPOINT=https://formspree.io/f/mlgojojg
+  </div>
+  <div class="link-row">
+    <a class="link" href="https://formspree.io/forms" target="_blank">Formspree Dashboard</a>
+  </div>
 </div>
 
 <div class="card">
@@ -242,14 +315,38 @@ td { color: var(--text); }
 
 <div class="card">
   <div class="card-header">
-    <div class="card-title">GitHub Pages (Website)</div>
+    <div class="card-title">GitHub Pages (Marketing Site)</div>
     <span class="badge badge-free">Free</span>
   </div>
-  <p>Hosts the public website: landing page, features, blog, privacy policy, terms, and feedback page. Currently at <code>moonligh7er.github.io/FaultLine</code>.</p>
+  <p>Hosts the public website: landing, features (plain + technical), blog, about, privacy, terms, feedback. 10 static HTML pages sharing a single <code>theme.css</code>. Currently at <code>moonligh7er.github.io/FaultLine</code>.</p>
   <div class="link-row">
-    <a class="link" href="https://github.com/Moonligh7er/FaultLine" target="_blank">GitHub Repo</a>
+    <a class="link" href="https://github.com/Moonligh7er/FaultLine" target="_blank">Public Repo (marketing)</a>
+    <a class="link" href="https://github.com/Moonligh7er/FaultLine-private" target="_blank">Private Repo (full project)</a>
     <a class="link" href="https://moonligh7er.github.io/FaultLine/" target="_blank">Live Site</a>
   </div>
+  <p style="margin-top:8px;"><strong>Repo layout:</strong> the public repo contains only the website/ files (served at root). The private repo contains the full project source: mobile app, Next.js web app pointer, Supabase migrations, docs. Two remotes — <code>origin</code> (private) is the default push target; <code>github-public</code> is pushed manually for website updates.</p>
+</div>
+
+<div class="card">
+  <div class="card-header">
+    <div class="card-title">Vercel (Next.js Web App)</div>
+    <span class="badge badge-free">Free (Hobby)</span>
+  </div>
+  <p>Hosts the Next.js fault-line-web project. Auto-deploys on every push to main. Edge middleware, SSR, image optimization, zero cold-start on the production URL.</p>
+  <div class="link-row">
+    <a class="link" href="https://fault-line-web.vercel.app" target="_blank">Live Web App</a>
+    <a class="link" href="https://vercel.com/moonligh7er-3255s-projects/fault-line-web" target="_blank">Vercel Dashboard</a>
+  </div>
+  <p style="margin-top:8px;"><strong>Limits:</strong> Hobby tier gives 100 GB bandwidth/month, 1000 deployments/month. Plenty for pre-launch. Paid (Pro) is $20/month if traffic outpaces the free tier.</p>
+</div>
+
+<div class="card">
+  <div class="card-header">
+    <div class="card-title">Upstash Redis (Rate Limiting)</div>
+    <span class="badge badge-free">10K req/day free</span>
+  </div>
+  <p>Serverless Redis used by the Next.js web app's rate limiter. Protects against abuse of the report-submission endpoint and other public mutation paths. Fails open in dev, fails closed in prod.</p>
+  <p style="margin-top:8px;"><strong>Status:</strong> account not yet created. Code references <code>UPSTASH_REDIS_REST_URL</code> and <code>UPSTASH_REDIS_REST_TOKEN</code> env vars; without them the web app's rate limiter short-circuits to reject every request (by design).</p>
 </div>
 
 <div class="card">
@@ -286,18 +383,22 @@ td { color: var(--text); }
 
 <table>
   <tr><th>Service</th><th>Monthly</th><th>Annual</th><th>Notes</th></tr>
-  <tr><td>Supabase</td><td class="cost-free">$0</td><td class="cost-free">$0</td><td>Free tier (500MB DB, 1GB storage, 50K users)</td></tr>
+  <tr><td>Supabase</td><td class="cost-free">$0</td><td class="cost-free">$0</td><td>Free tier (500MB DB, 1GB storage, 50K users, 500K edge invocations)</td></tr>
+  <tr><td>Vercel (Hobby)</td><td class="cost-free">$0</td><td class="cost-free">$0</td><td>Next.js web app. Free tier — 100GB bandwidth/mo</td></tr>
+  <tr><td>Upstash Redis</td><td class="cost-free">$0</td><td class="cost-free">$0</td><td>Free tier (10K req/day) — rate limiting</td></tr>
   <tr><td>Resend</td><td class="cost-free">$0</td><td class="cost-free">$0</td><td>Free tier (3,000 emails/month)</td></tr>
   <tr><td>Anthropic (Claude AI)</td><td class="cost-paid">~$5–20</td><td class="cost-paid">~$60–240</td><td>Pay per use. Scales with report volume</td></tr>
-  <tr><td>GitHub Pages</td><td class="cost-free">$0</td><td class="cost-free">$0</td><td>Free for public repos</td></tr>
+  <tr><td>Modal (Kokoro TTS)</td><td class="cost-paid">~$0.50–3</td><td class="cost-paid">~$6–36</td><td>Pay per request (~$0.001/req). Shared across all MSL projects</td></tr>
+  <tr><td>GitHub Pages</td><td class="cost-free">$0</td><td class="cost-free">$0</td><td>Free for public repos (marketing site)</td></tr>
+  <tr><td>Formspree</td><td class="cost-free">$0</td><td class="cost-free">$0</td><td>Free tier (50 submissions/month)</td></tr>
   <tr><td>Expo (EAS)</td><td class="cost-free">$0</td><td class="cost-free">$0</td><td>Free tier (30 builds/month)</td></tr>
   <tr><td>Google Play</td><td class="cost-free">$0</td><td class="cost-free">$0</td><td>$25 one-time (already paid)</td></tr>
-  <tr><td>Apple Developer</td><td class="cost-paid">~$8.25</td><td class="cost-paid">$99</td><td>Annual subscription</td></tr>
-  <tr><td>Domain</td><td class="cost-paid">~$1</td><td class="cost-paid">~$12</td><td>When purchased</td></tr>
-  <tr><td>AdMob</td><td class="cost-free">$0</td><td class="cost-free">$0</td><td>Free — generates revenue</td></tr>
-  <tr><td>Sentry</td><td class="cost-free">$0</td><td class="cost-free">$0</td><td>Free tier (5K errors/month)</td></tr>
+  <tr><td>Apple Developer</td><td class="cost-paid">~$8.25</td><td class="cost-paid">$99</td><td>Annual subscription (not yet enrolled)</td></tr>
+  <tr><td>Domain (faultline.app)</td><td class="cost-paid">~$1</td><td class="cost-paid">~$12</td><td>When purchased (not yet)</td></tr>
+  <tr><td>AdMob / AdSense</td><td class="cost-free">$0</td><td class="cost-free">$0</td><td>Free — generates revenue (not yet configured)</td></tr>
+  <tr><td>Sentry</td><td class="cost-free">$0</td><td class="cost-free">$0</td><td>Free tier (5K errors/month, not yet configured)</td></tr>
   <tr><td>Ko-fi</td><td class="cost-free">$0</td><td class="cost-free">$0</td><td>Free — receives donations</td></tr>
-  <tr class="total-row"><td>TOTAL</td><td class="cost-paid">~$14–29/mo</td><td class="cost-paid">~$171–351/yr</td><td>Mostly AI costs. Everything else is free tier.</td></tr>
+  <tr class="total-row"><td>TOTAL</td><td class="cost-paid">~$15–32/mo</td><td class="cost-paid">~$177–387/yr</td><td>Mostly AI + Apple Developer fee. Everything else is free tier.</td></tr>
 </table>
 
 <p><strong>Break-even:</strong> With AdMob banner ads averaging $1-3 eCPM and even moderate daily active users (~500), ad revenue would cover all costs. Ko-fi donations are bonus.</p>
@@ -518,6 +619,9 @@ cluster_reports (cluster_id, report_id — link table)
     <li><code>supabase/migration_004_server_rate_limit.sql</code> — rate limit trigger, honeypot, submission_log</li>
     <li><code>supabase/migration_005_feedback.sql</code> — feedback table with RLS</li>
     <li><code>supabase/migration_006_ai_cache.sql</code> — AI result cache table</li>
+    <li><code>supabase/migration_007_rpc_auth_guards.sql</code> — increment_upvote / increment_confirm now require auth; prevent self-voting</li>
+    <li><code>supabase/migration_008_reports_insert_rls.sql</code> — tightened INSERT policy so an attacker cannot forge reports under another user's ID</li>
+    <li><code>supabase/migration_009_schedule_escalation_cron.sql</code> — enable pg_cron + pg_net, schedule <code>escalate-clusters-daily</code> to run at 14:00 UTC every day</li>
   </ol>
 </div>
 
