@@ -125,7 +125,7 @@ Each item includes what's needed and what has already been prepared.
 Edge functions updated to include `reply_to` header and redeployed.
 
 **Still needed:**
-- Set up daily cron for `escalate-clusters` in the Supabase Dashboard → Edge Functions → escalate-clusters → Schedule (recommended: `0 14 * * *` — 2pm UTC daily)
+- ✅ DONE 2026-04-20: Daily cron scheduled via `pg_cron` (migration 009). Runs at 14:00 UTC (10:00 AM Eastern). Job name: `escalate-clusters-daily`. Enabled `pg_cron` + `pg_net` extensions. `CRON_SECRET` rotated to a fresh value, set in Supabase secrets, and embedded in the cron job header.
 
 ---
 
