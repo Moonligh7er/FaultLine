@@ -237,13 +237,29 @@ This is Resend's sandbox mode. It's the default for unverified accounts. Until a
 
 ## 9g. Census Boundary Coverage Gap (Tier 3 remainder)
 
-**Status:** 584 of 784 authorities have boundaries via Migration 013 + enrich-authority-boundaries (Layers 28/22/34). 194 authorities still lack boundaries because their city name doesn't exactly match Census BASENAME. Fixes for the long tail:
+**Status:** 584 of 784 authorities have boundaries via Migration 013 + enrich-authority-boundaries (Layers 28/22/34). The remaining 193 SeeClickFix-origin rows that Census couldn't match have been **deactivated** (`is_active = false`) as of 2026-04-21 to keep routing and admin UIs clean. They are preserved (not deleted) for future recovery.
 
-1. **Fuzzy matching** — allow `LIKE '${name}%'` when exact match fails. Catches cases where our name is "St. Louis" but Census has "Saint Louis", or hyphenation differences.
-2. **Name alias table** — manual overrides for known mismatches (`El Paso de Robles (Paso Robles)` → "Paso Robles"), ~50 entries.
-3. **Geocode fallback** — for unmatchable cities, geocode the city/state to a point and generate a 5-mile radius polygon as a loose approximation. Not perfect but enables routing.
+**The 193 deactivated rows are a mix of:**
+- Unincorporated neighborhoods / SeeClickFix watch-areas that aren't real municipal authorities (Catalina Foothills, Flowing Wells, Drexel Heights, etc. — Tucson-area CDPs; Sterling Ranch CAB — an HOA; Hamden_Feature 001 — a SeeClickFix internal tag)
+- Real CDPs whose name didn't exact-match Census BASENAME (Sun City, Green Valley, Casas Adobes — valid places, just naming-fuzzy)
+- Name encoding issues (Cañon City with mangled ñ, parenthetical aliases like "El Paso de Robles (Paso Robles)")
 
-**Effort:** 1-2 hours to ship #1 and #3. #2 is ongoing maintenance.
+**To restore coverage for the real-CDP subset (~50-74 rows estimated), three fixes:**
+
+1. **Fuzzy match pass** — retry with `ILIKE '${name}%'`, Unicode normalization, and `St.` ↔ `Saint` / `N.` ↔ `North` alias substitution. Would recover most Category-2 real CDPs. Runs against `is_active = false AND boundary_checked_at IS NOT NULL` rows, auto-reactivates on match. ~1-2 hrs.
+
+2. **Manual alias table** — seed known overrides for encoding-damaged names (Cañon City → "Canon City" Census name, El Paso de Robles → "Paso Robles"). ~50 entries, ongoing maintenance.
+
+3. **Geocode-and-buffer fallback** — when no Census polygon exists, geocode the city via Census Geocoder API (already in pinned-fetch allowlist) and buffer by ~3 miles to create a loose polygon. Enables routing even for tiny unincorporated places. ~1-2 hrs.
+
+**Reactivation script** (when fixes ship):
+```sql
+-- Safe reversal of the 2026-04-21 deactivation
+UPDATE authorities SET is_active = true
+WHERE is_active = false AND name LIKE '% (SeeClickFix)';
+```
+
+**Effort:** 1-2 hours to ship #1 and #3. #2 is ongoing.
 
 ---
 
