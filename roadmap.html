@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Fault Line — Roadmap</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,800;0,900;1,800;1,900&family=Lora:ital,wght@0,400;0,500;0,600;1,400;1,500&family=IBM+Plex+Mono:wght@400;500;600&family=Oswald:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --tunnel: #0A1628;
+  --tunnel-deep: #050B14;
+  --tunnel-mid: #14243C;
+  --rail: #1D3553;
+  --rail-light: #2A4568;
+  --steel: #6B7A91;
+  --steel-light: #8C95A3;
+  --amber: #F4B832;
+  --amber-bright: #FFD15C;
+  --amber-deep: #D9A01A;
+  --amber-glow: rgba(244, 184, 50, 0.22);
+  --signal-green: #46C37A;
+  --signal-red: #E8463E;
+  --tile: #F4F4F0;
+  --tile-dim: #CFCFC8;
+  --tile-mute: #9098A5;
+  --grid: rgba(244, 244, 240, 0.04);
+  --ff-display: 'Playfair Display', Georgia, serif;
+  --ff-body: 'Lora', Georgia, serif;
+  --ff-ui: 'Oswald', -apple-system, BlinkMacSystemFont, sans-serif;
+  --ff-mono: 'IBM Plex Mono', 'SF Mono', Menlo, monospace;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: var(--ff-body);
+  background: var(--tunnel);
+  color: var(--tile);
+  line-height: 1.65;
+  font-size: 17px;
+  -webkit-font-smoothing: antialiased;
+  background-image:
+    linear-gradient(var(--grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+  background-size: 60px 30px;
+  background-position: -1px -1px;
+  min-height: 100vh;
+}
+a { color: var(--amber); text-decoration: none; }
+a:hover { color: var(--amber-bright); }
+h1, h2, h3, h4 {
+  font-family: var(--ff-display);
+  font-weight: 800;
+  color: var(--tile);
+  letter-spacing: -0.5px;
+  line-height: 1.15;
+}
+h1 { font-weight: 900; }
+em { font-style: italic; color: var(--amber); }
+p, li { color: var(--tile-dim); }
+strong { color: var(--tile); font-weight: 600; }
+
+.hazard {
+  height: 14px;
+  background: repeating-linear-gradient(-45deg, var(--amber) 0 22px, var(--tunnel) 22px 44px);
+}
+.hazard-thin {
+  height: 4px;
+  background: repeating-linear-gradient(-45deg, var(--amber) 0 10px, transparent 10px 20px);
+  margin: 40px 0;
+}
+
+.topbar {
+  background: var(--tunnel-deep);
+  border-bottom: 2px solid var(--amber);
+  padding: 18px 32px;
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 24px; flex-wrap: wrap;
+}
+.brand {
+  display: inline-flex; align-items: center; gap: 14px;
+  font-family: var(--ff-display);
+  font-weight: 900; font-style: italic;
+  font-size: 22px;
+  color: var(--tile); letter-spacing: -0.5px;
+  line-height: 1; text-decoration: none;
+}
+.brand span { color: var(--amber); }
+.brand::before {
+  content: ''; display: inline-block;
+  width: 10px; height: 24px;
+  background: var(--amber); transform: skewX(-15deg);
+}
+.topbar-links {
+  font-family: var(--ff-ui);
+  font-size: 12px; letter-spacing: 2px; text-transform: uppercase;
+  display: flex; gap: 20px;
+}
+.topbar-links a { color: var(--tile-dim); }
+.topbar-links a:hover { color: var(--amber); }
+
+.hero {
+  padding: 80px 36px 40px;
+  max-width: 960px; margin: 0 auto;
+}
+.hero-serial {
+  font-family: var(--ff-mono);
+  font-size: 12px; color: var(--steel-light);
+  letter-spacing: 2.5px; text-transform: uppercase;
+  margin-bottom: 24px;
+  display: inline-flex; align-items: center; gap: 14px;
+}
+.hero-serial::before {
+  content: ''; width: 36px; height: 2px; background: var(--amber);
+}
+.hero h1 {
+  font-size: clamp(44px, 7vw, 84px);
+  letter-spacing: -2px;
+  line-height: 1;
+  margin-bottom: 20px;
+}
+.hero .sub {
+  font-family: var(--ff-body);
+  font-style: italic;
+  font-size: 20px;
+  color: var(--tile-dim);
+  max-width: 660px;
+}
+
+.confidential {
+  background: rgba(232, 70, 62, 0.08);
+  border-top: 1px solid rgba(232, 70, 62, 0.25);
+  border-bottom: 1px solid rgba(232, 70, 62, 0.25);
+  padding: 10px 24px;
+  text-align: center;
+  font-family: var(--ff-ui);
+  font-size: 11px; letter-spacing: 2px; text-transform: uppercase;
+  color: #ff8e88; font-weight: 600;
+}
+
+main { max-width: 960px; margin: 0 auto; padding: 32px 36px 100px; }
+
+.phase {
+  margin-top: 64px;
+  padding-top: 48px;
+  border-top: 1px solid var(--rail);
+}
+.phase:first-of-type { border-top: 0; padding-top: 0; margin-top: 0; }
+
+.phase-label {
+  font-family: var(--ff-mono);
+  font-size: 12px; color: var(--amber);
+  letter-spacing: 3px; text-transform: uppercase;
+  display: inline-flex; align-items: center; gap: 14px;
+  margin-bottom: 16px;
+}
+.phase-label::before {
+  content: ''; width: 44px; height: 2px; background: var(--amber);
+}
+.phase h2 {
+  font-size: clamp(32px, 4.5vw, 48px);
+  letter-spacing: -1px;
+  margin-bottom: 28px;
+}
+
+.block {
+  background: var(--tunnel-deep);
+  border: 1px solid var(--rail);
+  border-left: 3px solid var(--amber);
+  padding: 26px 32px;
+  margin-bottom: 20px;
+}
+.block h3 {
+  font-family: var(--ff-display);
+  font-weight: 800;
+  font-size: 22px;
+  margin-bottom: 14px;
+  color: var(--tile);
+}
+.block p { margin-bottom: 10px; }
+.block ul, .block ol {
+  padding-left: 22px;
+  color: var(--tile-dim);
+  margin-bottom: 8px;
+}
+.block li { margin-bottom: 8px; }
+.block code {
+  font-family: var(--ff-mono);
+  font-size: 14px;
+  background: var(--tunnel-mid);
+  border: 1px solid var(--rail);
+  padding: 1px 6px;
+  color: var(--amber-bright);
+}
+
+.block.status-done {
+  border-left-color: var(--signal-green);
+}
+.block.status-done h3::after {
+  content: ' ✓';
+  color: var(--signal-green);
+  font-family: var(--ff-mono);
+}
+
+.tag {
+  display: inline-block;
+  font-family: var(--ff-mono);
+  font-size: 10px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  padding: 3px 9px;
+  border: 1px solid var(--rail-light);
+  color: var(--steel-light);
+  margin-left: 10px;
+  vertical-align: middle;
+}
+.tag.green { color: var(--signal-green); border-color: rgba(70, 195, 122, 0.45); }
+.tag.amber { color: var(--amber); border-color: rgba(244, 184, 50, 0.45); }
+
+footer {
+  background: var(--tunnel-deep);
+  padding: 36px 36px 28px;
+  border-top: 1px solid var(--rail);
+  text-align: center;
+  font-family: var(--ff-mono);
+  font-size: 12px;
+  color: var(--steel-light);
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+}
+footer a { color: var(--tile-dim); margin: 0 10px; font-family: var(--ff-ui); letter-spacing: 2px; }
+
+@media (max-width: 640px) {
+  .topbar { padding: 14px 20px; }
+  .hero { padding: 48px 20px 28px; }
+  main { padding: 24px 20px 80px; }
+  .block { padding: 20px 22px; }
+}
+</style>
+</head>
+<body>
+
+<div class="confidential">Internal Planning Document — Not for Public Distribution</div>
+
+<header class="topbar">
+  <a class="brand" href="investorlanding.html"><span>Fault</span>&nbsp;Line</a>
+  <nav class="topbar-links">
+    <a href="investorlanding.html">Investor Brief</a>
+    <a href="business-plan.html">Business Plan</a>
+    <a href="ARCHITECTURE.html">Architecture</a>
+  </nav>
+</header>
+
+<section class="hero">
+  <div class="hero-serial">Doc 04 · Planning Track</div>
+  <h1>Roadmap</h1>
+  <p class="sub">Everything that needs to happen, in order of priority. Phases reflect real-world sequencing — what ships to go live, what waits, and what needs external relationships.</p>
+</section>
+
+<div class="hazard"></div>
+
+<main>
+
+  <section class="phase">
+    <div class="phase-label">Phase 01 · Deploy</div>
+    <h2>Ship it. <em>The things that gate going live.</em></h2>
+
+    <div class="block">
+      <h3>Domain &amp; Email</h3>
+      <ul>
+        <li>Buy domain (<code>faultline.app</code>, <code>.io</code>, <code>.dev</code>, or <code>.org</code> — ~$12/yr)</li>
+        <li>Point DNS to GitHub Pages (or Vercel / Netlify)</li>
+        <li>Replace all GitHub Pages URLs in <code>website/*.html</code> with real domain</li>
+        <li>Add domain to Resend dashboard, configure DNS records (2 TXT + 1 MX)</li>
+        <li>Update <code>FROM_EMAIL</code> in Supabase Edge Function secrets to <code>reports@yourdomain</code></li>
+      </ul>
+    </div>
+
+    <div class="block">
+      <h3>Supabase Edge Functions</h3>
+      <ul>
+        <li>Deploy <code>escalate-clusters</code>, <code>analyze-photo</code>, <code>ai-generate</code>, <code>ai-compare-photos</code>, <code>send-report-email</code></li>
+        <li>Set secrets: <code>RESEND_API_KEY</code>, <code>FROM_EMAIL</code>, <code>ANTHROPIC_API_KEY</code>, <code>CRON_SECRET</code></li>
+        <li>Set up daily cron for <code>escalate-clusters</code></li>
+      </ul>
+    </div>
+
+    <div class="block">
+      <h3>App Stores</h3>
+      <p><strong>Google Play</strong> ($25 one-time) — <code>play.google.com/console</code></p>
+      <ul>
+        <li>Build: <code>npx eas build --platform android --profile production</code></li>
+        <li>Data Safety form: <code>store-metadata/google-data-safety.md</code></li>
+        <li>Content Rating, Description, Privacy Policy URL</li>
+        <li>Take 8 screenshots (listed in <code>store-metadata/description.md</code>)</li>
+      </ul>
+      <p><strong>Apple App Store</strong> ($99/yr) — <code>developer.apple.com</code></p>
+      <ul>
+        <li>Build: <code>npx eas build --platform ios --profile production</code></li>
+        <li>Submit: <code>npx eas submit --platform ios</code></li>
+        <li>Privacy Labels: <code>store-metadata/apple-privacy-labels.md</code></li>
+        <li>Fill <code>eas.json</code> with Apple ID, ASC App ID, Team ID</li>
+      </ul>
+    </div>
+
+    <div class="block">
+      <h3>SEO &amp; Analytics</h3>
+      <ul>
+        <li>Submit sitemap to Google Search Console + Bing Webmaster Tools</li>
+        <li>Create 1200×630 OG social share image, add <code>og:image</code> tags to all pages</li>
+        <li>Add Google Analytics 4 or Plausible to the marketing site</li>
+      </ul>
+    </div>
+
+    <div class="block status-done">
+      <h3>Authority Coverage<span class="tag green">Live 2026-04-21</span></h3>
+      <ul>
+        <li><strong>795 US authorities</strong> seeded (NE email coverage + nationwide SeeClickFix + Commonwealth Connect / CT / NM / OR gap fills)</li>
+        <li>Boston MA has standalone Open311 endpoint (priority 1) — request POST API key to activate</li>
+        <li>584+ have Census TIGER boundaries for point-in-polygon routing; enrichment runs on cron</li>
+        <li>Chicago / SF / Seattle / Austin / Philly use proprietary 311 — no API seed possible; fall back to email or web-form scraping</li>
+        <li>See <code>DEFERRED #9e</code> for remaining Open311 probing, <code>#9g</code> for Census fuzzy-match recovery</li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="phase">
+    <div class="phase-label">Phase 02 · Activate</div>
+    <h2>Do these when ready. <em>The app works without them.</em></h2>
+
+    <div class="block">
+      <h3>AdMob<span class="tag amber">Revenue</span></h3>
+      <ul>
+        <li>Create account at <code>admob.google.com</code></li>
+        <li>Create Android + iOS apps, generate banner ad unit IDs</li>
+        <li>Install <code>react-native-google-mobile-ads</code></li>
+        <li>Replace <code>AdBanner.tsx</code> placeholder with real integration</li>
+        <li>Plug IDs into <code>.env</code></li>
+      </ul>
+    </div>
+
+    <div class="block">
+      <h3>Sentry (crash reporting)</h3>
+      <ul>
+        <li>Create free account at <code>sentry.io</code> (5K errors/month free)</li>
+        <li>Create React Native project, copy DSN</li>
+        <li>Add <code>SENTRY_DSN</code> to <code>.env</code></li>
+        <li>Verify crashes appear in dashboard</li>
+      </ul>
+    </div>
+
+    <div class="block">
+      <h3>Professional App Icon</h3>
+      <ul>
+        <li>Current icon is auto-generated SVG→PNG — functional but basic</li>
+        <li>Hire a designer or use AI generation</li>
+        <li>Replace PNGs in <code>/assets/</code></li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="phase">
+    <div class="phase-label">Phase 03 · Partnerships</div>
+    <h2>External relationships required.</h2>
+
+    <div class="block">
+      <h3>Damage Lawsuit Connector</h3>
+      <ul>
+        <li>Partner with personal injury attorneys who work on contingency</li>
+        <li>App matches damaged drivers with lawyers, pre-packages evidence</li>
+        <li>Needs: legal partnerships, state-bar compliance review, referral agreements</li>
+        <li>Start with a directory of infrastructure-damage attorneys per state</li>
+        <li>Evidence package (insurance claim service) already generates the docs lawyers need</li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="phase">
+    <div class="phase-label">Phase 04 · Future Features</div>
+    <h2>Significant dev effort.</h2>
+
+    <div class="block">
+      <h3>Real-Time Pothole Avoidance Routing<span class="tag amber">3–4 weeks</span></h3>
+      <ul>
+        <li>"Avoid potholes" turn-by-turn navigation</li>
+        <li>Routing engine: OSRM, Mapbox Directions, or Google Directions API</li>
+        <li>Overlay reported hazards as avoidance waypoints</li>
+        <li>Real-time route recalculation as new reports come in</li>
+        <li>Needs: routing API costs, background location, battery optimization</li>
+      </ul>
+    </div>
+
+    <div class="block">
+      <h3>Dashcam Mode<span class="tag amber">6–8 weeks</span></h3>
+      <ul>
+        <li>Continuous video recording while driving</li>
+        <li>AI frame-by-frame analysis detecting road damage</li>
+        <li>Auto-pause/resume based on speed (accelerometer + GPS)</li>
+        <li>On-device ML model (TFLite or CoreML)</li>
+        <li>Auto-create draft reports for detected issues</li>
+        <li>Privacy: must blur pedestrians / license plates</li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="phase">
+    <div class="phase-label">Phase 05 · Post-Launch Marketing</div>
+    <h2>Distribution &amp; press.</h2>
+
+    <div class="block">
+      <ul>
+        <li>Submit to Product Hunt, Hacker News, <code>r/civictech</code></li>
+        <li>Reach out to local news in MA / RI / NH with shame-index data</li>
+        <li>Submit to app review sites</li>
+        <li>Write blog posts for backlinks</li>
+        <li>Create Google Business Profile</li>
+      </ul>
+    </div>
+  </section>
+
+  <div class="hazard-thin"></div>
+
+  <p style="color: var(--steel-light); font-family: var(--ff-mono); font-size: 12px; letter-spacing: 2px; text-transform: uppercase; text-align: center;">
+    See also: <a href="DEFERRED.md">DEFERRED.md</a> — external-credential blockers and research items
+  </p>
+
+</main>
+
+<footer>
+  Fault Line · Moonlit Social Labs · Internal Planning Doc
+  &nbsp;·&nbsp;
+  <a href="investorlanding.html">Investor Brief</a>
+  <a href="business-plan.html">Business Plan</a>
+  <a href="ARCHITECTURE.html">Architecture</a>
+</footer>
+
+</body>
+</html>
