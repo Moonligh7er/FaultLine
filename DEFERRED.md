@@ -202,6 +202,51 @@ This is Resend's sandbox mode. It's the default for unverified accounts. Until a
 
 ---
 
+## 9e. Open311 City Expansion (Tier 2 — per-city endpoint research)
+
+**Status:** Not done. Tier 1 (all SeeClickFix US cities) shipped in Migration 013 — 784 authorities with 584 routing boundaries. Tier 2 is the parallel expansion for Open311 cities, which require per-city endpoint research because Open311 is a federated standard (not a centralized service like SeeClickFix).
+
+**Priority targets (~30 major US cities):** NYC, Chicago, DC, SF, LA, Seattle, Baltimore, Philadelphia, Austin, Houston, San Jose, Fort Worth, Indianapolis, Jacksonville, Columbus, Charlotte, El Paso, Nashville, Oklahoma City, Memphis, Portland OR, Las Vegas, Louisville, Milwaukee, Albuquerque, Tucson, Fresno, Sacramento, Long Beach, Kansas City MO.
+
+**For each, need:**
+- Open311 endpoint URL (e.g. `https://mayors24.cityofboston.gov/open311/v2/requests.json`)
+- Whether it requires `jurisdiction_id`
+- Whether it requires an API key (usually provisioned via email request)
+- Map our 24 category slugs to the city's service_codes via `GET /services.json`
+
+**Effort:** ~3-4 hours of research + seed + per-city testing.
+
+---
+
+## 9f. Missing Big-City SeeClickFix Seed (dormant-flagged cities)
+
+**Status:** Known omission from Migration 013. The seed was scraped from `seeclickfix.com/recent_place_stats` which shows ~738 cities but *misses* the ones SeeClickFix keeps at `web_portal/<hash>` URLs rather than short slugs. Research-agent notes flagged these:
+
+- **Chicago IL** — uses CHI311 primarily; SeeClickFix presence uncertain
+- **San Francisco CA** — dormant or moved to in-house
+- **Seattle WA** — no clean slug
+- **Austin TX** — web_portal hash only
+- **Houston TX** — web_portal hash only
+- **Ann Arbor MI** — web_portal hash only
+- **Philadelphia PA** — landing page exists but activity unclear
+- **Minneapolis MN** — has SeeClickFix app but city routes via its own 311
+
+**Fix:** Manually verify each city's SeeClickFix status, find the proper slug or confirm they're not actually SeeClickFix, seed any that are. ~2 hours.
+
+---
+
+## 9g. Census Boundary Coverage Gap (Tier 3 remainder)
+
+**Status:** 584 of 784 authorities have boundaries via Migration 013 + enrich-authority-boundaries (Layers 28/22/34). 194 authorities still lack boundaries because their city name doesn't exactly match Census BASENAME. Fixes for the long tail:
+
+1. **Fuzzy matching** — allow `LIKE '${name}%'` when exact match fails. Catches cases where our name is "St. Louis" but Census has "Saint Louis", or hyphenation differences.
+2. **Name alias table** — manual overrides for known mismatches (`El Paso de Robles (Paso Robles)` → "Paso Robles"), ~50 entries.
+3. **Geocode fallback** — for unmatchable cities, geocode the city/state to a point and generate a 5-mile radius polygon as a loose approximation. Not perfect but enables routing.
+
+**Effort:** 1-2 hours to ship #1 and #3. #2 is ongoing maintenance.
+
+---
+
 ## 10. Supabase Migration 007 — Apply RPC Auth Guards
 
 **Status:** Migration file created at `supabase/migration_007_rpc_auth_guards.sql`
