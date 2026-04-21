@@ -154,6 +154,54 @@ This is Resend's sandbox mode. It's the default for unverified accounts. Until a
 
 ---
 
+## 9c. Register the Resend Webhook (bounce/delivery tracking)
+
+**Status:** Code shipped, needs 2-minute click-through in the Resend dashboard.
+
+**Why:** The Next.js route `/api/webhooks/resend` is live and will record delivery / bounce / complaint events against `escalation_log` rows + auto-flag authorities whose email has gone dead. But Resend won't fire events anywhere until you register the webhook URL in their dashboard.
+
+**Steps:**
+1. Log in to [resend.com/webhooks](https://resend.com/webhooks)
+2. Click **Add Webhook**
+3. **Endpoint URL:** `https://fault-line-web.vercel.app/api/webhooks/resend`
+4. **Events:** tick `email.delivered`, `email.bounced`, `email.complained`, `email.delivery_delayed`
+5. Save → Resend shows you a signing secret starting with `whsec_`
+6. Copy that secret into Vercel: `fault-line-web` → Settings → Environment Variables → add `RESEND_WEBHOOK_SECRET = whsec_...` for Production (and Preview if you want)
+7. Redeploy fault-line-web (or just wait for next push)
+
+**Verification:** After a real escalation fires, the `escalation_log` row for it should have `delivered_at` set (or `bounced_at` if the city email was bad). Authority `email_health` column updates to `soft_bouncing` / `hard_bouncing` on bounces.
+
+---
+
+## 9d. Deploy the Modal Browser-Automation Worker
+
+**Status:** Code shipped at `modal/web_form_submitter/main.py`. Not yet deployed.
+
+**Why:** This worker fills city web forms headlessly (Playwright + Chromium). When `escalate-clusters` falls through to `web_form` method and `WEB_FORM_WORKER_URL` is set, it POSTs to the worker — if the worker succeeds, the cluster is marked `web_form_auto:<adapter>` instead of `web_form_manual`. Lights up ~14 more New England authorities that would otherwise need manual follow-up (CivicPlus covers most of them).
+
+**Steps:**
+1. Install the Modal CLI locally (one-time, if not already): `pip install modal && modal setup`
+2. `cd Fault-Line/modal/web_form_submitter`
+3. Generate a worker secret (random 32-byte base64): `openssl rand -base64 32`
+4. Register it with Modal: `modal secret create fault-line-web-form-worker WEB_FORM_WORKER_SECRET=<the-random-string>`
+5. Deploy: `modal deploy main.py`
+6. Modal prints the endpoint URL — something like `https://moons7onr--fault-line-web-form-submitter-submit.modal.run`
+7. Set both secrets in Supabase so `escalate-clusters` can call the worker:
+   ```
+   npx supabase secrets set \
+     WEB_FORM_WORKER_URL=https://moons7onr--fault-line-web-form-submitter-submit.modal.run \
+     WEB_FORM_WORKER_SECRET=<the-same-random-string> \
+     --project-ref dzewklljiksyivsfpunt
+   ```
+8. Test with a real web_form authority cluster (or a dry run curl against the Modal endpoint with a simple form URL)
+
+**Known limits:**
+- Current adapters cover CivicPlus (dominant CMS), SeeClickFix embedded forms, and a generic heuristic fallback. Granicus and custom city portals may need per-site adapters added over time.
+- The worker checks for "thank you" / "received" / "submitted" text in the response — a pessimistic heuristic that catches most successful submissions but will mark some real successes as failures when a city uses nonstandard wording. Those land in the manual queue, not lost.
+- Cost: ~$0.002 per submission (Modal billed per execution-second; avg run is 15-20s).
+
+---
+
 ## 10. Supabase Migration 007 — Apply RPC Auth Guards
 
 **Status:** Migration file created at `supabase/migration_007_rpc_auth_guards.sql`
