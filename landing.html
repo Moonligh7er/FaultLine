@@ -36,38 +36,39 @@
 }
 </script>
 
+<link rel="stylesheet" href="theme.css">
 <style>
 :root {
-  --primary: #1E88E5;
-  --primary-dark: #1565C0;
-  --secondary: #FF6F00;
-  --accent: #00C853;
-  --danger: #F44336;
-  --bg: #050507;
-  --bg-card: #0f1014;
-  --bg-elevated: #16181f;
-  --text: #f6f6f9;
-  --text-secondary: #a8aab5;
-  --text-muted: #6b6d7a;
-  --border: #25272f;
-  --glow-primary: rgba(30,136,229,0.18);
-  --glow-accent: rgba(0,200,83,0.18);
-  --glow-secondary: rgba(255,111,0,0.18);
-  --gradient-1: linear-gradient(135deg, #1E88E5 0%, #00C853 100%);
-  --gradient-2: linear-gradient(135deg, #FF6F00 0%, #F44336 100%);
+  /* Landing-specific overrides on top of theme.css */
+  --primary: var(--amber);
+  --primary-dark: var(--amber-deep);
+  --secondary: var(--amber);
+  --accent: var(--signal-green);
+  --danger: var(--signal-red);
+  --bg: var(--tunnel);
+  --bg-card: var(--tunnel-deep);
+  --bg-elevated: var(--tunnel-mid);
+  --text: var(--tile);
+  --text-secondary: var(--tile-dim);
+  --text-muted: var(--steel-light);
+  --border: var(--rail);
+  --glow-primary: var(--amber-glow);
+  --glow-accent: rgba(70, 195, 122, 0.18);
+  --glow-secondary: var(--amber-glow);
+  --gradient-1: linear-gradient(135deg, var(--amber) 0%, var(--amber-bright) 100%);
+  --gradient-2: linear-gradient(135deg, var(--amber) 0%, var(--signal-red) 100%);
 }
-* { margin: 0; padding: 0; box-sizing: border-box; }
 html { scroll-behavior: smooth; }
 body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  background: var(--bg);
-  color: var(--text);
-  line-height: 1.6;
+  font-family: var(--ff-body);
+  background: var(--tunnel);
+  color: var(--tile);
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
 }
-a { color: var(--primary); text-decoration: none; }
-a:hover { text-decoration: underline; }
+h1, h2, h3, h4 { font-family: var(--ff-display); }
+a { color: var(--amber); text-decoration: none; }
+a:hover { text-decoration: none; color: var(--amber-bright); }
 
 /* Top sticky nav */
 .topnav {
