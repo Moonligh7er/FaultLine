@@ -349,34 +349,38 @@ async function submitOpen311(
 
 /** SeeClickFix API v2 POST /issues
  *  Docs: https://dev.seeclickfix.com/
- *  Requires an API key in Authorization header. */
+ *  No API key required for issue creation — SeeClickFix accepts public
+ *  anonymous submissions as long as the payload identifies the submitter
+ *  via user[name] + user[email]. If SEECLICKFIX_API_KEY is set, we pass
+ *  it along too (some jurisdictions prefer it), but absence is not fatal. */
 async function submitSeeClickFix(
   method: SubmissionMethod,
   s: ClusterSummary,
 ): Promise<{ ok: boolean; error?: string; ticketId?: string }> {
-  if (!SEECLICKFIX_API_KEY) {
-    return { ok: false, error: 'SEECLICKFIX_API_KEY not set' };
+  // SeeClickFix POST /issues expects form-encoded keys with bracket notation
+  // for nested fields. We submit as Fault Line on behalf of the community.
+  const body = new URLSearchParams();
+  body.append('summary', `${s.category.replace('_', ' ')} at ${s.address || `${s.latitude}, ${s.longitude}`}`);
+  body.append(
+    'description',
+    `Community-verified issue reported ${s.report_count} times by ${s.unique_reporters} residents ` +
+    `over ${s.days_open} days. Max hazard: ${s.max_hazard}. Submitted via Fault Line (faultline.app).`,
+  );
+  body.append('address', s.address || '');
+  body.append('lat', String(s.latitude));
+  body.append('lng', String(s.longitude));
+  body.append('user[name]', 'Fault Line Community Reports');
+  body.append('user[email]', REPLY_TO || FROM_EMAIL);
+
+  const headers: Record<string, string> = {
+    'Content-Type': 'application/x-www-form-urlencoded',
+  };
+  if (SEECLICKFIX_API_KEY) {
+    headers.Authorization = `Bearer ${SEECLICKFIX_API_KEY}`;
   }
 
-  const payload = {
-    summary: `${s.category.replace('_', ' ')} at ${s.address || `${s.latitude}, ${s.longitude}`}`,
-    description:
-      `Community-verified issue reported ${s.report_count} times by ${s.unique_reporters} residents ` +
-      `over ${s.days_open} days. Max hazard: ${s.max_hazard}. Submitted via Fault Line.`,
-    address: s.address || '',
-    lat: s.latitude,
-    lng: s.longitude,
-  };
-
   try {
-    const res = await fetch(method.endpoint, {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${SEECLICKFIX_API_KEY}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(payload),
-    });
+    const res = await fetch(method.endpoint, { method: 'POST', headers, body });
     if (!res.ok) {
       const text = await res.text().catch(() => '');
       return { ok: false, error: `SeeClickFix HTTP ${res.status}: ${text.slice(0, 200)}` };
