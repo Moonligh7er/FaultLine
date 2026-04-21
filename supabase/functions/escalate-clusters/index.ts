@@ -15,6 +15,20 @@ const REPLY_TO = Deno.env.get('REPLY_TO') || '';
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL') || '';
 const SUPABASE_SERVICE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') || '';
 
+// Optional API keys for direct city-system integration.
+// When unset, API-method authorities fall back to email automatically.
+const OPEN311_JURISDICTION_ID = Deno.env.get('OPEN311_JURISDICTION_ID') || '';
+const OPEN311_API_KEY = Deno.env.get('OPEN311_API_KEY') || '';
+const SEECLICKFIX_API_KEY = Deno.env.get('SEECLICKFIX_API_KEY') || '';
+
+interface SubmissionMethod {
+  method: 'api' | 'email' | 'web_form' | 'phone';
+  endpoint: string;
+  priority?: number;
+  protocol?: 'open311' | 'seeclickfix' | string;
+  notes?: string;
+}
+
 interface ClusterSummary {
   cluster_id: string;
   category: string;
@@ -87,54 +101,73 @@ Deno.serve(async (req) => {
     const summary: ClusterSummary | null = summaryRows?.[0] || null;
     if (!summary) continue;
 
-    // 3. Get authority submission methods
-    let recipientEmail = '';
+    // 3. Get authority + all submission methods
+    let authorityName = '';
+    let methods: SubmissionMethod[] = [];
     if (cluster.authority_id) {
       const { data: authority } = await supabase
         .from('authorities')
         .select('submission_methods, name')
         .eq('id', cluster.authority_id)
         .single();
-
-      if (authority?.submission_methods) {
-        const emailMethod = authority.submission_methods.find(
-          (m: any) => m.method === 'email'
-        );
-        if (emailMethod) {
-          recipientEmail = emailMethod.endpoint;
-        }
-      }
+      authorityName = authority?.name || '';
+      methods = (authority?.submission_methods || []) as SubmissionMethod[];
     }
 
-    if (!recipientEmail) {
-      results.push({ clusterId: cluster.id, status: 'skipped', error: 'No email found for authority' });
-      continue;
-    }
-
-    // 4. Build professional email
+    // 4. Build escalation payload once
     const subject = buildSubject(summary);
     const body = buildEmailBody(summary);
 
-    // 5. Send via Resend
-    try {
-      const sendResult = await sendEmail(recipientEmail, subject, body);
+    // 5. Try methods in priority order: api → email → web_form (manual)
+    //    If the preferred method fails, fall back down the chain.
+    const prioritized = prioritizeMethods(methods);
+    let sent: { method: string; recipient: string } | null = null;
+    const attempts: string[] = [];
 
-      if (sendResult.ok) {
-        // 6. Log the escalation
-        await supabase.rpc('escalate_cluster', {
-          p_cluster_id: cluster.id,
-          p_method: 'email',
-          p_recipient: recipientEmail,
-          p_subject: subject,
-          p_body: body,
-        });
-        results.push({ clusterId: cluster.id, status: 'sent' });
-      } else {
-        const errorBody = await sendResult.text();
-        results.push({ clusterId: cluster.id, status: 'failed', error: `Resend ${sendResult.status}: ${errorBody}` });
+    for (const m of prioritized) {
+      try {
+        if (m.method === 'api') {
+          const apiResult = await submitViaApi(m, summary);
+          if (apiResult.ok) {
+            sent = { method: `api:${m.protocol || 'unknown'}`, recipient: m.endpoint };
+            break;
+          }
+          attempts.push(`api:${m.protocol}: ${apiResult.error}`);
+        } else if (m.method === 'email') {
+          const sendResult = await sendEmail(m.endpoint, subject, body);
+          if (sendResult.ok) {
+            sent = { method: 'email', recipient: m.endpoint };
+            break;
+          }
+          const errText = await sendResult.text().catch(() => 'unknown');
+          attempts.push(`email → ${m.endpoint}: ${sendResult.status} ${errText}`);
+        } else if (m.method === 'web_form') {
+          // We can't auto-submit arbitrary web forms from a server, but we CAN
+          // record the cluster as awaiting manual submission. The admin UI picks
+          // these up with the prepared subject/body for one-click copy-paste.
+          sent = { method: 'web_form_manual', recipient: m.endpoint };
+          attempts.push(`web_form: queued for manual submission at ${m.endpoint}`);
+          break;
+        }
+        // 'phone' is a no-op for automated escalation — skip.
+      } catch (err) {
+        attempts.push(`${m.method}: ${String(err)}`);
       }
-    } catch (err) {
-      results.push({ clusterId: cluster.id, status: 'failed', error: String(err) });
+    }
+
+    if (sent) {
+      await supabase.rpc('escalate_cluster', {
+        p_cluster_id: cluster.id,
+        p_method: sent.method,
+        p_recipient: sent.recipient,
+        p_subject: subject,
+        p_body: body,
+      });
+      results.push({ clusterId: cluster.id, status: 'sent', method: sent.method, recipient: sent.recipient, attempts });
+    } else if (methods.length === 0) {
+      results.push({ clusterId: cluster.id, status: 'skipped', error: 'Authority has no submission methods configured' });
+    } else {
+      results.push({ clusterId: cluster.id, status: 'failed', error: 'All submission methods failed', attempts });
     }
   }
 
@@ -210,4 +243,147 @@ async function sendEmail(to: string, subject: string, body: string): Promise<Res
       ...(REPLY_TO ? { reply_to: REPLY_TO } : {}),
     }),
   });
+}
+
+// ============================================================
+// Submission-method prioritization + API dispatch
+// ============================================================
+
+/** Sort submission methods by priority (explicit priority first, then by
+ *  category: api > email > web_form > phone). Phone is included last for
+ *  completeness but the dispatcher ignores it. */
+function prioritizeMethods(methods: SubmissionMethod[]): SubmissionMethod[] {
+  const categoryRank: Record<string, number> = {
+    api: 1,
+    email: 2,
+    web_form: 3,
+    phone: 99,
+  };
+  return [...methods].sort((a, b) => {
+    // Explicit priority wins
+    if (a.priority !== undefined && b.priority !== undefined) {
+      return a.priority - b.priority;
+    }
+    if (a.priority !== undefined) return -1;
+    if (b.priority !== undefined) return 1;
+    // Otherwise fall back to category
+    return (categoryRank[a.method] ?? 100) - (categoryRank[b.method] ?? 100);
+  }).filter(m => m.method !== 'phone');
+}
+
+/** Dispatch to the right API protocol. Missing keys → graceful fail so the
+ *  caller falls through to the next method (typically email). */
+async function submitViaApi(
+  method: SubmissionMethod,
+  s: ClusterSummary,
+): Promise<{ ok: boolean; error?: string; ticketId?: string }> {
+  const protocol = (method.protocol || '').toLowerCase();
+
+  if (protocol === 'open311' || method.endpoint.includes('open311') || method.endpoint.includes('/open311/')) {
+    return submitOpen311(method, s);
+  }
+  if (protocol === 'seeclickfix' || method.endpoint.includes('seeclickfix.com')) {
+    return submitSeeClickFix(method, s);
+  }
+  return { ok: false, error: `Unknown API protocol: ${protocol || method.endpoint}` };
+}
+
+/** Open311 GeoReport v2 POST /requests.json
+ *  Spec: http://wiki.open311.org/GeoReport_v2/
+ *  Some endpoints require an API key + jurisdiction_id query params. */
+async function submitOpen311(
+  method: SubmissionMethod,
+  s: ClusterSummary,
+): Promise<{ ok: boolean; error?: string; ticketId?: string }> {
+  // Map internal category to a service_code.
+  // Cities publish their own service_codes; this is a best-effort guess.
+  const serviceCodeMap: Record<string, string> = {
+    pothole: 'pothole',
+    streetlight: 'streetlight',
+    sidewalk: 'sidewalk',
+    signage: 'sign_damage',
+    drainage: 'drainage',
+    graffiti: 'graffiti',
+    road_debris: 'road_debris',
+    water_main: 'water_main',
+    sewer: 'sewer',
+    bridge: 'bridge',
+    fallen_tree: 'tree_down',
+    snow_ice: 'snow_ice',
+  };
+  const serviceCode = serviceCodeMap[s.category] || s.category;
+
+  const body = new URLSearchParams();
+  body.append('service_code', serviceCode);
+  body.append('lat', String(s.latitude));
+  body.append('long', String(s.longitude));
+  if (s.address) body.append('address_string', s.address);
+  body.append('description',
+    `Community-verified issue reported ${s.report_count} times by ${s.unique_reporters} unique residents ` +
+    `over ${s.days_open} days. Max hazard level: ${s.max_hazard}. Submitted via Fault Line (faultline.app).`,
+  );
+  if (OPEN311_API_KEY) body.append('api_key', OPEN311_API_KEY);
+  if (OPEN311_JURISDICTION_ID) body.append('jurisdiction_id', OPEN311_JURISDICTION_ID);
+
+  try {
+    const res = await fetch(method.endpoint, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body,
+    });
+    if (!res.ok) {
+      const text = await res.text().catch(() => '');
+      return { ok: false, error: `Open311 HTTP ${res.status}: ${text.slice(0, 200)}` };
+    }
+    const json = await res.json().catch(() => null);
+    const ticketId =
+      json?.[0]?.service_request_id ||
+      json?.[0]?.token ||
+      json?.service_request_id ||
+      undefined;
+    return { ok: true, ticketId };
+  } catch (err) {
+    return { ok: false, error: `Open311 network error: ${String(err)}` };
+  }
+}
+
+/** SeeClickFix API v2 POST /issues
+ *  Docs: https://dev.seeclickfix.com/
+ *  Requires an API key in Authorization header. */
+async function submitSeeClickFix(
+  method: SubmissionMethod,
+  s: ClusterSummary,
+): Promise<{ ok: boolean; error?: string; ticketId?: string }> {
+  if (!SEECLICKFIX_API_KEY) {
+    return { ok: false, error: 'SEECLICKFIX_API_KEY not set' };
+  }
+
+  const payload = {
+    summary: `${s.category.replace('_', ' ')} at ${s.address || `${s.latitude}, ${s.longitude}`}`,
+    description:
+      `Community-verified issue reported ${s.report_count} times by ${s.unique_reporters} residents ` +
+      `over ${s.days_open} days. Max hazard: ${s.max_hazard}. Submitted via Fault Line.`,
+    address: s.address || '',
+    lat: s.latitude,
+    lng: s.longitude,
+  };
+
+  try {
+    const res = await fetch(method.endpoint, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${SEECLICKFIX_API_KEY}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(payload),
+    });
+    if (!res.ok) {
+      const text = await res.text().catch(() => '');
+      return { ok: false, error: `SeeClickFix HTTP ${res.status}: ${text.slice(0, 200)}` };
+    }
+    const json = await res.json().catch(() => null);
+    return { ok: true, ticketId: json?.id ? String(json.id) : undefined };
+  } catch (err) {
+    return { ok: false, error: `SeeClickFix network error: ${String(err)}` };
+  }
 }
