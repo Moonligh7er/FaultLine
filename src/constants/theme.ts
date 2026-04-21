@@ -46,16 +46,29 @@ export const COLORS = {
   statusRejected: '#E8463E',
 };
 
-/** Fonts — loaded via expo-font in App.tsx before first render. */
+/** Fonts — loaded via expo-font + @expo-google-fonts in App.tsx.
+ *  Keep these keys in sync with the useFonts() block in App.tsx. */
 export const FONTS = {
+  // Display — Playfair Display (italic emphasis is the signature move)
   display: 'PlayfairDisplay_800ExtraBold',
   displayItalic: 'PlayfairDisplay_800ExtraBold_Italic',
+  displayBlack: 'PlayfairDisplay_900Black',
+  displayBlackItalic: 'PlayfairDisplay_900Black_Italic',
+
+  // Body — Lora serif
   body: 'Lora_400Regular',
   bodyItalic: 'Lora_400Regular_Italic',
   bodyBold: 'Lora_600SemiBold',
+
+  // Functional UI — Oswald condensed sans, always uppercase w/ letter-spacing
   ui: 'Oswald_600SemiBold',
   uiMedium: 'Oswald_500Medium',
+  uiBold: 'Oswald_700Bold',
+
+  // Data readouts / serials / timestamps
   mono: 'IBMPlexMono_500Medium',
+  monoRegular: 'IBMPlexMono_400Regular',
+  monoBold: 'IBMPlexMono_600SemiBold',
 } as const;
 
 export const SPACING = {
