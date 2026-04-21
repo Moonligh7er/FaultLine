@@ -1,0 +1,756 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Fault Line — Theme Mockup C: Subterranean</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --tunnel: #0A1628;
+  --tunnel-deep: #050B14;
+  --tunnel-mid: #14243C;
+  --rail: #1D3553;
+  --tile: #F4F4F0;
+  --tile-dim: #CFCFC8;
+  --tile-line: rgba(244, 244, 240, 0.08);
+  --amber: #F4B832;
+  --amber-bright: #FFD15C;
+  --signal-red: #E8463E;
+  --signal-green: #46C37A;
+  --steel-dim: #8C95A3;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: 'Inter', Helvetica, Arial, sans-serif;
+  background: var(--tunnel);
+  color: var(--tile);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  /* Subway tile grid background */
+  background-image:
+    linear-gradient(var(--tile-line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--tile-line) 1px, transparent 1px);
+  background-size: 60px 30px;
+  background-position: 0 0;
+}
+a { color: var(--amber); text-decoration: none; }
+a:hover { color: var(--amber-bright); }
+
+/* Signage bar — like a station header sign */
+.sign-bar {
+  background: var(--tunnel-deep);
+  border-bottom: 1px solid var(--rail);
+  padding: 6px 0;
+  overflow: hidden;
+}
+.sign-bar-inner {
+  display: flex; gap: 40px;
+  padding: 0 32px;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  color: var(--steel-dim);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.sign-bar-inner span { display: inline-flex; align-items: center; gap: 8px; }
+.sign-dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--signal-green);
+  box-shadow: 0 0 6px var(--signal-green);
+  animation: blink 2.5s infinite;
+}
+@keyframes blink { 50% { opacity: 0.35; } }
+
+/* === NAV / STATION SIGN === */
+.nav {
+  background: var(--tunnel-deep);
+  border-bottom: 3px solid var(--amber);
+  padding: 20px 32px;
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 32px;
+}
+.brand {
+  display: flex; align-items: center; gap: 16px;
+  font-family: 'Inter', sans-serif;
+  font-weight: 900;
+  font-size: 26px;
+  letter-spacing: -0.5px;
+  color: var(--tile);
+}
+.brand-bullet {
+  width: 44px; height: 44px;
+  border-radius: 50%;
+  background: var(--amber);
+  color: var(--tunnel-deep);
+  display: inline-flex; align-items: center; justify-content: center;
+  font-family: 'Inter', sans-serif;
+  font-weight: 900;
+  font-size: 22px;
+  letter-spacing: -1px;
+}
+.nav-links {
+  display: flex; gap: 32px;
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+  font-size: 13px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+}
+.nav-links a {
+  color: var(--tile-dim);
+  transition: color 0.15s;
+}
+.nav-links a:hover { color: var(--amber); }
+
+/* === Departures board hero === */
+.hero {
+  padding: 100px 32px 40px;
+  max-width: 1280px; margin: 0 auto;
+  position: relative;
+}
+.hero-track {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 12px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--amber);
+  margin-bottom: 32px;
+  display: flex; align-items: center; gap: 16px;
+}
+.hero-track::before {
+  content: ''; width: 8px; height: 8px; background: var(--amber);
+  box-shadow: 0 0 12px var(--amber);
+}
+.hero h1 {
+  font-family: 'Inter', sans-serif;
+  font-weight: 900;
+  font-size: clamp(60px, 10vw, 140px);
+  letter-spacing: -4px;
+  line-height: 0.88;
+  margin-bottom: 36px;
+  max-width: 1100px;
+}
+.hero h1 .amber { color: var(--amber); }
+.hero-sub {
+  font-size: 20px;
+  color: var(--tile-dim);
+  max-width: 620px;
+  margin-bottom: 48px;
+  line-height: 1.55;
+}
+.hero-cta-row { display: flex; gap: 16px; flex-wrap: wrap; }
+
+.btn {
+  font-family: 'Inter', sans-serif;
+  font-weight: 700;
+  font-size: 14px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  padding: 18px 32px;
+  border: 2px solid;
+  border-radius: 100px;
+  transition: all 0.15s;
+  cursor: pointer;
+  display: inline-flex; align-items: center; gap: 10px;
+  text-decoration: none;
+}
+.btn-primary {
+  background: var(--amber);
+  color: var(--tunnel-deep);
+  border-color: var(--amber);
+}
+.btn-primary:hover {
+  background: var(--amber-bright);
+  border-color: var(--amber-bright);
+  transform: translateY(-1px);
+}
+.btn-outline {
+  background: transparent;
+  color: var(--tile);
+  border-color: var(--rail);
+}
+.btn-outline:hover { border-color: var(--tile); }
+
+/* === LED departures-board stat panel === */
+.board {
+  max-width: 1280px; margin: 60px auto 0;
+  padding: 0 32px;
+}
+.board-frame {
+  background: var(--tunnel-deep);
+  border: 1px solid var(--rail);
+  padding: 24px 32px;
+  position: relative;
+}
+.board-frame::before {
+  content: 'SYS-STATUS'; position: absolute; top: -10px; left: 24px;
+  background: var(--tunnel); padding: 0 12px;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  color: var(--amber);
+  letter-spacing: 2.5px;
+}
+.board-inner {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 32px;
+}
+.stat {
+  display: flex; flex-direction: column; gap: 4px;
+}
+.stat-num {
+  font-family: 'IBM Plex Mono', monospace;
+  font-weight: 600;
+  font-size: 52px;
+  line-height: 1;
+  color: var(--amber);
+  letter-spacing: -1px;
+  text-shadow: 0 0 18px rgba(244, 184, 50, 0.35);
+}
+.stat-label {
+  font-family: 'Inter', sans-serif;
+  font-weight: 500;
+  font-size: 11px;
+  color: var(--steel-dim);
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  margin-top: 6px;
+}
+
+/* === SECTIONS === */
+.section {
+  max-width: 1280px; margin: 0 auto;
+  padding: 120px 32px;
+}
+.section-eyebrow {
+  display: inline-flex; align-items: center; gap: 12px;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 12px;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  color: var(--amber);
+  margin-bottom: 16px;
+}
+.section-eyebrow::before {
+  content: ''; display: inline-block;
+  width: 16px; height: 16px; border-radius: 50%;
+  background: var(--amber);
+  color: var(--tunnel-deep);
+}
+.section-title {
+  font-family: 'Inter', sans-serif;
+  font-weight: 900;
+  font-size: clamp(40px, 6vw, 72px);
+  letter-spacing: -2px;
+  line-height: 0.95;
+  margin-bottom: 20px;
+  max-width: 900px;
+}
+.section-lead {
+  font-size: 18px;
+  color: var(--tile-dim);
+  max-width: 680px;
+  margin-bottom: 56px;
+  line-height: 1.55;
+}
+
+/* === LINE / STOPS (process steps) === */
+.line {
+  position: relative;
+  padding-left: 40px;
+}
+.line::before {
+  content: '';
+  position: absolute; left: 7px; top: 12px; bottom: 12px;
+  width: 4px;
+  background: var(--amber);
+  border-radius: 2px;
+}
+.stop {
+  position: relative;
+  padding: 16px 0 32px;
+  padding-left: 32px;
+}
+.stop::before {
+  content: '';
+  position: absolute; left: -40px; top: 24px;
+  width: 18px; height: 18px; border-radius: 50%;
+  background: var(--tunnel); border: 4px solid var(--amber);
+  box-shadow: 0 0 0 4px var(--tunnel);
+}
+.stop-num {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 2px;
+  color: var(--amber);
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+.stop h3 {
+  font-family: 'Inter', sans-serif;
+  font-weight: 800;
+  font-size: 28px;
+  letter-spacing: -0.8px;
+  margin-bottom: 8px;
+  color: var(--tile);
+}
+.stop p { color: var(--tile-dim); max-width: 640px; font-size: 15px; }
+
+/* === REPORT TILE === */
+.tile-card {
+  background: var(--tunnel-deep);
+  border: 1px solid var(--rail);
+  border-radius: 4px;
+  padding: 0;
+  max-width: 560px;
+  margin-top: 48px;
+  overflow: hidden;
+}
+.tile-header {
+  background: var(--amber);
+  color: var(--tunnel-deep);
+  padding: 16px 24px;
+  display: flex; justify-content: space-between; align-items: center;
+  gap: 16px;
+}
+.tile-header-left {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+.tile-header-right {
+  background: var(--tunnel-deep); color: var(--amber);
+  font-family: 'Inter', sans-serif;
+  font-weight: 700;
+  font-size: 11px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  padding: 6px 14px;
+  border-radius: 100px;
+}
+.tile-body { padding: 28px 24px; }
+.tile-subject {
+  font-family: 'Inter', sans-serif;
+  font-weight: 800;
+  font-size: 26px;
+  letter-spacing: -0.5px;
+  margin-bottom: 20px;
+  color: var(--tile);
+}
+.tile-meta {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 16px 24px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--rail);
+  margin-bottom: 20px;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 13px;
+}
+.tile-meta dt {
+  font-size: 10px;
+  color: var(--steel-dim);
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+.tile-meta dd { color: var(--tile); }
+.tile-progress-label {
+  display: flex; justify-content: space-between;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  color: var(--steel-dim);
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+.tile-progress-bar {
+  height: 8px; background: var(--tunnel-mid); border-radius: 4px; overflow: hidden;
+  box-shadow: inset 0 0 0 1px var(--rail);
+}
+.tile-progress-fill {
+  height: 100%;
+  width: 85%;
+  background: linear-gradient(90deg, var(--amber) 0%, var(--amber-bright) 100%);
+  box-shadow: 0 0 12px rgba(244, 184, 50, 0.5);
+}
+
+/* === City Grades - like a route diagram === */
+.route-map {
+  background: var(--tunnel-deep);
+  border: 1px solid var(--rail);
+  padding: 48px 40px;
+}
+.route-line {
+  display: flex; align-items: stretch;
+  position: relative;
+  padding: 24px 0;
+}
+.route-line::before {
+  content: '';
+  position: absolute; left: 0; right: 0; top: 50%; transform: translateY(-50%);
+  height: 6px;
+  background: linear-gradient(90deg, var(--signal-green) 0% 20%, var(--amber) 20% 70%, var(--signal-red) 70% 100%);
+  border-radius: 3px;
+  box-shadow: 0 0 16px rgba(244, 184, 50, 0.2);
+}
+.stop-station {
+  flex: 1;
+  position: relative;
+  display: flex; flex-direction: column; align-items: center;
+  gap: 12px;
+  z-index: 1;
+}
+.station-dot {
+  width: 20px; height: 20px; border-radius: 50%;
+  background: var(--tunnel-deep);
+  border: 4px solid var(--tile);
+}
+.station-label {
+  font-family: 'Inter', sans-serif;
+  font-weight: 700;
+  font-size: 14px;
+  letter-spacing: -0.2px;
+  color: var(--tile);
+  text-align: center;
+  margin-top: 4px;
+}
+.station-grade {
+  font-family: 'IBM Plex Mono', monospace;
+  font-weight: 600;
+  font-size: 22px;
+  color: var(--amber);
+}
+.station-pop {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 10px;
+  color: var(--steel-dim);
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+}
+.grade-a .station-grade { color: var(--signal-green); }
+.grade-b .station-grade { color: var(--amber); }
+.grade-c .station-grade { color: var(--amber); }
+.grade-d .station-grade { color: var(--signal-red); }
+
+/* === BLOG === */
+.blog-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+.blog-card {
+  background: var(--tunnel-deep);
+  border: 1px solid var(--rail);
+  border-radius: 8px;
+  padding: 28px;
+  transition: border-color 0.2s, transform 0.2s;
+  cursor: pointer;
+}
+.blog-card:hover {
+  border-color: var(--amber);
+  transform: translateY(-2px);
+}
+.blog-cat {
+  display: inline-block;
+  background: rgba(244, 184, 50, 0.1);
+  color: var(--amber);
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  padding: 4px 10px;
+  border-radius: 100px;
+  margin-bottom: 16px;
+}
+.blog-title {
+  font-family: 'Inter', sans-serif;
+  font-weight: 800;
+  font-size: 22px;
+  line-height: 1.2;
+  letter-spacing: -0.5px;
+  margin-bottom: 12px;
+  color: var(--tile);
+}
+.blog-excerpt {
+  font-size: 14px;
+  color: var(--tile-dim);
+  line-height: 1.55;
+  margin-bottom: 16px;
+}
+.blog-meta {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  color: var(--steel-dim);
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+}
+
+/* === FOOTER === */
+footer {
+  background: var(--tunnel-deep);
+  padding: 60px 32px 32px;
+  border-top: 3px solid var(--amber);
+  margin-top: 80px;
+}
+.footer-inner {
+  max-width: 1280px; margin: 0 auto;
+  display: grid; grid-template-columns: 2fr 1fr 1fr 1fr;
+  gap: 48px;
+}
+.footer-brand-block {
+  display: flex; align-items: center; gap: 14px;
+  font-family: 'Inter', sans-serif;
+  font-weight: 900;
+  font-size: 22px;
+  color: var(--tile);
+}
+.footer-brand-block .brand-bullet {
+  width: 38px; height: 38px; font-size: 18px;
+}
+.footer-col h5 {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  color: var(--amber);
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  font-weight: 600;
+  margin-bottom: 14px;
+}
+.footer-col a, .footer-col p {
+  display: block;
+  color: var(--tile-dim);
+  font-size: 14px;
+  margin-bottom: 8px;
+}
+.footer-bottom {
+  max-width: 1280px; margin: 40px auto 0;
+  padding-top: 24px;
+  border-top: 1px solid var(--rail);
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  color: var(--steel-dim);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  display: flex; justify-content: space-between; flex-wrap: wrap; gap: 16px;
+}
+
+@media (max-width: 900px) {
+  .nav-links { display: none; }
+  .board-inner { grid-template-columns: repeat(2, 1fr); gap: 24px; }
+  .route-line { flex-direction: column; gap: 24px; }
+  .route-line::before { display: none; }
+  .blog-grid { grid-template-columns: 1fr; }
+  .footer-inner { grid-template-columns: 1fr 1fr; }
+}
+</style>
+</head>
+<body>
+
+<div class="sign-bar">
+  <div class="sign-bar-inner">
+    <span><span class="sign-dot"></span>All Systems Operational</span>
+    <span>2026-04-20 · 14:32 UTC</span>
+    <span>42 Authorities · 3 States · 24 Categories</span>
+    <span><span class="sign-dot"></span>Next Escalation Run: 14:00 UTC Daily</span>
+  </div>
+</div>
+
+<nav class="nav">
+  <div class="brand">
+    <span class="brand-bullet">F</span>
+    Fault Line
+  </div>
+  <div class="nav-links">
+    <a href="#">Report</a>
+    <a href="#">Map</a>
+    <a href="#">Grades</a>
+    <a href="#">Data</a>
+    <a href="#">About</a>
+    <a href="#">Sign In</a>
+  </div>
+</nav>
+
+<section class="hero">
+  <div class="hero-track">Track 01 · Civic Infrastructure Line · Now Boarding</div>
+  <h1>Your tax dollars should<br><span class="amber">fix this faster.</span></h1>
+  <p class="hero-sub">Report infrastructure in ten seconds. Community-verified, GPS-stamped, legally documented. When the community speaks together, authorities can't look away.</p>
+  <div class="hero-cta-row">
+    <a href="#" class="btn btn-primary">Download Free</a>
+    <a href="#" class="btn btn-outline">See the system</a>
+  </div>
+</section>
+
+<div class="board">
+  <div class="board-frame">
+    <div class="board-inner">
+      <div class="stat"><div class="stat-num">24</div><div class="stat-label">Categories</div></div>
+      <div class="stat"><div class="stat-num">42</div><div class="stat-label">Authorities</div></div>
+      <div class="stat"><div class="stat-num">10<span style="font-size:22px;">S</span></div><div class="stat-label">Time to report</div></div>
+      <div class="stat"><div class="stat-num">$0</div><div class="stat-label">Forever</div></div>
+    </div>
+  </div>
+</div>
+
+<section class="section">
+  <div class="section-eyebrow">Line 01 · The Process</div>
+  <h2 class="section-title">Four stops to<br>accountability.</h2>
+  <p class="section-lead">Every submission routes through the same line. Transparent, predictable, documented at each stop.</p>
+
+  <div class="line">
+    <div class="stop">
+      <div class="stop-num">01 &middot; Report</div>
+      <h3>Snap a photo, submit</h3>
+      <p>One screen. The camera opens, AI auto-fills category and severity, GPS drops your pin. From open to submit in about ten seconds.</p>
+    </div>
+    <div class="stop">
+      <div class="stop-num">02 &middot; Verify</div>
+      <h3>Community confirms</h3>
+      <p>When three neighbors report the same spot within fifty meters, the cluster becomes community-verified evidence.</p>
+    </div>
+    <div class="stop">
+      <div class="stop-num">03 &middot; Escalate</div>
+      <h3>Authority notified</h3>
+      <p>At ten reports, a professional demand letter &mdash; citing your state's notice-of-defect statute &mdash; arrives in the responsible department's inbox.</p>
+    </div>
+    <div class="stop">
+      <div class="stop-num">04 &middot; Countdown</div>
+      <h3>Clock runs public</h3>
+      <p>The statutory deadline is visible to the community. Miss it and the city's liability exposure grows by the hour.</p>
+    </div>
+  </div>
+
+  <div class="tile-card">
+    <div class="tile-header">
+      <div class="tile-header-left">Rec &middot; RPT-026A-47-9182</div>
+      <div class="tile-header-right">Priority 02 · Escalated</div>
+    </div>
+    <div class="tile-body">
+      <div class="tile-subject">Pothole &middot; Large &middot; 1247 Elm St</div>
+      <dl class="tile-meta">
+        <div><dt>Jurisdiction</dt><dd>Brockton, MA</dd></div>
+        <div><dt>Coordinates</dt><dd>42.0834, -71.0184</dd></div>
+        <div><dt>First report</dt><dd>2026-03-14 08:43 UTC</dd></div>
+        <div><dt>Authority</dt><dd>Brockton DPW</dd></div>
+        <div><dt>Statute</dt><dd>M.G.L. c. 84 §15</dd></div>
+        <div><dt>Clock</dt><dd>18 days remaining</dd></div>
+      </dl>
+      <div class="tile-progress-label">
+        <span>Verification</span>
+        <span>11 / 10 · Complete</span>
+      </div>
+      <div class="tile-progress-bar"><div class="tile-progress-fill"></div></div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="section-eyebrow">Line 02 · Accountability</div>
+  <h2 class="section-title">The shame index.</h2>
+  <p class="section-lead">Every city gets a live grade on this line &mdash; fix rate, response time, severity, recurrence. Public. Comparable. Embeddable.</p>
+
+  <div class="route-map">
+    <div class="route-line">
+      <div class="stop-station grade-a">
+        <div class="station-dot"></div>
+        <div class="station-label">Cambridge</div>
+        <div class="station-grade">A−</div>
+        <div class="station-pop">119K</div>
+      </div>
+      <div class="stop-station grade-b">
+        <div class="station-dot"></div>
+        <div class="station-label">Somerville</div>
+        <div class="station-grade">B+</div>
+        <div class="station-pop">82K</div>
+      </div>
+      <div class="stop-station grade-c">
+        <div class="station-dot"></div>
+        <div class="station-label">Boston</div>
+        <div class="station-grade">C+</div>
+        <div class="station-pop">675K</div>
+      </div>
+      <div class="stop-station grade-c">
+        <div class="station-dot"></div>
+        <div class="station-label">Worcester</div>
+        <div class="station-grade">C−</div>
+        <div class="station-pop">206K</div>
+      </div>
+      <div class="stop-station grade-d">
+        <div class="station-dot"></div>
+        <div class="station-label">Springfield</div>
+        <div class="station-grade">D+</div>
+        <div class="station-pop">155K</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="section-eyebrow">Line 03 · Editorial</div>
+  <h2 class="section-title">From the newsroom.</h2>
+  <p class="section-lead">Research-grade writing on infrastructure economics, municipal accountability law, and the quiet math of neglect.</p>
+
+  <div class="blog-grid">
+    <div class="blog-card">
+      <span class="blog-cat">Economics</span>
+      <div class="blog-title">The $3 billion pothole: an economic autopsy</div>
+      <div class="blog-excerpt">Deconstructing AAA's headline number with TRIP, FHWA, NBER and TTI data. The real annual cost exceeds $130B &mdash; an order of magnitude greater than reported.</div>
+      <div class="blog-meta">14 min · Apr 14 2026</div>
+    </div>
+    <div class="blog-card">
+      <span class="blog-cat">Legal</span>
+      <div class="blog-title">Your city has a legal obligation to fix that road</div>
+      <div class="blog-excerpt">Statute-level analysis: M.G.L. c. 84 §15, R.I. Gen. Laws §24-5-14, NH RSA 231:90-92. Constructive notice, statutory deadlines, proper demand letters.</div>
+      <div class="blog-meta">12 min · Apr 12 2026</div>
+    </div>
+    <div class="blog-card">
+      <span class="blog-cat">Policy</span>
+      <div class="blog-title">Why 311 doesn't work, and what replaces it</div>
+      <div class="blog-excerpt">Five structural failures of the legacy system. Design principles for the citizen-aligned replacement that routes around the status quo.</div>
+      <div class="blog-meta">13 min · Apr 09 2026</div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-inner">
+    <div>
+      <div class="footer-brand-block">
+        <span class="brand-bullet">F</span>
+        Fault Line
+      </div>
+      <p style="color: var(--tile-dim); margin-top: 16px; font-size: 14px; max-width: 320px;">Community infrastructure accountability. Built by Moonlit Social Labs. Made for streets, maintained by the people who use them.</p>
+    </div>
+    <div class="footer-col">
+      <h5>Product</h5>
+      <a href="#">Download</a>
+      <a href="#">Features</a>
+      <a href="#">Blog</a>
+      <a href="#">Feedback</a>
+    </div>
+    <div class="footer-col">
+      <h5>Company</h5>
+      <a href="#">About</a>
+      <a href="#">Privacy</a>
+      <a href="#">Terms</a>
+    </div>
+    <div class="footer-col">
+      <h5>Contact</h5>
+      <a href="mailto:moonlit-social-labs@proton.me">moonlit-social-labs@proton.me</a>
+      <a href="https://ko-fi.com/moonlitsociallabs">Ko-fi</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>&copy; 2026 Moonlit Social Labs</span>
+    <span>Operational · V1.0.0</span>
+    <span>2026-04-20 · 02:15 UTC</span>
+  </div>
+</footer>
+
+</body>
+</html>

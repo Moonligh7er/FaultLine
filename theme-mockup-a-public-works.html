@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Fault Line — Theme Mockup A: Public Works</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800;900&family=IBM+Plex+Sans:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --asphalt: #15161A;
+  --asphalt-deep: #0C0D10;
+  --concrete: #2E2F33;
+  --concrete-light: #3A3B40;
+  --steel: #6B6E76;
+  --steel-light: #9A9CA2;
+  --eggshell: #F0EAE0;
+  --eggshell-dim: #C4BFB5;
+  --orange: #E85C2A;
+  --orange-bright: #FF6B35;
+  --lime: #C8D132;
+  --red: #C41E3A;
+  --grid: rgba(240, 234, 224, 0.06);
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: 'IBM Plex Sans', -apple-system, system-ui, sans-serif;
+  background: var(--asphalt);
+  color: var(--eggshell);
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+  /* Subtle concrete texture */
+  background-image:
+    linear-gradient(var(--grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+  background-size: 48px 48px;
+  background-position: -1px -1px;
+}
+a { color: var(--orange); text-decoration: none; }
+a:hover { color: var(--orange-bright); }
+
+/* === HAZARD STRIPE === */
+.hazard {
+  height: 14px;
+  background: repeating-linear-gradient(
+    -45deg,
+    var(--orange) 0 20px,
+    var(--asphalt) 20px 40px
+  );
+}
+.hazard-thin {
+  height: 4px;
+  background: repeating-linear-gradient(
+    -45deg,
+    var(--orange) 0 10px,
+    transparent 10px 20px
+  );
+}
+
+/* === NAV === */
+.nav {
+  position: sticky; top: 0; z-index: 50;
+  background: var(--asphalt-deep);
+  border-bottom: 2px solid var(--orange);
+  padding: 18px 32px;
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 32px;
+}
+.brand {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 900;
+  font-size: 26px;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  color: var(--eggshell);
+  display: flex; align-items: center; gap: 10px;
+}
+.brand-mark {
+  display: inline-block;
+  width: 10px; height: 26px;
+  background: var(--orange);
+  transform: skewX(-15deg);
+}
+.brand em {
+  font-style: normal;
+  color: var(--orange);
+}
+.nav-links {
+  display: flex; gap: 28px;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 600;
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+}
+.nav-links a {
+  color: var(--eggshell-dim);
+  transition: color 0.15s;
+}
+.nav-links a:hover { color: var(--orange); }
+.nav-cta {
+  background: var(--orange);
+  color: var(--asphalt-deep);
+  padding: 10px 20px;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 800;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  font-size: 13px;
+  border: 2px solid var(--orange);
+  transition: all 0.15s;
+}
+.nav-cta:hover { background: transparent; color: var(--orange); }
+
+/* === HERO === */
+.hero {
+  padding: 120px 32px 100px;
+  max-width: 1280px;
+  margin: 0 auto;
+  position: relative;
+}
+.hero-serial {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 12px;
+  color: var(--steel);
+  letter-spacing: 2px;
+  margin-bottom: 24px;
+  display: flex; align-items: center; gap: 12px;
+}
+.hero-serial::before {
+  content: ''; width: 24px; height: 1px; background: var(--orange);
+}
+.hero h1 {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 900;
+  font-size: clamp(54px, 10vw, 130px);
+  letter-spacing: -2px;
+  line-height: 0.92;
+  text-transform: uppercase;
+  margin-bottom: 28px;
+  max-width: 1100px;
+}
+.hero h1 .orange { color: var(--orange); }
+.hero h1 .strike {
+  position: relative; display: inline-block;
+  color: var(--steel);
+}
+.hero h1 .strike::after {
+  content: ''; position: absolute; left: 0; right: 0; top: 52%;
+  height: 10px; background: var(--red);
+  transform: rotate(-2deg);
+}
+.hero-sub {
+  font-size: 20px;
+  color: var(--eggshell-dim);
+  max-width: 640px;
+  margin-bottom: 48px;
+  line-height: 1.55;
+}
+.hero-sub strong { color: var(--eggshell); font-weight: 600; }
+.hero-cta-row { display: flex; gap: 16px; flex-wrap: wrap; }
+
+.btn {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 800;
+  font-size: 17px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  padding: 18px 36px;
+  border: 2px solid;
+  transition: all 0.15s;
+  cursor: pointer;
+  display: inline-flex; align-items: center; gap: 10px;
+  text-decoration: none;
+}
+.btn-primary {
+  background: var(--orange);
+  color: var(--asphalt-deep);
+  border-color: var(--orange);
+}
+.btn-primary:hover {
+  background: transparent; color: var(--orange);
+}
+.btn-primary::after { content: '→'; font-weight: 900; }
+.btn-outline {
+  background: transparent;
+  color: var(--eggshell);
+  border-color: var(--steel);
+}
+.btn-outline:hover { border-color: var(--eggshell); }
+
+/* === STAT BAR === */
+.stat-bar {
+  background: var(--asphalt-deep);
+  border-top: 1px solid var(--concrete);
+  border-bottom: 1px solid var(--concrete);
+  padding: 40px 32px;
+  margin-top: 40px;
+}
+.stat-bar-inner {
+  max-width: 1280px; margin: 0 auto;
+  display: grid; grid-template-columns: repeat(4, 1fr);
+  gap: 32px;
+}
+.stat {
+  border-left: 2px solid var(--orange);
+  padding-left: 20px;
+}
+.stat-num {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 900;
+  font-size: 56px;
+  line-height: 1;
+  color: var(--eggshell);
+  letter-spacing: -1px;
+}
+.stat-label {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  color: var(--steel-light);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-top: 8px;
+}
+
+/* === SECTION === */
+.section {
+  padding: 120px 32px;
+  max-width: 1280px;
+  margin: 0 auto;
+}
+.section-label {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 12px;
+  color: var(--orange);
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  display: flex; align-items: center; gap: 14px;
+  margin-bottom: 16px;
+}
+.section-label::before {
+  content: ''; width: 40px; height: 2px; background: var(--orange);
+}
+.section-title {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 900;
+  font-size: clamp(40px, 6vw, 68px);
+  letter-spacing: -1px;
+  line-height: 1;
+  text-transform: uppercase;
+  margin-bottom: 24px;
+  max-width: 900px;
+}
+.section-lead {
+  font-size: 18px;
+  color: var(--eggshell-dim);
+  max-width: 680px;
+  margin-bottom: 56px;
+}
+
+/* === PROCESS STEPS === */
+.steps {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 0;
+  border: 1px solid var(--concrete);
+  background: var(--asphalt-deep);
+}
+.step {
+  padding: 36px 28px;
+  border-right: 1px solid var(--concrete);
+  position: relative;
+  transition: background 0.2s;
+}
+.step:last-child { border-right: none; }
+.step:hover { background: var(--concrete); }
+.step-num {
+  font-family: 'IBM Plex Mono', monospace;
+  font-weight: 600;
+  font-size: 13px;
+  color: var(--orange);
+  letter-spacing: 2px;
+  margin-bottom: 16px;
+}
+.step h3 {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 800;
+  font-size: 24px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 10px;
+  color: var(--eggshell);
+}
+.step p { font-size: 14px; color: var(--eggshell-dim); }
+
+/* === REPORT CARD (simulated record) === */
+.report-card {
+  background: var(--asphalt-deep);
+  border: 1px solid var(--concrete);
+  padding: 32px;
+  max-width: 580px;
+  margin-top: 48px;
+  position: relative;
+}
+.report-card::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px;
+  background: repeating-linear-gradient(-45deg, var(--orange) 0 10px, var(--asphalt) 10px 20px);
+}
+.report-header {
+  display: flex; justify-content: space-between; align-items: flex-start;
+  gap: 16px; padding-bottom: 20px;
+  border-bottom: 1px dashed var(--concrete);
+  margin-bottom: 20px;
+}
+.report-id {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  color: var(--steel-light);
+  letter-spacing: 1.5px;
+}
+.report-cat {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 800;
+  font-size: 20px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--eggshell);
+  margin-top: 4px;
+}
+.report-badge {
+  background: var(--red);
+  color: var(--eggshell);
+  font-family: 'IBM Plex Mono', monospace;
+  font-weight: 600;
+  font-size: 10px;
+  letter-spacing: 1.5px;
+  padding: 4px 10px;
+  text-transform: uppercase;
+}
+.report-meta {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 16px 24px;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 12px;
+}
+.report-meta dt {
+  color: var(--steel-light);
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+  font-size: 10px;
+}
+.report-meta dd { color: var(--eggshell); font-size: 13px; }
+.report-progress {
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px dashed var(--concrete);
+}
+.report-progress-bar {
+  height: 6px;
+  background: var(--concrete);
+  margin-top: 8px;
+  position: relative;
+  overflow: hidden;
+}
+.report-progress-fill {
+  width: 80%; height: 100%; background: var(--lime);
+}
+.report-progress-label {
+  display: flex; justify-content: space-between;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  color: var(--steel-light);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+/* === CITY GRADE === */
+.grade-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 1px;
+  background: var(--concrete);
+  border: 1px solid var(--concrete);
+}
+.grade-cell {
+  background: var(--asphalt-deep);
+  padding: 28px 24px;
+  position: relative;
+}
+.grade-city {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 700;
+  font-size: 18px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--eggshell);
+  margin-bottom: 4px;
+}
+.grade-state {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 10px;
+  color: var(--steel-light);
+  letter-spacing: 1.5px;
+  margin-bottom: 20px;
+}
+.grade-letter {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 900;
+  font-size: 64px;
+  line-height: 1;
+  letter-spacing: -2px;
+}
+.grade-a { color: var(--lime); }
+.grade-b { color: var(--eggshell); }
+.grade-c { color: var(--orange); }
+.grade-d { color: var(--red); }
+
+/* === BLOG TEASER === */
+.blog-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1px;
+  background: var(--concrete);
+}
+.blog-card {
+  background: var(--asphalt-deep);
+  padding: 32px 28px;
+  transition: background 0.2s;
+  cursor: pointer;
+}
+.blog-card:hover { background: var(--concrete); }
+.blog-cat {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 10px;
+  color: var(--orange);
+  letter-spacing: 2px;
+  margin-bottom: 14px;
+  text-transform: uppercase;
+}
+.blog-title {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 800;
+  font-size: 22px;
+  line-height: 1.1;
+  margin-bottom: 12px;
+  color: var(--eggshell);
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+.blog-excerpt {
+  font-size: 14px;
+  color: var(--eggshell-dim);
+}
+
+/* === FOOTER === */
+footer {
+  background: var(--asphalt-deep);
+  padding: 60px 32px 32px;
+  border-top: 1px solid var(--concrete);
+  margin-top: 80px;
+}
+.footer-inner {
+  max-width: 1280px; margin: 0 auto;
+  display: flex; justify-content: space-between;
+  flex-wrap: wrap; gap: 32px;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 12px;
+  color: var(--steel-light);
+  letter-spacing: 1px;
+}
+.footer-inner p { line-height: 1.7; }
+.footer-inner strong { color: var(--eggshell); }
+
+@media (max-width: 768px) {
+  .nav-links { display: none; }
+  .stat-bar-inner { grid-template-columns: repeat(2, 1fr); }
+  .hero { padding: 60px 24px; }
+  .step { border-right: none; border-bottom: 1px solid var(--concrete); }
+}
+</style>
+</head>
+<body>
+
+<div class="hazard"></div>
+
+<nav class="nav">
+  <div class="brand">
+    <span class="brand-mark"></span>
+    Fault<em>Line</em>
+  </div>
+  <div class="nav-links">
+    <a href="#">Report</a>
+    <a href="#">Map</a>
+    <a href="#">Grades</a>
+    <a href="#">Data</a>
+    <a href="#">About</a>
+  </div>
+  <a href="#" class="nav-cta">Download</a>
+</nav>
+
+<section class="hero">
+  <div class="hero-serial">REC · 024-CATEGORIES · 042-AUTHORITIES · MA/RI/NH</div>
+  <h1>Your Tax Dollars<br>Should <span class="orange">Fix This</span><br><span class="strike">Never</span> <span>Faster</span></h1>
+  <p class="hero-sub">Report infrastructure issues in <strong>ten seconds</strong>. Community-verified, GPS-stamped, legally documented. When ten neighbors point at the same hazard, authorities can't look away.</p>
+  <div class="hero-cta-row">
+    <a href="#" class="btn btn-primary">Download Free</a>
+    <a href="#" class="btn btn-outline">See All Features</a>
+  </div>
+</section>
+
+<div class="stat-bar">
+  <div class="stat-bar-inner">
+    <div class="stat"><div class="stat-num">24</div><div class="stat-label">Report Categories</div></div>
+    <div class="stat"><div class="stat-num">42</div><div class="stat-label">Authorities Wired In</div></div>
+    <div class="stat"><div class="stat-num">10<span style="font-size:24px;">s</span></div><div class="stat-label">Time to Report</div></div>
+    <div class="stat"><div class="stat-num">$0</div><div class="stat-label">Forever</div></div>
+  </div>
+</div>
+
+<section class="section">
+  <div class="section-label">Protocol 01 / Procedure</div>
+  <h2 class="section-title">Three reports.<br>Real consequences.</h2>
+  <p class="section-lead">We turned individual frustration into collective power, automated the paperwork, and made inaction legally expensive.</p>
+
+  <div class="steps">
+    <div class="step">
+      <div class="step-num">STEP · 01</div>
+      <h3>Snap a photo</h3>
+      <p>One screen. One tap. AI auto-fills category, severity, and dimensions. GPS drops the pin.</p>
+    </div>
+    <div class="step">
+      <div class="step-num">STEP · 02</div>
+      <h3>Community verifies</h3>
+      <p>When three people report the same issue within 50 meters, it's community-verified.</p>
+    </div>
+    <div class="step">
+      <div class="step-num">STEP · 03</div>
+      <h3>Authority notified</h3>
+      <p>At ten reports, a professional email with legal language hits the responsible department.</p>
+    </div>
+    <div class="step">
+      <div class="step-num">STEP · 04</div>
+      <h3>Clock starts</h3>
+      <p>Public countdown. Miss the statutory deadline, face liability exposure.</p>
+    </div>
+  </div>
+
+  <div class="hazard-thin" style="margin-top: 48px;"></div>
+
+  <h3 style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:24px;text-transform:uppercase;letter-spacing:1px;margin-top:48px;margin-bottom:12px;">Live Report Record</h3>
+  <p style="color:var(--eggshell-dim);font-size:15px;max-width:580px;">Every report is a documented legal notification. This is what one looks like after community verification.</p>
+
+  <div class="report-card">
+    <div class="report-header">
+      <div>
+        <div class="report-id">RPT-026A-47-9182 · PRIORITY 02</div>
+        <div class="report-cat">Pothole · Large</div>
+      </div>
+      <span class="report-badge">Escalated</span>
+    </div>
+    <dl class="report-meta">
+      <div><dt>Location</dt><dd>1247 Elm St, Brockton MA</dd></div>
+      <div><dt>GPS</dt><dd>42.0834, -71.0184</dd></div>
+      <div><dt>First Reported</dt><dd>2026-03-14 08:43</dd></div>
+      <div><dt>Reports</dt><dd>11 / threshold 10</dd></div>
+      <div><dt>Authority</dt><dd>Brockton DPW</dd></div>
+      <div><dt>Statute</dt><dd>M.G.L. c. 84 § 15</dd></div>
+    </dl>
+    <div class="report-progress">
+      <div class="report-progress-label">
+        <span>Community Verification</span>
+        <span>11/10 <span style="color:var(--lime);">COMPLETE</span></span>
+      </div>
+      <div class="report-progress-bar"><div class="report-progress-fill"></div></div>
+    </div>
+  </div>
+</section>
+
+<div class="hazard"></div>
+
+<section class="section">
+  <div class="section-label">Protocol 02 / Accountability</div>
+  <h2 class="section-title">The Shame Index</h2>
+  <p class="section-lead">Every city, real-time grades, based on fix rate, response time, severity, and recurrence. Public. Shareable. Impossible to hide from.</p>
+
+  <div class="grade-grid">
+    <div class="grade-cell">
+      <div class="grade-city">Cambridge</div>
+      <div class="grade-state">MA · 119K pop</div>
+      <div class="grade-letter grade-a">A−</div>
+    </div>
+    <div class="grade-cell">
+      <div class="grade-city">Somerville</div>
+      <div class="grade-state">MA · 82K pop</div>
+      <div class="grade-letter grade-b">B+</div>
+    </div>
+    <div class="grade-cell">
+      <div class="grade-city">Boston</div>
+      <div class="grade-state">MA · 675K pop</div>
+      <div class="grade-letter grade-c">C+</div>
+    </div>
+    <div class="grade-cell">
+      <div class="grade-city">Worcester</div>
+      <div class="grade-state">MA · 206K pop</div>
+      <div class="grade-letter grade-c">C−</div>
+    </div>
+    <div class="grade-cell">
+      <div class="grade-city">Springfield</div>
+      <div class="grade-state">MA · 155K pop</div>
+      <div class="grade-letter grade-d">D+</div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="section-label">Protocol 03 / Editorial</div>
+  <h2 class="section-title">From the blog</h2>
+  <p class="section-lead">Research-grade writing on infrastructure economics, municipal accountability law, and the structural failures of the systems we inherit.</p>
+
+  <div class="blog-grid">
+    <div class="blog-card">
+      <div class="blog-cat">ECONOMICS · 14 MIN</div>
+      <div class="blog-title">The $3 billion pothole: an economic autopsy</div>
+      <div class="blog-excerpt">Deconstructing AAA's headline number with TRIP, FHWA, NBER and TTI data. The real annual cost is 10× the reported number.</div>
+    </div>
+    <div class="blog-card">
+      <div class="blog-cat">LEGAL · 12 MIN</div>
+      <div class="blog-title">Your city has a legal obligation to fix that road</div>
+      <div class="blog-excerpt">Statute-level analysis of M.G.L. c. 84 § 15, R.I. Gen. Laws § 24-5-14, and NH RSA 231:90-92.</div>
+    </div>
+    <div class="blog-card">
+      <div class="blog-cat">POLICY · 13 MIN</div>
+      <div class="blog-title">Why 311 doesn't work &mdash; and what replaces it</div>
+      <div class="blog-excerpt">Five structural failures and the design principles for a citizen-aligned replacement.</div>
+    </div>
+  </div>
+</section>
+
+<div class="hazard"></div>
+
+<footer>
+  <div class="footer-inner">
+    <p>
+      <strong>FAULT LINE</strong><br>
+      A PUBLIC WORKS TOOL<br>
+      MOONLIT SOCIAL LABS &copy; 2026
+    </p>
+    <p>
+      BUILT FOR<br>
+      MA · RI · NH · ALL 50 SOON<br>
+      MOONLIT-SOCIAL-LABS@PROTON.ME
+    </p>
+    <p>
+      STATUS · OPERATIONAL<br>
+      VERSION · 1.0.0<br>
+      LAST UPDATE · 2026-04-20
+    </p>
+  </div>
+</footer>
+
+</body>
+</html>

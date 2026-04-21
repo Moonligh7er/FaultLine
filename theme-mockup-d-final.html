@@ -1,0 +1,781 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Fault Line — Theme Mockup D (final): A+B blend</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,800;0,900;1,700;1,800;1,900&family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=IBM+Plex+Mono:wght@400;500;600&family=Oswald:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  /* ================= COLOR SYSTEM ================= */
+  /* Foundational */
+  --asphalt: #15161A;           /* primary background */
+  --asphalt-deep: #0C0D10;      /* elevated surfaces, footer */
+  --concrete: #2E2F33;           /* borders, dividers */
+  --concrete-light: #3A3B40;     /* hover surfaces */
+  --steel: #6B6E76;              /* secondary text */
+  --steel-light: #9A9CA2;        /* tertiary text, labels */
+
+  /* Primary signal — bright optimistic safety orange */
+  --orange: #FF6B35;             /* THE accent */
+  --orange-bright: #FF8A5C;      /* hover / highlight */
+  --orange-deep: #D9521F;        /* pressed / muted */
+  --orange-glow: rgba(255, 107, 53, 0.18);
+
+  /* Supporting signals */
+  --lime: #C8D132;               /* positive / complete / verified */
+  --red: #D63B3B;                /* danger / overdue / failed */
+
+  /* Paper / reading */
+  --eggshell: #F0EAE0;           /* primary foreground */
+  --eggshell-dim: #C4BFB5;       /* body dim */
+  --eggshell-mute: #8A857D;      /* captions / bylines */
+
+  /* Texture */
+  --grid: rgba(240, 234, 224, 0.05);
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: 'Lora', Georgia, serif;
+  background: var(--asphalt);
+  color: var(--eggshell);
+  line-height: 1.65;
+  font-size: 17px;
+  -webkit-font-smoothing: antialiased;
+  background-image:
+    linear-gradient(var(--grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+  background-size: 56px 56px;
+  background-position: -1px -1px;
+}
+a { color: var(--orange); text-decoration: none; }
+a:hover { color: var(--orange-bright); }
+
+/* ================= HAZARD STRIPES ================= */
+.hazard {
+  height: 14px;
+  background: repeating-linear-gradient(
+    -45deg,
+    var(--orange) 0 22px,
+    var(--asphalt) 22px 44px
+  );
+}
+.hazard-thin {
+  height: 4px;
+  background: repeating-linear-gradient(
+    -45deg,
+    var(--orange) 0 10px,
+    transparent 10px 20px
+  );
+}
+
+/* ================= NAV ================= */
+.nav {
+  position: sticky; top: 0; z-index: 50;
+  background: var(--asphalt-deep);
+  border-bottom: 2px solid var(--orange);
+  padding: 20px 36px;
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 32px;
+}
+.brand {
+  display: flex; align-items: center; gap: 14px;
+  font-family: 'Playfair Display', serif;
+  font-weight: 900;
+  font-style: italic;
+  font-size: 32px;
+  color: var(--eggshell);
+  letter-spacing: -0.5px;
+  line-height: 1;
+}
+.brand em { font-style: italic; color: var(--orange); }
+.brand-mark {
+  display: inline-block;
+  width: 10px; height: 28px;
+  background: var(--orange);
+  transform: skewX(-15deg);
+}
+.nav-links {
+  display: flex; gap: 32px;
+  font-family: 'Oswald', sans-serif;
+  font-weight: 500;
+  font-size: 13px;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+}
+.nav-links a {
+  color: var(--eggshell-dim);
+  transition: color 0.15s;
+  border-bottom: 2px solid transparent;
+  padding-bottom: 2px;
+}
+.nav-links a:hover { color: var(--orange); border-bottom-color: var(--orange); }
+.nav-cta {
+  background: var(--orange);
+  color: var(--asphalt-deep);
+  font-family: 'Oswald', sans-serif;
+  font-weight: 700;
+  font-size: 12px;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  padding: 11px 22px;
+  border: 2px solid var(--orange);
+  transition: all 0.15s;
+}
+.nav-cta:hover {
+  background: transparent; color: var(--orange);
+}
+
+/* ================= HERO ================= */
+.hero {
+  padding: 130px 36px 100px;
+  max-width: 1280px;
+  margin: 0 auto;
+}
+.hero-serial {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--steel-light);
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  margin-bottom: 28px;
+  display: flex; align-items: center; gap: 14px;
+}
+.hero-serial::before {
+  content: ''; width: 36px; height: 2px; background: var(--orange);
+}
+.hero h1 {
+  font-family: 'Playfair Display', serif;
+  font-weight: 900;
+  font-size: clamp(58px, 10vw, 140px);
+  letter-spacing: -3px;
+  line-height: 0.92;
+  margin-bottom: 32px;
+  max-width: 1100px;
+  color: var(--eggshell);
+}
+.hero h1 em {
+  font-style: italic;
+  font-weight: 900;
+  color: var(--orange);
+}
+.hero h1 .strike {
+  position: relative; display: inline-block;
+  color: var(--steel); font-style: normal;
+}
+.hero h1 .strike::after {
+  content: ''; position: absolute; left: 0; right: 0; top: 52%;
+  height: 10px; background: var(--red);
+  transform: rotate(-2deg);
+}
+.hero-sub {
+  font-family: 'Lora', serif;
+  font-size: 22px;
+  color: var(--eggshell-dim);
+  max-width: 680px;
+  margin-bottom: 48px;
+  line-height: 1.55;
+  font-style: italic;
+}
+.hero-sub strong { color: var(--eggshell); font-style: normal; font-weight: 600; }
+.hero-cta-row { display: flex; gap: 16px; flex-wrap: wrap; }
+
+.btn {
+  font-family: 'Oswald', sans-serif;
+  font-weight: 700;
+  font-size: 14px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  padding: 18px 36px;
+  border: 2px solid;
+  transition: all 0.15s;
+  cursor: pointer;
+  display: inline-flex; align-items: center; gap: 12px;
+  text-decoration: none;
+}
+.btn-primary {
+  background: var(--orange);
+  color: var(--asphalt-deep);
+  border-color: var(--orange);
+  box-shadow: 0 0 0 0 var(--orange-glow);
+}
+.btn-primary:hover {
+  background: var(--orange-bright);
+  border-color: var(--orange-bright);
+  box-shadow: 0 0 0 6px var(--orange-glow);
+  color: var(--asphalt-deep);
+}
+.btn-primary::after { content: '→'; font-weight: 900; }
+.btn-outline {
+  background: transparent;
+  color: var(--eggshell);
+  border-color: var(--steel);
+}
+.btn-outline:hover { border-color: var(--eggshell); color: var(--eggshell); }
+
+/* ================= STAT BAR ================= */
+.stat-bar {
+  background: var(--asphalt-deep);
+  border-top: 1px solid var(--concrete);
+  border-bottom: 1px solid var(--concrete);
+  padding: 48px 36px;
+}
+.stat-bar-inner {
+  max-width: 1280px; margin: 0 auto;
+  display: grid; grid-template-columns: repeat(4, 1fr);
+  gap: 40px;
+}
+.stat {
+  border-left: 3px solid var(--orange);
+  padding-left: 24px;
+}
+.stat-num {
+  font-family: 'Playfair Display', serif;
+  font-weight: 900;
+  font-style: italic;
+  font-size: 68px;
+  line-height: 1;
+  color: var(--eggshell);
+  letter-spacing: -1.5px;
+}
+.stat-label {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  color: var(--steel-light);
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  margin-top: 10px;
+}
+
+/* ================= SECTION ================= */
+.section {
+  padding: 130px 36px;
+  max-width: 1280px;
+  margin: 0 auto;
+}
+.section-label {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 12px;
+  color: var(--orange);
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  display: flex; align-items: center; gap: 14px;
+  margin-bottom: 18px;
+}
+.section-label::before {
+  content: ''; width: 44px; height: 2px; background: var(--orange);
+}
+.section-title {
+  font-family: 'Playfair Display', serif;
+  font-weight: 900;
+  font-size: clamp(44px, 6vw, 76px);
+  letter-spacing: -1.5px;
+  line-height: 1.02;
+  margin-bottom: 26px;
+  max-width: 960px;
+  color: var(--eggshell);
+}
+.section-title em { font-style: italic; color: var(--orange); font-weight: 900; }
+.section-lead {
+  font-family: 'Lora', serif;
+  font-style: italic;
+  font-size: 19px;
+  color: var(--eggshell-dim);
+  max-width: 720px;
+  margin-bottom: 60px;
+  line-height: 1.6;
+}
+
+/* ================= PROCESS STEPS ================= */
+.steps {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 0;
+  border: 1px solid var(--concrete);
+  background: var(--asphalt-deep);
+}
+.step {
+  padding: 40px 30px;
+  border-right: 1px solid var(--concrete);
+  position: relative;
+  transition: background 0.2s;
+}
+.step:last-child { border-right: none; }
+.step:hover { background: var(--concrete); }
+.step-num {
+  font-family: 'IBM Plex Mono', monospace;
+  font-weight: 600;
+  font-size: 12px;
+  color: var(--orange);
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  margin-bottom: 18px;
+}
+.step h3 {
+  font-family: 'Playfair Display', serif;
+  font-weight: 800;
+  font-size: 26px;
+  line-height: 1.15;
+  letter-spacing: -0.5px;
+  margin-bottom: 12px;
+  color: var(--eggshell);
+}
+.step p {
+  font-family: 'Lora', serif;
+  font-size: 15px;
+  color: var(--eggshell-dim);
+  line-height: 1.6;
+}
+
+/* ================= REPORT CARD (data record) ================= */
+.report-card {
+  background: var(--asphalt-deep);
+  border: 1px solid var(--concrete);
+  padding: 36px;
+  max-width: 600px;
+  margin-top: 52px;
+  position: relative;
+}
+.report-card::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px;
+  background: repeating-linear-gradient(-45deg, var(--orange) 0 10px, var(--asphalt-deep) 10px 20px);
+}
+.report-header {
+  display: flex; justify-content: space-between; align-items: flex-start;
+  gap: 16px; padding-bottom: 20px;
+  border-bottom: 1px dashed var(--concrete);
+  margin-bottom: 22px;
+}
+.report-id {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  color: var(--steel-light);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+.report-cat {
+  font-family: 'Playfair Display', serif;
+  font-weight: 800;
+  font-size: 26px;
+  letter-spacing: -0.5px;
+  color: var(--eggshell);
+}
+.report-cat em { font-style: italic; color: var(--orange); }
+.report-badge {
+  background: var(--red);
+  color: var(--eggshell);
+  font-family: 'Oswald', sans-serif;
+  font-weight: 700;
+  font-size: 10px;
+  letter-spacing: 2.5px;
+  padding: 6px 12px;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.report-meta {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 18px 28px;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 13px;
+}
+.report-meta dt {
+  color: var(--steel-light);
+  letter-spacing: 1.8px;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+  font-size: 10px;
+}
+.report-meta dd { color: var(--eggshell); font-size: 13px; }
+.report-progress {
+  margin-top: 26px;
+  padding-top: 22px;
+  border-top: 1px dashed var(--concrete);
+}
+.report-progress-bar {
+  height: 6px;
+  background: var(--concrete);
+  margin-top: 10px;
+  overflow: hidden;
+}
+.report-progress-fill {
+  width: 85%; height: 100%;
+  background: var(--lime);
+  box-shadow: 0 0 10px rgba(200, 209, 50, 0.3);
+}
+.report-progress-label {
+  display: flex; justify-content: space-between;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  color: var(--steel-light);
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+}
+.report-progress-label strong { color: var(--lime); }
+
+/* ================= CITY GRADES ================= */
+.grade-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1px;
+  background: var(--concrete);
+  border: 1px solid var(--concrete);
+}
+.grade-cell {
+  background: var(--asphalt-deep);
+  padding: 32px 28px;
+  transition: background 0.2s;
+}
+.grade-cell:hover { background: var(--concrete); }
+.grade-city {
+  font-family: 'Playfair Display', serif;
+  font-weight: 800;
+  font-size: 22px;
+  letter-spacing: -0.3px;
+  color: var(--eggshell);
+  margin-bottom: 4px;
+}
+.grade-state {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 10px;
+  color: var(--steel-light);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-bottom: 22px;
+}
+.grade-letter {
+  font-family: 'Playfair Display', serif;
+  font-weight: 900;
+  font-style: italic;
+  font-size: 72px;
+  line-height: 1;
+  letter-spacing: -3px;
+}
+.grade-a { color: var(--lime); }
+.grade-b { color: var(--eggshell); }
+.grade-c { color: var(--orange); }
+.grade-d { color: var(--red); }
+
+/* ================= BLOG TEASER ================= */
+.blog-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 1px;
+  background: var(--concrete);
+}
+.blog-card {
+  background: var(--asphalt-deep);
+  padding: 36px 30px;
+  transition: background 0.2s;
+  cursor: pointer;
+}
+.blog-card:hover { background: var(--concrete); }
+.blog-cat {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 10px;
+  color: var(--orange);
+  letter-spacing: 2.5px;
+  margin-bottom: 16px;
+  text-transform: uppercase;
+}
+.blog-title {
+  font-family: 'Playfair Display', serif;
+  font-weight: 800;
+  font-size: 24px;
+  line-height: 1.18;
+  letter-spacing: -0.5px;
+  margin-bottom: 14px;
+  color: var(--eggshell);
+}
+.blog-byline {
+  font-family: 'Lora', serif;
+  font-style: italic;
+  font-size: 13px;
+  color: var(--eggshell-mute);
+  margin-bottom: 12px;
+}
+.blog-excerpt {
+  font-family: 'Lora', serif;
+  font-size: 15px;
+  color: var(--eggshell-dim);
+  line-height: 1.6;
+}
+.drop-cap::first-letter {
+  font-family: 'Playfair Display', serif;
+  font-weight: 900;
+  font-style: italic;
+  font-size: 56px;
+  float: left;
+  line-height: 0.85;
+  padding: 4px 10px 0 0;
+  color: var(--orange);
+}
+
+/* ================= FOOTER ================= */
+footer {
+  background: var(--asphalt-deep);
+  padding: 64px 36px 36px;
+  border-top: 1px solid var(--concrete);
+  margin-top: 80px;
+}
+.footer-inner {
+  max-width: 1280px; margin: 0 auto;
+  display: grid; grid-template-columns: 2fr 1fr 1fr 1fr;
+  gap: 48px;
+}
+.footer-brand {
+  font-family: 'Playfair Display', serif;
+  font-weight: 900;
+  font-style: italic;
+  font-size: 32px;
+  color: var(--eggshell);
+  margin-bottom: 14px;
+}
+.footer-brand em { color: var(--orange); }
+.footer-lede {
+  font-family: 'Lora', serif;
+  font-style: italic;
+  font-size: 15px;
+  color: var(--eggshell-dim);
+  line-height: 1.6;
+  max-width: 340px;
+}
+.footer-col h5 {
+  font-family: 'Oswald', sans-serif;
+  font-size: 11px;
+  color: var(--orange);
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  font-weight: 600;
+  margin-bottom: 16px;
+}
+.footer-col a, .footer-col p {
+  display: block;
+  font-family: 'Lora', serif;
+  color: var(--eggshell-dim);
+  font-size: 14px;
+  margin-bottom: 8px;
+}
+.footer-col a:hover { color: var(--orange); }
+.footer-bottom {
+  max-width: 1280px; margin: 40px auto 0;
+  padding-top: 24px;
+  border-top: 1px solid var(--concrete);
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  color: var(--steel-light);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  display: flex; justify-content: space-between; flex-wrap: wrap; gap: 16px;
+}
+
+/* ================= RESPONSIVE ================= */
+@media (max-width: 900px) {
+  .nav-links { display: none; }
+  .stat-bar-inner { grid-template-columns: repeat(2, 1fr); gap: 28px; }
+  .step { border-right: none; border-bottom: 1px solid var(--concrete); }
+  .footer-inner { grid-template-columns: 1fr 1fr; }
+}
+</style>
+</head>
+<body>
+
+<div class="hazard"></div>
+
+<nav class="nav">
+  <div class="brand">
+    <span class="brand-mark"></span>
+    Fault<em> Line</em>
+  </div>
+  <div class="nav-links">
+    <a href="#">Report</a>
+    <a href="#">Map</a>
+    <a href="#">Grades</a>
+    <a href="#">Dispatch</a>
+    <a href="#">About</a>
+  </div>
+  <a href="#" class="nav-cta">Download</a>
+</nav>
+
+<section class="hero">
+  <div class="hero-serial">Record · 024 Categories · 042 Authorities · MA / RI / NH</div>
+  <h1>Your tax dollars should<br><span class="strike">never</span> <em>fix this faster</em>.</h1>
+  <p class="hero-sub">Report infrastructure issues in <strong>ten seconds</strong>. Community-verified, GPS-stamped, legally documented. When ten neighbors point at the same hazard, the city's deniability runs out.</p>
+  <div class="hero-cta-row">
+    <a href="#" class="btn btn-primary">Download Free</a>
+    <a href="#" class="btn btn-outline">See all features</a>
+  </div>
+</section>
+
+<div class="stat-bar">
+  <div class="stat-bar-inner">
+    <div class="stat"><div class="stat-num">24</div><div class="stat-label">Report Categories</div></div>
+    <div class="stat"><div class="stat-num">42</div><div class="stat-label">Authorities Wired In</div></div>
+    <div class="stat"><div class="stat-num">10<span style="font-size:30px;">s</span></div><div class="stat-label">Time to Report</div></div>
+    <div class="stat"><div class="stat-num">$0</div><div class="stat-label">Forever</div></div>
+  </div>
+</div>
+
+<section class="section">
+  <div class="section-label">Protocol 01 / The Procedure</div>
+  <h2 class="section-title">Three reports.<br><em>Real</em> consequences.</h2>
+  <p class="section-lead">Individual complaints die in queues. Documented evidence, multiplied by neighbors, changes the calculus.</p>
+
+  <div class="steps">
+    <div class="step">
+      <div class="step-num">Step · 01</div>
+      <h3>Snap a photo</h3>
+      <p>One screen, one tap. AI auto-fills category, severity, and dimensions. GPS drops the pin.</p>
+    </div>
+    <div class="step">
+      <div class="step-num">Step · 02</div>
+      <h3>Community verifies</h3>
+      <p>When three people report the same issue within 50 meters, it's community-verified.</p>
+    </div>
+    <div class="step">
+      <div class="step-num">Step · 03</div>
+      <h3>Authority notified</h3>
+      <p>At ten reports, a professional demand letter hits the responsible department.</p>
+    </div>
+    <div class="step">
+      <div class="step-num">Step · 04</div>
+      <h3>Clock starts</h3>
+      <p>Public countdown. Miss the statutory deadline, face liability exposure.</p>
+    </div>
+  </div>
+
+  <div class="hazard-thin" style="margin-top: 56px;"></div>
+
+  <h3 style="font-family:'Playfair Display',serif;font-weight:800;font-size:34px;margin-top:56px;margin-bottom:16px;font-style:italic;">A report of record.</h3>
+  <p style="font-family:'Lora',serif;font-size:18px;color:var(--eggshell-dim);max-width:620px;font-style:italic;line-height:1.55;">Every submission is a timestamped notice of defect. This is what one looks like after community verification.</p>
+
+  <div class="report-card">
+    <div class="report-header">
+      <div>
+        <div class="report-id">RPT-026A-47-9182 · Priority 02</div>
+        <div class="report-cat">Pothole, <em>large</em></div>
+      </div>
+      <span class="report-badge">Escalated</span>
+    </div>
+    <dl class="report-meta">
+      <div><dt>Location</dt><dd>1247 Elm St, Brockton MA</dd></div>
+      <div><dt>GPS</dt><dd>42.0834, -71.0184</dd></div>
+      <div><dt>First reported</dt><dd>2026-03-14 08:43</dd></div>
+      <div><dt>Reports</dt><dd>11 / threshold 10</dd></div>
+      <div><dt>Authority</dt><dd>Brockton DPW</dd></div>
+      <div><dt>Statute</dt><dd>M.G.L. c. 84 § 15</dd></div>
+    </dl>
+    <div class="report-progress">
+      <div class="report-progress-label">
+        <span>Community Verification</span>
+        <span>11/10 · <strong>COMPLETE</strong></span>
+      </div>
+      <div class="report-progress-bar"><div class="report-progress-fill"></div></div>
+    </div>
+  </div>
+</section>
+
+<div class="hazard"></div>
+
+<section class="section">
+  <div class="section-label">Protocol 02 / Accountability</div>
+  <h2 class="section-title">The <em>Shame</em> Index.</h2>
+  <p class="section-lead">Every city, real-time grades: fix rate, response time, severity, recurrence. Public. Shareable. Impossible to hide from.</p>
+
+  <div class="grade-grid">
+    <div class="grade-cell">
+      <div class="grade-city">Cambridge</div>
+      <div class="grade-state">MA · 119K pop</div>
+      <div class="grade-letter grade-a">A−</div>
+    </div>
+    <div class="grade-cell">
+      <div class="grade-city">Somerville</div>
+      <div class="grade-state">MA · 82K pop</div>
+      <div class="grade-letter grade-b">B+</div>
+    </div>
+    <div class="grade-cell">
+      <div class="grade-city">Boston</div>
+      <div class="grade-state">MA · 675K pop</div>
+      <div class="grade-letter grade-c">C+</div>
+    </div>
+    <div class="grade-cell">
+      <div class="grade-city">Worcester</div>
+      <div class="grade-state">MA · 206K pop</div>
+      <div class="grade-letter grade-c">C−</div>
+    </div>
+    <div class="grade-cell">
+      <div class="grade-city">Springfield</div>
+      <div class="grade-state">MA · 155K pop</div>
+      <div class="grade-letter grade-d">D+</div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="section-label">Protocol 03 / Editorial</div>
+  <h2 class="section-title">From the <em>desk</em>.</h2>
+  <p class="section-lead">Long-form reporting on infrastructure economics, municipal liability law, and the quiet math of neglect.</p>
+
+  <div class="blog-grid">
+    <div class="blog-card">
+      <div class="blog-cat">Economics · 14 min read</div>
+      <div class="blog-title">The $3 billion pothole: an economic autopsy</div>
+      <div class="blog-byline">By Michael Wylde · Moonlit Social Labs</div>
+      <div class="blog-excerpt drop-cap">Deconstructing AAA's headline number with data from TRIP, the FHWA, NBER and the Texas Transportation Institute. The real annual cost exceeds $130 billion &mdash; an order of magnitude greater than the figure in the news.</div>
+    </div>
+    <div class="blog-card">
+      <div class="blog-cat">Legal · 12 min read</div>
+      <div class="blog-title">Your city has a legal obligation to fix that road</div>
+      <div class="blog-byline">By Michael Wylde · Moonlit Social Labs</div>
+      <div class="blog-excerpt drop-cap">Statute-level analysis of M.G.L. c. 84 § 15, R.I. Gen. Laws § 24-5-14, and NH RSA 231:90-92. Constructive notice, statutory deadlines, and the anatomy of a proper demand letter.</div>
+    </div>
+    <div class="blog-card">
+      <div class="blog-cat">Policy · 13 min read</div>
+      <div class="blog-title">Why 311 doesn't work, and what replaces it</div>
+      <div class="blog-byline">By Michael Wylde · Moonlit Social Labs</div>
+      <div class="blog-excerpt drop-cap">Five structural failures of the legacy citizen-reporting system, and the design principles for the citizen-aligned platform that routes around the status quo.</div>
+    </div>
+  </div>
+</section>
+
+<div class="hazard"></div>
+
+<footer>
+  <div class="footer-inner">
+    <div>
+      <div class="footer-brand">Fault<em> Line</em></div>
+      <p class="footer-lede">Community infrastructure accountability. A product of Moonlit Social Labs, made for streets, maintained by the people who use them.</p>
+    </div>
+    <div class="footer-col">
+      <h5>Product</h5>
+      <a href="#">Download</a>
+      <a href="#">Features</a>
+      <a href="#">Blog</a>
+      <a href="#">Feedback</a>
+    </div>
+    <div class="footer-col">
+      <h5>Company</h5>
+      <a href="#">About</a>
+      <a href="#">Privacy</a>
+      <a href="#">Terms</a>
+    </div>
+    <div class="footer-col">
+      <h5>Contact</h5>
+      <a href="mailto:moonlit-social-labs@proton.me">moonlit-social-labs@proton.me</a>
+      <a href="https://ko-fi.com/moonlitsociallabs">☕ Ko-fi</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>&copy; 2026 Moonlit Social Labs</span>
+    <span>Operational · v1.0.0</span>
+    <span>Massachusetts · Rhode Island · New Hampshire</span>
+  </div>
+</footer>
+
+</body>
+</html>
