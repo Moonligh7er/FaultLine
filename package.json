@@ -9,6 +9,10 @@
     "web": "expo start --web"
   },
   "dependencies": {
+    "@expo-google-fonts/ibm-plex-mono": "^0.4.1",
+    "@expo-google-fonts/lora": "^0.4.2",
+    "@expo-google-fonts/oswald": "^0.4.2",
+    "@expo-google-fonts/playfair-display": "^0.4.2",
     "@expo/vector-icons": "^15.0.2",
     "@gorhom/bottom-sheet": "^5.2.8",
     "@react-native-async-storage/async-storage": "2.2.0",
@@ -24,6 +28,7 @@
     "expo-constants": "~55.0.9",
     "expo-device": "^55.0.10",
     "expo-file-system": "~55.0.11",
+    "expo-font": "^55.0.6",
     "expo-gl": "~55.0.10",
     "expo-haptics": "~55.0.9",
     "expo-image-manipulator": "~55.0.11",
@@ -38,6 +43,7 @@
     "expo-sharing": "~55.0.14",
     "expo-speech": "~55.0.9",
     "expo-speech-recognition": "^3.1.2",
+    "expo-splash-screen": "^55.0.18",
     "expo-status-bar": "~55.0.4",
     "expo-tracking-transparency": "~55.0.9",
     "i18n-js": "^4.5.3",
