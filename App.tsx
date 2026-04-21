@@ -1,8 +1,31 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useCallback, useEffect, useRef } from 'react';
 import { StatusBar } from 'expo-status-bar';
-import { AppState, AppStateStatus } from 'react-native';
+import { AppState, AppStateStatus, View } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import * as Notifications from 'expo-notifications';
+import * as SplashScreen from 'expo-splash-screen';
+import {
+  useFonts,
+  PlayfairDisplay_800ExtraBold,
+  PlayfairDisplay_800ExtraBold_Italic,
+  PlayfairDisplay_900Black,
+  PlayfairDisplay_900Black_Italic,
+} from '@expo-google-fonts/playfair-display';
+import {
+  Lora_400Regular,
+  Lora_400Regular_Italic,
+  Lora_600SemiBold,
+} from '@expo-google-fonts/lora';
+import {
+  Oswald_500Medium,
+  Oswald_600SemiBold,
+  Oswald_700Bold,
+} from '@expo-google-fonts/oswald';
+import {
+  IBMPlexMono_400Regular,
+  IBMPlexMono_500Medium,
+  IBMPlexMono_600SemiBold,
+} from '@expo-google-fonts/ibm-plex-mono';
 import Navigation from './src/navigation';
 import { processQueue } from './src/services/offlineQueue';
 import {
@@ -28,10 +51,35 @@ global.fetch = createPinnedFetch(originalFetch);
 
 initCrashReporting();
 
+// Hold the native splash screen until fonts + initial bootstrap are ready.
+SplashScreen.preventAutoHideAsync().catch(() => {});
+
 export default function App() {
   const notificationListener = useRef<Notifications.EventSubscription | undefined>(undefined);
   const responseListener = useRef<Notifications.EventSubscription | undefined>(undefined);
   const appState = useRef(AppState.currentState);
+
+  const [fontsLoaded, fontError] = useFonts({
+    PlayfairDisplay_800ExtraBold,
+    PlayfairDisplay_800ExtraBold_Italic,
+    PlayfairDisplay_900Black,
+    PlayfairDisplay_900Black_Italic,
+    Lora_400Regular,
+    Lora_400Regular_Italic,
+    Lora_600SemiBold,
+    Oswald_500Medium,
+    Oswald_600SemiBold,
+    Oswald_700Bold,
+    IBMPlexMono_400Regular,
+    IBMPlexMono_500Medium,
+    IBMPlexMono_600SemiBold,
+  });
+
+  const onLayoutReady = useCallback(async () => {
+    if (fontsLoaded || fontError) {
+      await SplashScreen.hideAsync().catch(() => {});
+    }
+  }, [fontsLoaded, fontError]);
 
   useEffect(() => {
     const logErr = (name: string) => (err: any) => console.warn(`[${name}]`, err?.message || err);
@@ -104,8 +152,12 @@ export default function App() {
     };
   }, []);
 
+  // Keep the splash up until fonts resolve. If fonts fail, we still render
+  // with system fallbacks rather than leaving the user on a stuck splash.
+  if (!fontsLoaded && !fontError) return null;
+
   return (
-    <GestureHandlerRootView style={{ flex: 1 }}>
+    <GestureHandlerRootView style={{ flex: 1 }} onLayout={onLayoutReady}>
       <ThemeProvider>
         <TrackingPrompt />
         <StatusBar style="light" />
