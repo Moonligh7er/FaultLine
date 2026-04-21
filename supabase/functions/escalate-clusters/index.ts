@@ -121,7 +121,7 @@ Deno.serve(async (req) => {
     // 5. Try methods in priority order: api → email → web_form (manual)
     //    If the preferred method fails, fall back down the chain.
     const prioritized = prioritizeMethods(methods);
-    let sent: { method: string; recipient: string } | null = null;
+    let sent: { method: string; recipient: string; ticketId?: string } | null = null;
     const attempts: string[] = [];
 
     for (const m of prioritized) {
@@ -129,7 +129,11 @@ Deno.serve(async (req) => {
         if (m.method === 'api') {
           const apiResult = await submitViaApi(m, summary);
           if (apiResult.ok) {
-            sent = { method: `api:${m.protocol || 'unknown'}`, recipient: m.endpoint };
+            sent = {
+              method: `api:${m.protocol || 'unknown'}`,
+              recipient: m.endpoint,
+              ticketId: apiResult.ticketId,
+            };
             break;
           }
           attempts.push(`api:${m.protocol}: ${apiResult.error}`);
@@ -163,7 +167,24 @@ Deno.serve(async (req) => {
         p_subject: subject,
         p_body: body,
       });
-      results.push({ clusterId: cluster.id, status: 'sent', method: sent.method, recipient: sent.recipient, attempts });
+      // If the API returned a ticket ID, stash it on the just-written log
+      // row so the status-sync cron can poll for updates.
+      if (sent.ticketId) {
+        await supabase
+          .from('escalation_log')
+          .update({ external_ticket_id: sent.ticketId })
+          .eq('cluster_id', cluster.id)
+          .eq('method', sent.method)
+          .is('external_ticket_id', null);
+      }
+      results.push({
+        clusterId: cluster.id,
+        status: 'sent',
+        method: sent.method,
+        recipient: sent.recipient,
+        ticketId: sent.ticketId,
+        attempts,
+      });
     } else if (methods.length === 0) {
       results.push({ clusterId: cluster.id, status: 'skipped', error: 'Authority has no submission methods configured' });
     } else {
