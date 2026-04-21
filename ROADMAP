@@ -41,6 +41,14 @@
 - Add Google Analytics 4 or Plausible Analytics to website
 
 
+### Authority Coverage (current state 2026-04-21)
+- 795 US authorities seeded (69 NE email + 11 ME/VT/CT + 715 SeeClickFix + 11 Commonwealth Connect / CT / NM / OR gap fills via migration 014)
+- Boston MA has standalone Open311 endpoint (priority 1) — request POST API key to activate
+- 584+ have Census TIGER boundaries for point-in-polygon routing; enrichment runs on cron to catch the remaining
+- Chicago / SF / Seattle / Austin / Philly use proprietary 311 — no API seed possible; fall back to email or web-form scraping
+- See DEFERRED #9e for remaining Open311 probing, #9g for Census fuzzy-match recovery
+
+
 ## 2. ACTIVATE (do these when ready — app works without them)
 
 ### AdMob (revenue)

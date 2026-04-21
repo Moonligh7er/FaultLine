@@ -204,34 +204,26 @@ This is Resend's sandbox mode. It's the default for unverified accounts. Until a
 
 ## 9e. Open311 City Expansion (Tier 2 — per-city endpoint research)
 
-**Status:** Not done. Tier 1 (all SeeClickFix US cities) shipped in Migration 013 — 784 authorities with 584 routing boundaries. Tier 2 is the parallel expansion for Open311 cities, which require per-city endpoint research because Open311 is a federated standard (not a centralized service like SeeClickFix).
+**Status (2026-04-21 update):** Research pass complete. The Tier 2 hypothesis ("dozens of major US cities have their own standalone Open311 endpoints") did not survive contact with reality. Of the 30-city target list plus follow-ups in MA/CO/OR/CT/RI/NH/NM/FL:
 
-**Priority targets (~30 major US cities):** NYC, Chicago, DC, SF, LA, Seattle, Baltimore, Philadelphia, Austin, Houston, San Jose, Fort Worth, Indianapolis, Jacksonville, Columbus, Charlotte, El Paso, Nashville, Oklahoma City, Memphis, Portland OR, Las Vegas, Louisville, Milwaukee, Albuquerque, Tucson, Fresno, Sacramento, Long Beach, Kansas City MO.
+- **One** confirmed live standalone Open311 endpoint: **Boston** (`https://mayors24.cityofboston.gov/open311/v2/`, jurisdiction_id=`boston.gov`, API key required for POST). Already seeded in DB.
+- **Majority** of "has_open311: yes" cities (MA Commonwealth Connect members, CT/NH/NM trio, Eugene OR) actually route through SeeClickFix's aggregate Open311 endpoint — already covered by our SCF routing. New rows for the ones the scraper missed shipped in Migration 014.
+- **Proprietary / no API** (no seed possible): Chicago (CHI311), SF (SF311), Seattle (Find It Fix It), Austin 3-1-1, Philly (PublicStuff), Denver/Colorado Springs/Boulder/Aurora CO, Portland OR (PDX Reporter, historical endpoint dead), Salem/Gresham/Hillsboro OR, Somerville MA (QScend), Providence RI, Tampa FL — reachable only via email fallback or future web-form scraping.
 
-**For each, need:**
-- Open311 endpoint URL (e.g. `https://mayors24.cityofboston.gov/open311/v2/requests.json`)
-- Whether it requires `jurisdiction_id`
-- Whether it requires an API key (usually provisioned via email request)
-- Map our 24 category slugs to the city's service_codes via `GET /services.json`
-
-**Effort:** ~3-4 hours of research + seed + per-city testing.
+**Remaining Open311-specific work:** Request API keys from Boston (to enable POST), probe historical endpoints (pdxreporter.org, 311api.cityoforlando.net) at runtime in case they're still alive. ~1-2 hrs.
 
 ---
 
-## 9f. Missing Big-City SeeClickFix Seed (dormant-flagged cities)
+## 9f. Missing Big-City SeeClickFix Seed (dormant-flagged cities) — RESOLVED 2026-04-21
 
-**Status:** Known omission from Migration 013. The seed was scraped from `seeclickfix.com/recent_place_stats` which shows ~738 cities but *misses* the ones SeeClickFix keeps at `web_portal/<hash>` URLs rather than short slugs. Research-agent notes flagged these:
+**Original concern:** Migration 013's scraper of `seeclickfix.com/recent_place_stats` might have missed big cities that use SCF via `web_portal/<hash>` URLs instead of short slugs.
 
-- **Chicago IL** — uses CHI311 primarily; SeeClickFix presence uncertain
-- **San Francisco CA** — dormant or moved to in-house
-- **Seattle WA** — no clean slug
-- **Austin TX** — web_portal hash only
-- **Houston TX** — web_portal hash only
-- **Ann Arbor MI** — web_portal hash only
-- **Philadelphia PA** — landing page exists but activity unclear
-- **Minneapolis MN** — has SeeClickFix app but city routes via its own 311
+**Investigation outcome:** Of the 8 cities flagged (Chicago, SF, Seattle, Austin, Houston, Ann Arbor, Philly, Minneapolis):
+- **Already had SCF rows** from Migration 013 (scraper did catch them): Houston TX, Ann Arbor MI, Minneapolis MN, Albuquerque NM, Orlando FL.
+- **Confirmed NOT using SCF** (proprietary 311): Chicago, San Francisco, Seattle, Austin, Philadelphia — do not seed.
+- **Additional SCF-backed cities found missing** (scraper gap confirmed and filled via Migration 014): Hartford / Stamford / Waterbury CT; Lowell / New Bedford / Quincy / Springfield MA; Santa Fe / Las Cruces / Rio Rancho NM; Eugene OR. 11 INSERTs applied.
 
-**Fix:** Manually verify each city's SeeClickFix status, find the proper slug or confirm they're not actually SeeClickFix, seed any that are. ~2 hours.
+Boundaries for the 11 new rows will be populated by the next `enrich-authority-boundaries` run.
 
 ---
 
