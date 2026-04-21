@@ -115,14 +115,36 @@ Each item includes what's needed and what has already been prepared.
 
 ## 9. Supabase Edge Function Secrets
 
-**Status:** Project linked and all 5 edge functions deployed. They need secrets to function.
-**What's needed:** API keys for Resend and Anthropic, plus a domain for the FROM email
+**Status:** ✅ DONE as of 2026-04-20. All required secrets set:
+- ✅ `ANTHROPIC_API_KEY`
+- ✅ `RESEND_API_KEY`
+- ✅ `CRON_SECRET`
+- ✅ `FROM_EMAIL=onboarding@resend.dev` (Resend's test sender — works without domain verification)
+- ✅ `REPLY_TO=moonlit-social-labs@proton.me` (replies route to Michael's inbox)
+
+Edge functions updated to include `reply_to` header and redeployed.
+
+**Still needed:**
+- Set up daily cron for `escalate-clusters` in the Supabase Dashboard → Edge Functions → escalate-clusters → Schedule (recommended: `0 14 * * *` — 2pm UTC daily)
+
+---
+
+## 9b. Buy a Domain and Verify in Resend (upgrade escalation email credibility)
+
+**Status:** Not done. Escalation emails currently send from `onboarding@resend.dev` which looks amateur to city officials. Fix: own a real domain and verify it in Resend.
+
+**Why it matters:** The `escalate-clusters` function emails city officials with legal demand language. The sender address directly affects credibility — an `@resend.dev` sender gets flagged or ignored; a `reports@faultline.app` sender gets read.
+
+**Cost:** ~$12-15/year for the domain. Resend verification is free.
+
 **Steps:**
-1. Set secrets:
-   ```
-   npx supabase secrets set RESEND_API_KEY=xxx FROM_EMAIL=reports@yourdomain ANTHROPIC_API_KEY=xxx CRON_SECRET=xxx
-   ```
-2. Set up daily cron for `escalate-clusters` in the Supabase Dashboard → Edge Functions → escalate-clusters → Schedule
+1. Buy `faultline.app` (or `.org`, `.dev`, `.io`) at Namecheap, Porkbun, or Cloudflare Registrar
+2. Log in to Resend → Domains → Add Domain → enter your domain
+3. Resend gives you 3 DNS records (SPF TXT, DKIM TXT, return-path CNAME) — add them to your DNS provider
+4. Wait 5-15 min → click "Verify" in Resend → green checkmark
+5. Update Supabase secrets: `npx supabase secrets set FROM_EMAIL=reports@faultline.app --project-ref dzewklljiksyivsfpunt`
+6. (No redeploy needed — functions pick up new secret on next invocation)
+7. Update canonical URLs across website pages (find-and-replace `moonligh7er.github.io/FaultLine` → your new domain)
 
 ---
 
