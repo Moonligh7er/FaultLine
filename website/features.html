@@ -80,6 +80,119 @@
   border-radius: 0 !important;
   color: var(--steel-light) !important;
 }
+
+/* ===== Coverage section ===== */
+.coverage-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 14px;
+  margin: 24px 0 40px;
+}
+.coverage-stats .stat {
+  background: var(--tunnel-deep);
+  border: 1px solid var(--rail);
+  border-left: 3px solid var(--amber);
+  padding: 20px 22px;
+}
+.coverage-stats .num {
+  font-family: var(--ff-display);
+  font-size: 40px; font-weight: 900;
+  color: var(--amber);
+  line-height: 1;
+}
+.coverage-stats .label {
+  font-family: var(--ff-ui);
+  font-size: 11px; letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--steel-light);
+  margin-top: 8px;
+}
+.coverage-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 14px;
+}
+.cov-state {
+  background: var(--tunnel-deep);
+  border: 1px solid var(--rail);
+  padding: 18px 20px;
+  transition: border-color 0.15s;
+}
+.cov-state:hover { border-color: var(--amber); }
+.cov-state-head {
+  display: flex; align-items: baseline; gap: 12px;
+  margin-bottom: 10px; padding-bottom: 10px;
+  border-bottom: 1px solid var(--rail);
+}
+.cov-state-abbr {
+  font-family: var(--ff-mono);
+  font-weight: 600; font-size: 14px;
+  color: var(--amber);
+  letter-spacing: 1.5px;
+}
+.cov-state-name {
+  font-family: var(--ff-display);
+  font-size: 17px; font-weight: 700;
+  color: var(--tile);
+}
+.cov-state-count {
+  margin-left: auto;
+  font-family: var(--ff-mono);
+  font-size: 11px; color: var(--steel-light);
+  letter-spacing: 1.5px;
+}
+.cov-cities {
+  font-family: var(--ff-body);
+  font-size: 13.5px; line-height: 1.6;
+  color: var(--tile-dim);
+  margin: 0;
+}
+.coverage-cta {
+  background: var(--tunnel-deep);
+  border: 1px solid var(--rail);
+  border-left: 4px solid var(--amber);
+  padding: 32px 36px;
+  margin-top: 48px;
+}
+.coverage-cta-label {
+  font-family: var(--ff-mono);
+  font-size: 11px; letter-spacing: 2.5px;
+  color: var(--amber);
+  text-transform: uppercase;
+  margin-bottom: 14px;
+  display: inline-flex; align-items: center; gap: 12px;
+}
+.coverage-cta-label::before {
+  content: ''; width: 28px; height: 2px; background: var(--amber);
+}
+.coverage-cta h4 {
+  font-family: var(--ff-display);
+  font-size: 26px; font-weight: 800;
+  margin-bottom: 12px;
+  color: var(--tile);
+  line-height: 1.2;
+}
+.coverage-cta p {
+  color: var(--tile-dim);
+  font-family: var(--ff-body);
+  font-size: 15.5px; line-height: 1.65;
+  margin-bottom: 20px;
+  max-width: 680px;
+}
+.coverage-cta .cov-link {
+  font-family: var(--ff-ui);
+  font-size: 13px; letter-spacing: 2px;
+  text-transform: uppercase; font-weight: 700;
+  color: var(--amber);
+  border-bottom: 2px solid var(--amber);
+  padding-bottom: 3px;
+  transition: color 0.15s, border-color 0.15s;
+}
+.coverage-cta .cov-link:hover {
+  color: var(--amber-bright);
+  border-bottom-color: var(--amber-bright);
+  text-decoration: none;
+}
 </style>
 
 <!-- Google AdSense -->
@@ -156,11 +269,81 @@
   <div class="cat-header"><div class="cat-icon">📨</div><div class="cat-title">Authority Escalation</div></div>
   <p class="cat-desc">Automatic, professional, documented communication with the right government authority.</p>
   <div class="feature-grid">
-    <div class="feature"><h4><span class="fi">🏛️</span> Auto Authority Identification</h4><p>GPS boundary mapping + Census data identifies whether your report goes to the city, county, or state. 42 authorities pre-configured across MA, RI, and NH.</p></div>
+    <div class="feature"><h4><span class="fi">🏛️</span> Auto Authority Identification</h4><p>GPS boundary mapping + Census data identifies whether your report goes to the city, county, or state. <strong>795 authorities pre-configured across 46 states</strong>, with routing polygons seeded from the US Census TIGER dataset.</p></div>
     <div class="feature"><h4><span class="fi">📧</span> Auto Escalation (10 reports / 30 days)</h4><p>When a cluster hits 10 reports over 30 days, a professional report is auto-emailed to the responsible authority with location, photos, community impact, and fiscal projections.</p></div>
     <div class="feature"><h4><span class="fi">🔌</span> Direct 311 / SeeClickFix API</h4><p>For cities with Open311 or SeeClickFix APIs (Boston, Cambridge, hundreds more), reports submit directly into their ticketing system. No email — real tickets with tracking numbers.</p></div>
     <div class="feature"><h4><span class="fi">🔄</span> Bidirectional Status Sync</h4><p>For API-connected cities, Fault Line pulls status updates back. When the city marks it "in progress" or "resolved" in their system, your app updates automatically.</p></div>
     <div class="feature"><h4><span class="fi">🚨</span> Emergency Fast-Track</h4><p>Reports rated "extremely dangerous" or "critical urgency" skip the normal threshold. They're flagged immediately and prioritized for escalation.</p></div>
+  </div>
+</div>
+
+<!-- COVERAGE -->
+<div class="category">
+  <div class="cat-header"><div class="cat-icon">🗺️</div><div class="cat-title">Coverage</div></div>
+  <p class="cat-desc">Where Fault Line routes reports into real municipal ticketing systems today — nationwide, growing, and honest about where we can't yet reach.</p>
+
+  <div class="coverage-stats">
+    <div class="stat"><div class="num">795</div><div class="label">Authorities seeded</div></div>
+    <div class="stat"><div class="num">589</div><div class="label">Active cities & towns</div></div>
+    <div class="stat"><div class="num">46</div><div class="label">US states</div></div>
+    <div class="stat"><div class="num">584+</div><div class="label">With Census boundary routing</div></div>
+  </div>
+
+  <div class="coverage-grid">
+    <div class="cov-state"><div class="cov-state-head"><span class="cov-state-abbr">CA</span><span class="cov-state-name">California</span><span class="cov-state-count">56 cities</span></div><p class="cov-cities">Alameda, Antioch, Burlingame, Chula Vista, Dublin, Elk Grove, Emeryville, Folsom, Foster City, Gilroy, Los Angeles, Menlo Park, Merced, Millbrae, Milpitas, Morgan Hill, Murrieta, Oakland, Paso Robles, Poway, San Bernardino, San Clemente, San Leandro, San Rafael, South San Francisco, St. Helena, Truckee, Tustin, Vallejo, Victorville, Visalia, Walnut Creek, Watsonville + 24 more</p></div>
+    <div class="cov-state"><div class="cov-state-head"><span class="cov-state-abbr">MA</span><span class="cov-state-name">Massachusetts</span><span class="cov-state-count">48 cities</span></div><p class="cov-cities">Amesbury, Attleboro, Boston, Brockton, Cambridge, Chicopee, Fall River, Fitchburg, Foxborough, Framingham, Gloucester, Haverhill, Holyoke, Lawrence, Leominster, Lowell, Lynn, Malden, Marlborough, Medford, Methuen, Natick, Needham, New Bedford, Newburyport, Peabody, Pittsfield, Plymouth, Quincy, Revere, Salem, Somerville, Springfield, Taunton, Waltham, Watertown, Westfield, Weymouth, Worcester + 9 more</p></div>
+    <div class="cov-state"><div class="cov-state-head"><span class="cov-state-abbr">FL</span><span class="cov-state-name">Florida</span><span class="cov-state-count">40 cities</span></div><p class="cov-cities">Boca Raton, Clearwater, Daytona Beach, Fort Lauderdale, Fort Myers, Fort Pierce, Homestead, Key West, Largo, Orlando, Pembroke Pines, Pensacola, Pinellas Park, St. Petersburg, Stuart, Tamarac, Tarpon Springs, Venice, Winter Haven + 21 more</p></div>
+    <div class="cov-state"><div class="cov-state-head"><span class="cov-state-abbr">TX</span><span class="cov-state-name">Texas</span><span class="cov-state-count">34 cities</span></div><p class="cov-cities">Abilene, Baytown, Beaumont, Cedar Park, College Station, Edinburg, Farmers Branch, <strong>Houston</strong>, Killeen, Lubbock, Mesquite, Midland, Odessa, Pasadena, Victoria + 19 more</p></div>
+    <div class="cov-state"><div class="cov-state-head"><span class="cov-state-abbr">WA</span><span class="cov-state-name">Washington</span><span class="cov-state-count">30 cities</span></div><p class="cov-cities">Auburn, Bainbridge Island, Bellingham, Burien, Everett, Federal Way, Issaquah, Kent, Marysville, Mercer Island, Mukilteo, Puyallup, Renton, Sammamish, SeaTac, Shoreline, Tacoma, University Place + 12 more</p></div>
+    <div class="cov-state"><div class="cov-state-head"><span class="cov-state-abbr">GA</span><span class="cov-state-name">Georgia</span><span class="cov-state-count">29 cities</span></div><p class="cov-cities">Albany, Alpharetta, Brunswick, Decatur, Dunwoody, East Point, Kennesaw, Marietta, McDonough, Milton, Norcross, Smyrna, South Fulton, Stone Mountain, Valdosta + 14 more</p></div>
+    <div class="cov-state"><div class="cov-state-head"><span class="cov-state-abbr">IL</span><span class="cov-state-name">Illinois</span><span class="cov-state-count">26 cities</span></div><p class="cov-cities">Algonquin, Aurora, Carbondale, Elk Grove Village, Geneva, Glenview, Lake Forest, Libertyville, Lombard, Mount Prospect, Oak Brook, Peoria, Rock Island, Schiller Park, Springfield + 11 more</p></div>
+    <div class="cov-state"><div class="cov-state-head"><span class="cov-state-abbr">OH</span><span class="cov-state-name">Ohio</span><span class="cov-state-count">24 cities</span></div><p class="cov-cities">Athens, Canton, Chillicothe, Cleveland Heights, Gahanna, Hamilton, Hilliard, Hudson, Lima, Lorain, Newark, Parma, Reynoldsburg, Toledo, Upper Arlington, Westerville, Youngstown + 7 more</p></div>
+    <div class="cov-state"><div class="cov-state-head"><span class="cov-state-abbr">MI</span><span class="cov-state-name">Michigan</span><span class="cov-state-count">19 cities</span></div><p class="cov-cities"><strong>Ann Arbor</strong>, Bay City, Canton, Dearborn Heights, Detroit, Ferndale, Livonia, Muskegon, Portage, Sterling Heights, Westland, Ypsilanti + 7 more</p></div>
+    <div class="cov-state"><div class="cov-state-head"><span class="cov-state-abbr">CT</span><span class="cov-state-name">Connecticut</span><span class="cov-state-count">17 cities</span></div><p class="cov-cities">Bridgeport, Danbury, Darien, Enfield, Hamden, Hartford, Meriden, Middletown, New Britain, New Haven, Norwalk, Stamford, Waterbury, West Hartford, Wethersfield, Wilton, New Milford</p></div>
+    <div class="cov-state"><div class="cov-state-head"><span class="cov-state-abbr">CO</span><span class="cov-state-name">Colorado</span><span class="cov-state-count">15 cities</span></div><p class="cov-cities">Arvada, Aspen, Brighton, Colorado Springs, Commerce City, Durango, Erie, Greenwood Village, Littleton, Manitou Springs, Milliken, Montrose, Superior, Westminster, Windsor</p></div>
+    <div class="cov-state"><div class="cov-state-head"><span class="cov-state-abbr">IN</span><span class="cov-state-name">Indiana</span><span class="cov-state-count">15 cities</span></div><p class="cov-cities">Avon, Carmel, East Chicago, Elkhart, Fishers, Hammond, Huntington, Lafayette, New Haven, Plainfield, South Bend, West Lafayette + 3 more</p></div>
+    <div class="cov-state"><div class="cov-state-head"><span class="cov-state-abbr">UT</span><span class="cov-state-name">Utah</span><span class="cov-state-count">14 cities</span></div><p class="cov-cities">Bluffdale, Draper, Farmington, Lehi, Murray, Provo, Salt Lake City, Sandy, Saratoga Springs, South Jordan, South Salt Lake, Spanish Fork, Syracuse, West Valley City</p></div>
+    <div class="cov-state"><div class="cov-state-head"><span class="cov-state-abbr">KS</span><span class="cov-state-name">Kansas</span><span class="cov-state-count">12 cities</span></div><p class="cov-cities">Derby, Hutchinson, Independence, Junction City, Lawrence, Manhattan, Mission Hills, Overland Park, Pittsburg, Shawnee, Topeka, Wichita</p></div>
+    <div class="cov-state"><div class="cov-state-head"><span class="cov-state-abbr">MN</span><span class="cov-state-name">Minnesota</span><span class="cov-state-count">12 cities</span></div><p class="cov-cities">Blaine, Buffalo, Burnsville, Chanhassen, Eden Prairie, Edina, Mankato, Maple Grove, <strong>Minneapolis</strong>, Oakdale, Owatonna, Plymouth</p></div>
+    <div class="cov-state"><div class="cov-state-head"><span class="cov-state-abbr">NJ</span><span class="cov-state-name">New Jersey</span><span class="cov-state-count">12 cities</span></div><p class="cov-cities">Ewing, Fairview, Jersey City, Kearny, Madison, Middletown, Newark, Paterson, Princeton, Summit, West Windsor, Westfield</p></div>
+    <div class="cov-state"><div class="cov-state-head"><span class="cov-state-abbr">AZ</span><span class="cov-state-name">Arizona</span><span class="cov-state-count">10 cities</span></div><p class="cov-cities">Casa Grande, Chino Valley, Florence, Gilbert, Litchfield Park, Marana, Peoria, Queen Creek, Tucson, Yuma</p></div>
+    <div class="cov-state"><div class="cov-state-head"><span class="cov-state-abbr">NC</span><span class="cov-state-name">North Carolina</span><span class="cov-state-count">10 cities</span></div><p class="cov-cities">Archdale, Burlington, Carolina Beach, Davidson, Eden, Fayetteville, Nags Head, Pineville, Raleigh, Wake Forest</p></div>
+    <div class="cov-state"><div class="cov-state-head"><span class="cov-state-abbr">NY</span><span class="cov-state-name">New York</span><span class="cov-state-count">10 cities</span></div><p class="cov-cities">Albany, DeWitt, Ithaca, Mount Vernon, New York, Newburgh, Peekskill, Schenectady, Southampton, Syracuse</p></div>
+    <div class="cov-state"><div class="cov-state-head"><span class="cov-state-abbr">TN</span><span class="cov-state-name">Tennessee</span><span class="cov-state-count">10 cities</span></div><p class="cov-cities">Clarksville, Goodlettsville, Hendersonville, Johnson City, Kingsport, Knoxville, Lakeland, Memphis, Mount Juliet, Smyrna</p></div>
+    <div class="cov-state"><div class="cov-state-head"><span class="cov-state-abbr">IA</span><span class="cov-state-name">Iowa</span><span class="cov-state-count">9 cities</span></div><p class="cov-cities">Ames, Bettendorf, Clinton, Coralville, Davenport, Mason City, Muscatine, Urbandale, West Des Moines</p></div>
+    <div class="cov-state"><div class="cov-state-head"><span class="cov-state-abbr">MO</span><span class="cov-state-name">Missouri</span><span class="cov-state-count">9 cities</span></div><p class="cov-cities">Chesterfield, Columbia, Harrisonville, Hillsboro, Joplin, Lee's Summit, Parkville, Springfield, St. Joseph</p></div>
+    <div class="cov-state"><div class="cov-state-head"><span class="cov-state-abbr">NH</span><span class="cov-state-name">New Hampshire</span><span class="cov-state-count">9 cities</span></div><p class="cov-cities">Concord, Dover, Keene, Laconia, Lebanon, Manchester, Nashua, Portsmouth, Rochester</p></div>
+    <div class="cov-state"><div class="cov-state-head"><span class="cov-state-abbr">OK</span><span class="cov-state-name">Oklahoma</span><span class="cov-state-count">9 cities</span></div><p class="cov-cities">Bixby, Broken Arrow, Coweta, Duncan, Edmond, El Reno, Enid, Muskogee, Piedmont</p></div>
+    <div class="cov-state"><div class="cov-state-head"><span class="cov-state-abbr">AL</span><span class="cov-state-name">Alabama</span><span class="cov-state-count">8 cities</span></div><p class="cov-cities">Alabaster, Albertville, Birmingham, Gadsden, Homewood, Huntsville, Northport, Tuscaloosa</p></div>
+    <div class="cov-state"><div class="cov-state-head"><span class="cov-state-abbr">RI</span><span class="cov-state-name">Rhode Island</span><span class="cov-state-count">8 cities</span></div><p class="cov-cities">Cranston, East Providence, Middletown, Newport, Pawtucket, Providence, Warwick, Woonsocket</p></div>
+    <div class="cov-state"><div class="cov-state-head"><span class="cov-state-abbr">SC</span><span class="cov-state-name">South Carolina</span><span class="cov-state-count">8 cities</span></div><p class="cov-cities">Anderson, Beaufort, Bluffton, Hartsville, Hilton Head Island, Pendleton, Spartanburg, Summerville</p></div>
+    <div class="cov-state"><div class="cov-state-head"><span class="cov-state-abbr">WI</span><span class="cov-state-name">Wisconsin</span><span class="cov-state-count">8 cities</span></div><p class="cov-cities">Bayside, De Pere, Glendale, Greenfield, Mosinee, Oshkosh, Sheboygan, South Milwaukee</p></div>
+    <div class="cov-state"><div class="cov-state-head"><span class="cov-state-abbr">ME</span><span class="cov-state-name">Maine</span><span class="cov-state-count">7 cities</span></div><p class="cov-cities">Auburn, Augusta, Bangor, Biddeford, Lewiston, Portland, South Portland</p></div>
+    <div class="cov-state"><div class="cov-state-head"><span class="cov-state-abbr">ID</span><span class="cov-state-name">Idaho</span><span class="cov-state-count">6 cities</span></div><p class="cov-cities">Boise City, Eagle, Garden City, Kuna, Meridian, Pocatello</p></div>
+    <div class="cov-state"><div class="cov-state-head"><span class="cov-state-abbr">MD</span><span class="cov-state-name">Maryland</span><span class="cov-state-count">6 cities</span></div><p class="cov-cities">Annapolis, Bel Air, Cheverly, College Park, Hyattsville, Laurel</p></div>
+    <div class="cov-state"><div class="cov-state-head"><span class="cov-state-abbr">NM</span><span class="cov-state-name">New Mexico</span><span class="cov-state-count">6 cities</span></div><p class="cov-cities">Albuquerque, Carlsbad, Gallup, Las Cruces, Rio Rancho, Santa Fe</p></div>
+    <div class="cov-state"><div class="cov-state-head"><span class="cov-state-abbr">PA</span><span class="cov-state-name">Pennsylvania</span><span class="cov-state-count">6 cities</span></div><p class="cov-cities">Bethlehem, Lancaster, Monroeville, Norristown, State College, Zelienople</p></div>
+    <div class="cov-state"><div class="cov-state-head"><span class="cov-state-abbr">VT</span><span class="cov-state-name">Vermont</span><span class="cov-state-count">6 cities</span></div><p class="cov-cities">Burlington, Colchester, Essex, Montpelier, Rutland, South Burlington</p></div>
+    <div class="cov-state"><div class="cov-state-head"><span class="cov-state-abbr">KY</span><span class="cov-state-name">Kentucky</span><span class="cov-state-count">5 cities</span></div><p class="cov-cities">Danville, Frankfort, Jeffersontown, Paducah, Winchester</p></div>
+    <div class="cov-state"><div class="cov-state-head"><span class="cov-state-abbr">OR</span><span class="cov-state-name">Oregon</span><span class="cov-state-count">5 cities</span></div><p class="cov-cities">Ashland, Bend, Eugene, Newberg, Troutdale</p></div>
+    <div class="cov-state"><div class="cov-state-head"><span class="cov-state-abbr">VA</span><span class="cov-state-name">Virginia</span><span class="cov-state-count">5 cities</span></div><p class="cov-cities">Danville, Herndon, Martinsville, Portsmouth, Vienna</p></div>
+    <div class="cov-state"><div class="cov-state-head"><span class="cov-state-abbr">AR</span><span class="cov-state-name">Arkansas</span><span class="cov-state-count">4 cities</span></div><p class="cov-cities">Fayetteville, Fort Smith, Maumelle, Russellville</p></div>
+    <div class="cov-state"><div class="cov-state-head"><span class="cov-state-abbr">HI</span><span class="cov-state-name">Hawaii</span><span class="cov-state-count">4 cities</span></div><p class="cov-cities">Kahului, Kihei, Lahaina, Wailuku</p></div>
+    <div class="cov-state"><div class="cov-state-head"><span class="cov-state-abbr">LA</span><span class="cov-state-name">Louisiana</span><span class="cov-state-count">4 cities</span></div><p class="cov-cities">Gretna, Lake Charles, New Orleans, Plaquemine</p></div>
+    <div class="cov-state"><div class="cov-state-head"><span class="cov-state-abbr">NV</span><span class="cov-state-name">Nevada</span><span class="cov-state-count">4 cities</span></div><p class="cov-cities">Boulder City, Henderson, Las Vegas, North Las Vegas</p></div>
+    <div class="cov-state"><div class="cov-state-head"><span class="cov-state-abbr">DE</span><span class="cov-state-name">Delaware</span><span class="cov-state-count">2 cities</span></div><p class="cov-cities">Elsmere, Milford</p></div>
+    <div class="cov-state"><div class="cov-state-head"><span class="cov-state-abbr">NE</span><span class="cov-state-name">Nebraska</span><span class="cov-state-count">2 cities</span></div><p class="cov-cities">La Vista, Lincoln</p></div>
+    <div class="cov-state"><div class="cov-state-head"><span class="cov-state-abbr">SD</span><span class="cov-state-name">South Dakota</span><span class="cov-state-count">2 cities</span></div><p class="cov-cities">Brookings, Sioux Falls</p></div>
+    <div class="cov-state"><div class="cov-state-head"><span class="cov-state-abbr">WV</span><span class="cov-state-name">West Virginia</span><span class="cov-state-count">2 cities</span></div><p class="cov-cities">Huntington, Morgantown</p></div>
+    <div class="cov-state"><div class="cov-state-head"><span class="cov-state-abbr">MS</span><span class="cov-state-name">Mississippi</span><span class="cov-state-count">1 city</span></div><p class="cov-cities">Columbus</p></div>
+    <div class="cov-state"><div class="cov-state-head"><span class="cov-state-abbr">WY</span><span class="cov-state-name">Wyoming</span><span class="cov-state-count">1 city</span></div><p class="cov-cities">Cheyenne</p></div>
+  </div>
+
+  <div class="coverage-cta">
+    <div class="coverage-cta-label">Coming Soon</div>
+    <h4>Nationwide expansion, on the record.</h4>
+    <p>Chicago, San Francisco, Seattle, Austin, and Philadelphia run proprietary 311 platforms that don't expose public APIs — we're building a web-form-scraping worker to reach them. Boston's standalone Open311 endpoint is seeded and awaiting its API key. Additional direct-email DPW coverage is queued for under-served states, and a Census fuzzy-match pass will recover 50–70 deactivated unincorporated places.</p>
+    <a href="../roadmap.html" class="cov-link">See the full roadmap →</a>
   </div>
 </div>
 
