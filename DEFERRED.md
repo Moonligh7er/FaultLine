@@ -255,6 +255,72 @@ WHERE is_active = false AND name LIKE '% (SeeClickFix)';
 
 ---
 
+## 9h. PostGIS `spatial_ref_sys` Privilege Hardening (Supabase ticket open)
+
+**Status:** Support ticket opened with Supabase 2026-05-02. Awaiting their action.
+
+**The actual vulnerability:**
+Supabase's security advisor flags `public.spatial_ref_sys` as ERROR-level (RLS disabled on a public-schema table). Initial reaction was "PostGIS false positive" — but it's not, because the privilege grants on the table are wide open:
+
+```
+grantor          grantee          privileges
+supabase_admin   anon             SELECT, INSERT, UPDATE, DELETE, TRUNCATE, REFERENCES, TRIGGER
+supabase_admin   authenticated    SELECT, INSERT, UPDATE, DELETE, TRUNCATE, REFERENCES, TRIGGER
+supabase_admin   service_role     (same)
+supabase_admin   PUBLIC           SELECT
+```
+
+PostgREST exposes the `public` schema, so any client with the anon key can hit `/rest/v1/spatial_ref_sys` and:
+- `TRUNCATE` → wipe all 8,500 EPSG projection definitions
+- `UPDATE` srid 4326's `srtext` → corrupt WGS84
+- Either one breaks `find_authority_by_point`, `ST_GeomFromGeoJSON`, `ST_Contains` → app-wide geometry-routing DoS.
+
+Severity: medium. No data exfil, no auth bypass — just availability/integrity.
+
+**Why we can't fix it ourselves:**
+The table is owned by `supabase_admin`, a Supabase-internal platform role above the `postgres` role we're given. `REVOKE` from anon/authenticated as `postgres` silently no-ops because Postgres only honors REVOKEs from the original grantor (or the owner). RLS toggle from the dashboard fails with `must be owner of table spatial_ref_sys` for the same reason.
+
+**The ask in the ticket:**
+> Please REVOKE INSERT, UPDATE, DELETE, TRUNCATE, REFERENCES, TRIGGER on `public.spatial_ref_sys` from `anon` and `authenticated`. Leave SELECT in place (apps need it for PostGIS internals). This is a documented PostGIS-on-Supabase exposure flagged as ERROR by your own advisor on project `dzewklljiksyivsfpunt`.
+
+**What to verify when they respond:**
+
+1. Re-run privilege check:
+   ```sql
+   SELECT grantor, grantee, privilege_type
+   FROM information_schema.table_privileges
+   WHERE table_schema = 'public' AND table_name = 'spatial_ref_sys'
+     AND grantee IN ('anon', 'authenticated', 'PUBLIC')
+   ORDER BY grantee, privilege_type;
+   ```
+   Expected: `anon` and `authenticated` should retain only `SELECT` (or nothing). `PUBLIC` should still have SELECT.
+
+2. Re-run advisor:
+   ```
+   mcp call get_advisors security
+   ```
+   The `rls_disabled_in_public` ERROR for `spatial_ref_sys` may persist (the lint checks RLS, not grants), but the actual exposure path is closed.
+
+3. Smoke-test that PostGIS still works:
+   ```sql
+   SELECT ST_Contains(
+     ST_GeomFromGeoJSON('{"type":"Polygon","coordinates":[[[-71.1,42.3],[-71.0,42.3],[-71.0,42.4],[-71.1,42.4],[-71.1,42.3]]]}'),
+     ST_SetSRID(ST_MakePoint(-71.05, 42.35), 4326)
+   );
+   ```
+   Expected: `true`. Any srid lookup error means SELECT was over-revoked.
+
+4. Run a real boundary lookup:
+   ```sql
+   SELECT * FROM find_authority_by_point(42.3601, -71.0589);
+   ```
+   Expected: returns Boston row.
+
+**Alternative if Supabase declines:**
+Move PostGIS out of `public`: `ALTER EXTENSION postgis SET SCHEMA extensions;`. Also requires `supabase_admin`, but it's the path their advisor explicitly recommends (also clears the `extension_in_public` warning). Costs: every unqualified `ST_*` call in our SQL would need `extensions.` prefix or `SET search_path = public, extensions` (which migration 016 already does for our 16 functions — but bare SQL in edge functions / RPCs would still need touching).
+
+---
+
 ## 10. Supabase Migration 007 — Apply RPC Auth Guards
 
 **Status:** Migration file created at `supabase/migration_007_rpc_auth_guards.sql`
