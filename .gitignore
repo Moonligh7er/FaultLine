@@ -88,3 +88,10 @@ coverage/
 *.tmp
 tmp/
 supabase/.temp/
+
+# Image-pipeline working files (source renders + internal preview/review HTML).
+# The approved set is committed under website/og/, website/blog-heroes/,
+# website/social/, website/twitch/, store-metadata/, and assets/.
+generated-images/
+flux1-prompts-preview.html
+image-review.html
