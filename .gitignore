@@ -92,6 +92,9 @@ supabase/.temp/
 # Image-pipeline working files (source renders + internal preview/review HTML).
 # The approved set is committed under website/og/, website/blog-heroes/,
 # website/social/, website/twitch/, store-metadata/, and assets/.
+# image-subjects.json (source-of-truth) and the .mjs pipeline scripts ARE tracked.
 generated-images/
 flux1-prompts-preview.html
 image-review.html
+scripts/prompts.json
+scripts/decisions.txt
