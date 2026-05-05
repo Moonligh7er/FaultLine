@@ -102,19 +102,34 @@ p, li, dd { color: var(--tile-dim); }
   max-width: 1280px; margin: 0 auto;
 }
 .nav-brand {
-  display: inline-flex; align-items: center; gap: 14px;
+  display: inline-flex; align-items: baseline; gap: 10px;
   font-family: var(--ff-display);
   font-weight: 900; font-style: italic;
   font-size: 26px;
   color: var(--tile); letter-spacing: -0.5px;
   line-height: 1; text-decoration: none;
 }
-.nav-brand span { font-style: italic; color: var(--amber); }
-.nav-brand::before {
-  content: ''; display: inline-block;
-  width: 10px; height: 26px;
-  background: var(--amber); transform: skewX(-15deg);
+.nav-brand .brand-slash { color: var(--amber); margin: 0 2px; }
+.nav-brand .brand-line { color: var(--amber); }
+
+/* BETA pill — purple, scoped to nav + h1 contexts */
+.beta-badge {
+  display: inline-block;
+  background: #A855F7;
+  color: #fff;
+  font-family: var(--ff-ui);
+  font-style: normal;
+  font-weight: 700;
+  font-size: 10px;
+  letter-spacing: 1.8px;
+  text-transform: uppercase;
+  padding: 3px 9px;
+  border-radius: 100px;
+  vertical-align: middle;
+  line-height: 1;
 }
+h1 .beta-badge, h2 .beta-badge { font-size: 12px; padding: 4px 11px; margin-left: 10px; }
+
 .nav-links {
   display: flex; align-items: center; gap: 24px;
   font-family: var(--ff-ui);
@@ -128,6 +143,31 @@ p, li, dd { color: var(--tile-dim); }
   transition: color 0.15s, border-color 0.15s;
 }
 .nav-links a:hover { color: var(--amber); border-bottom-color: var(--amber); }
+.nav-links a[aria-current="page"] { color: var(--amber); border-bottom-color: var(--amber); }
+
+/* Ko-Fi support button — amber filled, action-oriented */
+.nav-kofi {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: var(--amber);
+  color: var(--tunnel-deep) !important;
+  border: 1px solid var(--amber);
+  padding: 6px 14px;
+  border-radius: 100px;
+  font-family: var(--ff-ui);
+  font-size: 11px; font-weight: 700;
+  letter-spacing: 1.8px; text-transform: uppercase;
+  text-decoration: none;
+  transition: background 0.15s, box-shadow 0.15s;
+}
+.nav-kofi:hover {
+  background: var(--amber-bright);
+  box-shadow: 0 0 0 4px var(--amber-glow);
+  border-bottom-color: var(--amber-bright) !important;
+  color: var(--tunnel-deep);
+}
+.nav-kofi::before { content: '☕'; font-size: 13px; }
+
+/* Legacy compat — kept so old pages don't crash; new markup uses .nav-kofi */
 .nav-active {
   display: inline-flex; align-items: center; gap: 8px;
   background: rgba(70, 195, 122, 0.08);
@@ -140,21 +180,10 @@ p, li, dd { color: var(--tile-dim); }
   letter-spacing: 1.5px; text-transform: uppercase;
   text-decoration: none;
 }
-.nav-active:hover {
-  background: rgba(70, 195, 122, 0.16);
-  color: var(--signal-green);
-  border-bottom: 1px solid rgba(70, 195, 122, 0.3) !important;
-}
 .nav-dot {
   width: 8px; height: 8px; border-radius: 50%;
   background: var(--signal-green);
-  box-shadow: 0 0 6px var(--signal-green);
   display: inline-block;
-  animation: nav-pulse 2s ease-in-out infinite;
-}
-@keyframes nav-pulse {
-  0%, 100% { opacity: 1; box-shadow: 0 0 6px var(--signal-green); }
-  50% { opacity: 0.55; box-shadow: 0 0 12px var(--signal-green); }
 }
 
 /* ===== Hero ===== */
@@ -332,5 +361,5 @@ footer a:hover { color: var(--amber); }
   .section { padding: 60px 24px; }
 }
 @media (max-width: 600px) {
-  .nav-links a:not(.nav-active) { display: none; }
+  .nav-links a:not(.nav-kofi) { display: none; }
 }
