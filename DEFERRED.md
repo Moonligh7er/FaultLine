@@ -255,9 +255,19 @@ WHERE is_active = false AND name LIKE '% (SeeClickFix)';
 
 ---
 
-## 9h. PostGIS `spatial_ref_sys` Privilege Hardening — RELOCATION IN PROGRESS
+## 9h. PostGIS `spatial_ref_sys` Privilege Hardening — RESOLVED 2026-05-06
 
-**Status (2026-05-06):** Supabase chose the structurally better fix instead of just revoking grants — they offered to relocate the PostGIS extension out of `public` to the dedicated `extensions` schema. We granted explicit permission for them to run the relocation SQL. Awaiting their confirmation.
+**Status:** Supabase relocated the PostGIS extension to the `extensions` schema. All 5 verification checks passed:
+
+| Check | Result |
+|---|---|
+| Extension schema | `extensions` ✓ |
+| `spatial_ref_sys` schema | `extensions` ✓ |
+| `ST_MakePoint` resolves via search_path | ✓ |
+| `find_authority_by_point(42.3601, -71.0589)` | returns Boston 311 ✓ |
+| Advisor PostGIS lints | both cleared ✓ |
+
+The relocation surfaced 4 unrelated SECURITY DEFINER lints (`handle_new_user`, `rls_auto_enable` callable as anon/authenticated via RPC). Migration 017 revoked EXECUTE — trigger invocation paths unaffected. Net advisor state: 3 lints, all intentional (`submission_log` audit table, `ai_cache` + `feedback` permissive INSERT).
 
 **Why this is better than the original ask (revoke privileges):**
 - Removes `spatial_ref_sys` from `public` schema entirely → no longer exposed to PostgREST → write-attack path is *structurally* impossible, not just policy-blocked
