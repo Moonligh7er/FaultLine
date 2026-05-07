@@ -493,3 +493,32 @@ Migration 016 pinned `search_path = public, extensions` on all 17 PostGIS-using 
 3. Fill out Google Play Data Safety form using `google-data-safety.md`
 4. Fill out Apple Privacy Labels using `apple-privacy-labels.md`
 5. Complete Content Rating questionnaire using `content-rating.md`
+
+---
+
+## 20. Eliminate `website/` ↔ root mirror — switch GH Pages to `/docs`
+
+**Status:** The marketing site currently lives in **two places** in this repo: `website/<file>` (canonical) and `<file>` at repo root (mirror). This was a workaround when GitHub Pages was 404-ing because GH Pages free tier serves from repo root or `/docs`, not arbitrary subdirectories like `/website`.
+
+**Cost of current setup:**
+- ~50 MB of binary duplication (every PNG in `og/`, `blog-heroes/`, `social/`, `twitch/` plus `og-image.png` is stored twice)
+- Every edit to `website/*.html` must be mirrored to `*.html` at root or the deploy goes stale
+- Easy to forget; introduces a class of "I changed it, why isn't it live" bugs (already saved to memory as `feedback_website_root_mirror.md`)
+
+**The fix:**
+1. Rename `website/` → `docs/`:
+   ```bash
+   git mv website docs
+   ```
+2. Update any internal references that say `website/` (check `scripts/`, root HTML) — most use relative paths so this is light.
+3. Delete the root duplicates:
+   ```bash
+   rm about.html blog.html features.html features-plain.html feedback.html index.html landing.html privacy.html terms.html theme.css og-image.png robots.txt sitemap.xml CNAME ads.txt
+   rm -rf og/ blog-heroes/ social/ twitch/
+   ```
+4. GitHub repo → Settings → Pages → Source: change from `master / (root)` to `master / /docs`. Save. Wait ~1 min for rebuild.
+5. Verify: `curl -sI https://fault-line.dev/` returns 200. Spot-check a blog hero image.
+
+**Effort:** ~10 minutes. Halves repo size, eliminates the dual-write tax permanently.
+
+**Why deferred:** Not blocking anything; current setup works. Worth doing on a quiet day before next round of marketing-site edits.
