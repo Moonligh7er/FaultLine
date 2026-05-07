@@ -5,12 +5,12 @@ import * as Linking from 'expo-linking';
 // Examples:
 //   faultline://report/abc-123
 //   faultline://dashboard
-//   https://faultline.app/report/abc-123
+//   https://fault-line.dev/report/abc-123
 
 export const LINKING_CONFIG = {
   prefixes: [
     Linking.createURL('/'),
-    'https://faultline.app',
+    'https://fault-line.dev',
     'faultline://',
   ],
   config: {

@@ -65,7 +65,7 @@ export default function PrivacyPolicyScreen() {
       <Text style={styles.heading}>5. Your Rights</Text>
       <Text style={styles.body}>
         • Access: View all your reports and profile data in the app.{'\n'}
-        • Delete: Request deletion of your account and all associated data by emailing privacy@faultline.app.{'\n'}
+        • Delete: Request deletion of your account and all associated data by emailing privacy@fault-line.dev.{'\n'}
         • Anonymous reporting: You can submit reports without creating an account.{'\n'}
         • Opt-out of tracking: Deny the iOS tracking prompt to prevent personalized ads.
       </Text>
@@ -83,7 +83,7 @@ export default function PrivacyPolicyScreen() {
       <Text style={styles.heading}>8. Contact</Text>
       <Text style={[styles.body, { marginBottom: SPACING.xxl }]}>
         For privacy questions or data deletion requests:{'\n'}
-        Email: privacy@faultline.app
+        Email: privacy@fault-line.dev
       </Text>
     </ScrollView>
   );

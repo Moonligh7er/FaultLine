@@ -232,7 +232,7 @@ async def submit_web_form(body: dict, authorization: str | None = None):
             browser = await p.chromium.launch(headless=True)
             context = await browser.new_context(
                 user_agent=(
-                    "Mozilla/5.0 (FaultLine/1.0; +https://faultline.app) "
+                    "Mozilla/5.0 (FaultLine/1.0; +https://fault-line.dev) "
                     "CivicEscalationBot/1.0"
                 ),
             )
