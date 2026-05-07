@@ -151,7 +151,7 @@ const svg = `
     font-weight="400"
     fill="${WHITE}"
     fill-opacity="0.65"
-  >faultline.app</text>
+  >fault-line.dev</text>
 
   <!-- Accent line at bottom -->
   <rect x="0" y="622" width="${WIDTH}" height="8" fill="${ACCENT}" fill-opacity="0.7"/>
