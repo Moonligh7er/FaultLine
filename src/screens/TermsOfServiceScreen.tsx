@@ -71,7 +71,7 @@ export default function TermsOfServiceScreen() {
 
       <Text style={styles.heading}>11. Contact</Text>
       <Text style={[styles.body, { marginBottom: SPACING.xxl }]}>
-        Questions about these terms: legal@faultline.app
+        Questions about these terms: legal@fault-line.dev
       </Text>
     </ScrollView>
   );

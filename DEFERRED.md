@@ -102,12 +102,12 @@ Each item includes what's needed and what has already been prepared.
 
 ## 8. Domain & Email
 
-**Status:** All canonical URLs point to `moonligh7er.github.io/FaultLine/`. Contact emails use `faultline.app` domain.
+**Status:** All canonical URLs point to `fault-line.dev/`. Contact emails use `faultline.app` domain.
 **What's needed:** A purchased domain
 **Steps:**
-1. Buy domain (faultline.app, .io, .dev, or .org)
+1. Buy domain (fault-line.dev (purchased 2026-05-06))
 2. Point DNS to hosting (GitHub Pages, Vercel, or Netlify)
-3. Find-and-replace `moonligh7er.github.io/FaultLine` with your domain across `website/`, `robots.txt`, `sitemap.xml`
+3. Find-and-replace `fault-line.dev` with your domain across `website/`, `robots.txt`, `sitemap.xml`
 4. Configure email (Resend or similar) for hello@, privacy@, legal@ addresses
 5. Update `robots.txt` and `sitemap.xml` with new domain
 
@@ -148,9 +148,9 @@ This is Resend's sandbox mode. It's the default for unverified accounts. Until a
 2. Log in to Resend → Domains → Add Domain → enter your domain
 3. Resend gives you 3 DNS records (SPF TXT, DKIM TXT, return-path CNAME) — add them to your DNS provider
 4. Wait 5-15 min → click "Verify" in Resend → green checkmark
-5. Update Supabase secrets: `npx supabase secrets set FROM_EMAIL=reports@faultline.app --project-ref dzewklljiksyivsfpunt`
+5. Update Supabase secrets: `npx supabase secrets set FROM_EMAIL=reports@fault-line.dev --project-ref dzewklljiksyivsfpunt`
 6. (No redeploy needed — functions pick up new secret on next invocation)
-7. Update canonical URLs across website pages (find-and-replace `moonligh7er.github.io/FaultLine` → your new domain)
+7. Update canonical URLs across website pages (find-and-replace `fault-line.dev` → your new domain)
 
 ---
 
