@@ -522,3 +522,68 @@ Migration 016 pinned `search_path = public, extensions` on all 17 PostGIS-using 
 **Effort:** ~10 minutes. Halves repo size, eliminates the dual-write tax permanently.
 
 **Why deferred:** Not blocking anything; current setup works. Worth doing on a quiet day before next round of marketing-site edits.
+
+---
+
+## 21. Move `CRON_SECRET` from inline pg_cron literal → Supabase Vault
+
+**Status:** Currently the cron secret is duplicated in two places that must stay in sync:
+1. Supabase Edge Function secrets (where `Deno.env.get('CRON_SECRET')` resolves) — used by the function to validate the `x-cron-secret` header.
+2. **As a literal string inside the `pg_cron` job's `command` SQL** — anyone with `SELECT` on `cron.job` can read it.
+
+**Verify the leak:**
+```sql
+SELECT command FROM cron.job WHERE jobname = 'escalate-clusters-daily';
+-- → command contains x-cron-secret literal value 'ww52+zdtNkTY50LZaddmGG4JDso5uuFZUECUJxrdHNY=' in clear text
+```
+
+**The cleaner pattern:** Store the secret in Supabase Vault (encrypted at rest, only readable via `vault.decrypted_secrets` view that decrypts on demand and respects RLS). pg_cron reads it at execution time instead of having it embedded.
+
+**Migration sketch:**
+```sql
+-- Step 1: stash the secret in Vault. Returns a UUID id; name is human-readable lookup key.
+SELECT vault.create_secret(
+  'ww52+zdtNkTY50LZaddmGG4JDso5uuFZUECUJxrdHNY=',
+  'cron_secret',
+  'Shared secret for authenticating pg_cron → Edge Function calls'
+);
+
+-- Step 2: rewrite the cron command to read from Vault at runtime instead of using a literal.
+SELECT cron.alter_job(
+  job_id := (SELECT jobid FROM cron.job WHERE jobname = 'escalate-clusters-daily'),
+  command := $cmd$
+    SELECT net.http_post(
+      url := 'https://dzewklljiksyivsfpunt.supabase.co/functions/v1/escalate-clusters',
+      headers := jsonb_build_object(
+        'Content-Type', 'application/json',
+        'x-cron-secret', (SELECT decrypted_secret FROM vault.decrypted_secrets WHERE name = 'cron_secret')
+      ),
+      body := '{}'::jsonb,
+      timeout_milliseconds := 120000
+    );
+  $cmd$
+);
+
+-- Step 3: same for sync-open311-statuses-hourly (jobid 2).
+
+-- Step 4: confirm — re-querying cron.job's command field should now show
+-- the Vault SELECT instead of the literal secret.
+```
+
+**After the migration, rotation becomes:**
+1. Update the Vault entry value (one place).
+2. Update the Supabase Edge Function `CRON_SECRET` env to match (the other place).
+3. No `cron.alter_job` calls needed — the command always pulls fresh from Vault.
+
+**Pros:**
+- pg_cron's `command` field no longer leaks the secret to anyone with `SELECT` on `cron.job`
+- Audit trail via Vault read access logs
+- Rotation is two updates, not three (no SQL on the cron jobs themselves)
+
+**Cons:**
+- One extra abstraction layer
+- Slightly slower (Vault decryption per cron firing — negligible)
+
+**Effort:** 30 minutes including migration file + test fire to confirm both cron jobs still reach the edge functions.
+
+**Why deferred:** Current setup works and only `postgres` role can read `cron.job` (not anon/authenticated/PUBLIC), so the leak is theoretical for now. But the Vault pattern is the recommended Supabase posture and worth converging on before the team grows beyond solo.
