@@ -587,3 +587,49 @@ SELECT cron.alter_job(
 **Effort:** 30 minutes including migration file + test fire to confirm both cron jobs still reach the edge functions.
 
 **Why deferred:** Current setup works and only `postgres` role can read `cron.job` (not anon/authenticated/PUBLIC), so the leak is theoretical for now. But the Vault pattern is the recommended Supabase posture and worth converging on before the team grows beyond solo.
+
+---
+
+## 22. Legal Review of Statute Dataset (HARM VECTOR)
+
+**Status:** All three shipping states (MA, RI, NH) sit at `verificationStatus: 'pending-review'` in `src/services/statutes/dataset.ts`. The letter generator now prepends a prominent **⚠ UNREVIEWED LEGAL CONTENT** banner to every letter and appends a chain-of-custody disclaimer (statute + version + review status), so users are honestly warned — but a wrong `noticePeriodDays` can still cost a real user their claim.
+
+**What's needed:** A qualified reviewer (attorney admitted in the state, or a legal researcher with documented municipal-liability experience — a software engineer or AI does not qualify) to work through each record against primary sources.
+
+**Full review protocol:** `src/services/statutes/README.md` — the promotion checklist to flip `pending-review` → `verified`.
+
+**Priority order (per README):**
+1. **MA** — 30-day window; property-vs-personal-injury distinction is the main audit point. Highest volume, shortest window, most consequential to get wrong.
+2. **NH** — the $50,000 statutory cap needs current-year confirmation.
+3. **RI** — clerk-of-record delivery is the main audit point.
+
+**When each state clears review, update:**
+1. Flip `verificationStatus: 'verified'`
+2. Fill `verifiedBy`, `verifiedAt`, `nextReviewAt` (default `verifiedAt + 12 months`)
+3. Add / update `sources[]` with the primary-source URLs the reviewer actually consulted
+4. Bump the record's `version` in `dataset.ts`
+5. Add a line to `src/services/statutes/CHANGELOG.md`
+
+**Cost:** ~2-4 hours of qualified legal review per state; ~$400-800 total for a solo consulting attorney at typical civic-tech rates. Grant-fundable line item.
+
+**Why deferred:** The engineering scaffolding is done — the dataset is structured, versioned, versioning propagates to the letter output, and the unreviewed banner protects users in the interim. This is purely a "hire a lawyer" step.
+
+---
+
+## 23. Verify Open311 / SeeClickFix Integration Claims End-to-End Per Authority
+
+**Status:** The marketing site (`features.html`, `landing.html`, `cities.html`) advertises "Open311 integration" and "SeeClickFix integration" as capabilities. The routing infrastructure exists (Migrations 013 / 014 seeded 795 authorities with `open311_endpoint` or `seeclickfix_place_id` metadata), but the end-to-end flow — Fault Line report → authority's actual ticketing system → resident sees a status update flow back — has not been verified per-authority except for Boston Open311 (which itself needs a POST API key to activate; see DEFERRED #9e).
+
+**Why this matters:** Municipal buyers on the `/cities` page will test integration claims first. If a public works director tries a demo report against their city's SeeClickFix and it doesn't land as a ticket in their existing dashboard, the credibility hit is disproportionate — they'll assume nothing else works either.
+
+**What's needed:** A per-authority integration test matrix. Suggested cadence:
+1. **Pilot cities first.** Before scheduling a demo per `cities.html`, run a scripted end-to-end test that files a low-severity report against that authority and verifies the round-trip: (a) escalation pipeline picked the right method, (b) authority's system accepted it, (c) status change on their side reflects back in Fault Line.
+2. **Boston Open311.** Request the POST API key (already flagged in DEFERRED #9e). Until we have the key, the marketing copy should say "Open311 read-only" for Boston, not "integration."
+3. **SeeClickFix aggregate endpoint.** Verify against 3–5 cities across CT / MA / NM / OR. Document per-city quirks in a `docs/integration-status.md` table.
+4. **QScend cities (Salem OR / Somerville MA / Gresham OR / Hillsboro OR).** These require adapter code in `modal/web_form_submitter/`; verify the adapter succeeds for each before advertising.
+
+**Effort:** ~15–30 minutes per authority. First pass ~4 hours for the top 10 pilot targets.
+
+**Why deferred:** No pilot city has requested a demo yet. This becomes urgent the day a public works director asks "does it actually work against our 311?" — at which point being able to answer "yes, we tested it last week, here's the log" is the difference between a signed pilot and a lost lead.
+
+

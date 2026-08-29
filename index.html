@@ -5,7 +5,7 @@
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://pagead2.googlesyndication.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: https:; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://www.google-analytics.com https://analytics.google.com https://pagead2.googlesyndication.com; frame-src https://googleads.g.doubleclick.net https://tpc.googlesyndication.com https://pagead2.googlesyndication.com; object-src 'none'; base-uri 'self';">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Fault Line — Report Potholes & Infrastructure Issues | Free App</title>
-<meta name="description" content="Report potholes, broken streetlights, and infrastructure problems in 10 seconds. Community-verified reports automatically escalate to government authorities. Free for Android & iOS.">
+<meta name="description" content="Report potholes, broken streetlights, and infrastructure problems in 10 seconds. Community-verified reports automatically escalate to government authorities. Free web app — no account required.">
 <meta name="keywords" content="pothole reporter app, report pothole, infrastructure reporting, 311 app, road repair app, civic tech, government accountability, community reporting, fix potholes, report streetlight, sidewalk repair, Fault Line">
 <meta name="author" content="Moonlit Social Labs">
 <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large">
@@ -21,20 +21,20 @@
 
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Fault Line — Your Tax Dollars Should Fix This Faster">
-<meta name="twitter:description" content="Report potholes & infrastructure issues. Community-verified. Authorities notified automatically. Free on Android & iOS.">
+<meta name="twitter:description" content="Report potholes & infrastructure issues. Community-verified. Authorities notified automatically. Free web app — no account required.">
 <meta name="twitter:image" content="https://fault-line.dev/og/og-home.png">
 
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
-  "@type": "SoftwareApplication",
+  "@type": "WebApplication",
   "name": "Fault Line",
-  "operatingSystem": "Android, iOS",
+  "url": "https://app.fault-line.dev",
+  "browserRequirements": "Requires a modern web browser.",
   "applicationCategory": "UtilitiesApplication",
-  "description": "Community infrastructure reporting app. Report potholes, broken streetlights, and 24 types of infrastructure issues. AI-powered photo analysis, automatic authority escalation, legal accountability tools, and public transparency dashboards.",
+  "description": "Community infrastructure reporting web app. Report potholes, broken streetlights, and 24 types of infrastructure issues. AI-powered photo analysis, automatic authority escalation, legal accountability tools, and public transparency dashboards.",
   "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
-  "aggregateRating": { "@type": "AggregateRating", "ratingValue": "4.8", "ratingCount": "100" },
-  "featureList": "Pothole reporting, AI photo analysis, GPS location, Voice commands, Augmented reality, Community verification, Automatic authority escalation, Legal demand letters, Insurance claim packaging, Infrastructure health scores, Government accountability tracking, 24 report categories, 5 languages, Offline mode"
+  "featureList": "Pothole reporting, AI photo analysis, GPS location, Community verification, Automatic authority escalation, Legal demand letter templates, Insurance claim packaging, Infrastructure health scores, Government accountability tracking, 24 report categories, Open311 integration"
 }
 </script>
 
@@ -282,9 +282,12 @@
   <a href="index.html" class="nav-brand"><span class="brand-fault">Fault</span><span class="brand-slash">\</span><span class="brand-line">Line</span><span class="beta-badge">BETA</span></a>
   <div class="nav-links">
     <a href="features-plain.html">Features</a>
+    <a href="cities.html">For Cities</a>
     <a href="blog.html">Blog</a>
     <a href="about.html">About</a>
     <a href="feedback.html" >Feedback</a>
+    <a href="faq.html">FAQ</a>
+    <a href="changelog.html">Changelog</a>
     <a href="https://ko-fi.com/moonlitsociallabs" target="_blank" rel="noopener" class="nav-kofi">Support on Ko-Fi</a>
     <span class="active-dev-status"><span class="nav-dot"></span> Active Development</span>
   </div>
@@ -306,7 +309,7 @@
   <h1>Your tax dollars should<br><em>fix this faster</em>.</h1>
   <p class="hero-sub">Report potholes, broken streetlights, and crumbling infrastructure in <strong>ten seconds</strong>. When your community speaks up together, authorities can&apos;t look away.</p>
   <div class="hero-cta">
-    <a href="#download" class="btn btn-primary">Download Free</a>
+    <a href="https://app.fault-line.dev" class="btn btn-primary">Open the web app</a>
     <a href="features-plain.html" class="btn btn-outline">See All Features</a>
   </div>
 </section>
@@ -367,13 +370,13 @@
       <div class="step-num">Step · 03</div>
       <div class="step-icon">📨</div>
       <h3>Authority notified</h3>
-      <p>At 10 reports, we auto-send a professional demand letter to the responsible department — with GPS evidence, photos, fiscal impact projections, and statutory citation.</p>
+      <p>At 10 reports, the app generates a professional demand letter — GPS evidence, photos, fiscal impact projections, statutory citation — and prepares it addressed to the right department. You review and send it in one tap.</p>
     </div>
     <div class="step">
       <div class="step-num">Step · 04</div>
       <div class="step-icon">⏱️</div>
       <h3>Clock starts running</h3>
-      <p>A public timer tracks the response. Miss the deadline? We generate a formal legal notice citing state statute. The whole community sees who acts and who doesn&apos;t.</p>
+      <p>A public timer tracks the response. If the deadline passes, the app drafts a formal follow-up notice citing state statute for you to send. The whole community sees who acts and who doesn&apos;t.</p>
     </div>
   </div>
 </section>
@@ -385,15 +388,16 @@
   <h2 class="section-title">Tools that make <em>inaction</em> expensive.</h2>
   <p class="section-lead">This isn&apos;t just a reporting app. It&apos;s an accountability platform.</p>
   <div class="acc-grid">
-    <div class="acc-card"><div class="icon">⚖️</div><h3>Legal demand letters</h3><p>Auto-generated formal notices citing your state&apos;s specific defective highway statute. Tracks the statutory deadline. Creates documented legal exposure.</p></div>
+    <div class="acc-card"><div class="icon">⚖️</div><h3>Legal demand letter templates</h3><p>The app generates a formal notice for <em>you</em> to send, citing your state&apos;s specific defective-highway statute (MA, RI, NH). Tracks the statutory deadline. You review, sign, and send.</p></div>
     <div class="acc-card"><div class="icon">🛡️</div><h3>Insurance claim packager</h3><p>One tap generates a timestamped evidence bundle: GPS proof, photos, notification history, community verification. Everything your insurance company needs.</p></div>
-    <div class="acc-card"><div class="icon">💰</div><h3>Fiscal impact math</h3><p>&ldquo;Fix this pothole for $75 today, or face $12,000 in liability next year.&rdquo; We show authorities the math. Inaction becomes the expensive option.</p></div>
-    <div class="acc-card"><div class="icon">📊</div><h3>Infrastructure grades</h3><p>Every city gets a public A-F grade. Response times, fix rates, severity trends — all transparent. See how your city compares.</p></div>
+    <div class="acc-card"><div class="icon">💰</div><h3>Fiscal impact math</h3><p>&ldquo;Fix this pothole for $75 today, or face $12,000 in liability next year.&rdquo; The letters show authorities the math. Inaction becomes the expensive option.</p></div>
+    <div class="acc-card"><div class="icon">📊</div><h3>Infrastructure grades</h3><p>Every city that clears the data threshold gets a public A–F grade. Response times, fix rates, severity trends — all transparent. <a href="methodology.html" style="color:var(--tile-hot);">Methodology →</a></p></div>
     <div class="acc-card"><div class="icon">🗳️</div><h3>Election district overlay</h3><p>See which council districts have the most unresolved issues. Know who represents you. Know their record. Vote accordingly.</p></div>
-    <div class="acc-card"><div class="icon">🏗️</div><h3>Contractor accountability</h3><p>Track which repair contractors do quality work and which ones cut corners. When the same pothole opens three months later, we know who to hold responsible.</p></div>
-    <div class="acc-card"><div class="icon">🎥</div><h3>Video testimonials</h3><p>Fifteen-second stories from real people. &ldquo;This pothole cost me $800.&rdquo; Attached to escalation emails. Numbers are ignorable. Faces aren&apos;t.</p></div>
-    <div class="acc-card"><div class="icon">🔮</div><h3>Predictive analytics</h3><p>We predict where damage will occur before it happens. Seasonal patterns, decay curves, historical data. Pre-deployment reports save cities millions.</p></div>
+    <div class="acc-card"><div class="icon">🏗️</div><h3>Contractor accountability</h3><p>Track which repair contractors do quality work and which ones cut corners. When the same pothole opens three months later, the record shows who signed off.</p></div>
+    <div class="acc-card"><div class="icon">🎥</div><h3>Video testimonials</h3><p>Optional 15-second video reporters can attach to their own escalations. Numbers are ignorable. A face saying &ldquo;this hazard is on my kid&apos;s walk to school&rdquo; is not.</p></div>
+    <div class="acc-card"><div class="icon">🔮</div><h3>Predictive analytics</h3><p>Designed to flag where damage will likely occur before it happens — seasonal patterns, decay curves, historical data. Intended for pre-deployment reports as pilots roll out.</p></div>
   </div>
+  <p class="mono" style="font-size:11px; color:var(--steel-light); letter-spacing:1.5px; text-transform:uppercase; text-align:center; margin-top:28px; max-width:640px; margin-left:auto; margin-right:auto; line-height:1.7;">Fault Line is a self-help documentation tool, not a law firm. Letters and claim packets are generated for you to review and send yourself. This is not legal advice. For a live claim against a municipality, consult a licensed attorney in your state.</p>
 </section>
 
 <div class="hazard"></div>
@@ -403,32 +407,35 @@
   <h2 class="section-title">The <em>Shame</em> Index.</h2>
   <p class="section-lead">Public, shareable, impossible to ignore.</p>
   <div class="shame-panel">
+    <div class="mono" style="font-size:12px; color:var(--tile-hot); letter-spacing:2px; text-transform:uppercase; margin-bottom:8px;">SAMPLE · Illustrative of the grading system</div>
     <div class="mono" style="font-size:12px; color:var(--steel-light); letter-spacing:2px; text-transform:uppercase; margin-bottom:20px;">Massachusetts Infrastructure Report Card</div>
     <div class="shame-row"><span class="shame-city">Cambridge</span><span class="shame-grade grade-a">A−</span></div>
     <div class="shame-row"><span class="shame-city">Somerville</span><span class="shame-grade grade-b">B+</span></div>
     <div class="shame-row"><span class="shame-city">Boston</span><span class="shame-grade grade-c">C+</span></div>
     <div class="shame-row"><span class="shame-city">Worcester</span><span class="shame-grade grade-c">C−</span></div>
     <div class="shame-row"><span class="shame-city">Springfield</span><span class="shame-grade grade-d">D+</span></div>
-    <p class="mono" style="font-size:11px; color:var(--steel-light); letter-spacing:1.5px; text-transform:uppercase; text-align:center; margin-top:20px;">Based on fix rate, response time, severity, and recurrence.</p>
+    <p class="mono" style="font-size:11px; color:var(--steel-light); letter-spacing:1.5px; text-transform:uppercase; text-align:center; margin-top:20px;">Grades above are sample data — not live measurements. Live grades launch when a city reaches the minimum-data threshold.</p>
+    <p class="mono" style="font-size:11px; letter-spacing:1.5px; text-transform:uppercase; text-align:center; margin-top:8px;"><a href="methodology.html" style="color:var(--tile-hot);">Read the grading methodology →</a></p>
   </div>
 </section>
 
 <section class="section">
-  <div class="section-label">Protocol 05 / Real People</div>
+  <div class="section-label">Protocol 05 / Illustrative Scenarios</div>
   <h2 class="section-title">This is <em>why</em> it matters.</h2>
-  <p class="section-lead">Every report has a person behind it.</p>
+  <p class="section-lead">The workflows Fault Line is built for. These are illustrative — not real users. Be one of our first real stories.</p>
   <div class="quote-block">
     <p>&ldquo;I hit the same pothole on my commute for six months. It finally destroyed my tire and cost me $400 I didn&apos;t have. I reported it to 311 twice. Nothing. I reported it on Fault Line. Seven neighbors did too. It was filled within two weeks.&rdquo;</p>
-    <div class="author">Maria · Brockton, MA</div>
+    <div class="author">Illustrative · commuter workflow</div>
   </div>
   <div class="quote-block">
     <p>&ldquo;The streetlight on our corner had been out for a year. My daughter walks to school in the dark. I didn&apos;t know who to call. Fault Line did it all — found the right department, sent the report, tracked the response. The light was fixed in nine days.&rdquo;</p>
-    <div class="author">James · Providence, RI</div>
+    <div class="author">Illustrative · resident workflow</div>
   </div>
   <div class="quote-block">
     <p>&ldquo;As a city council member, I actually appreciate this app. It shows me exactly where the problems are in my district with data I can take to budget meetings. My constituents don&apos;t have to call me anymore — I can see it all in real time.&rdquo;</p>
-    <div class="author">Council Member (anonymous) · Massachusetts</div>
+    <div class="author">Illustrative · municipal workflow</div>
   </div>
+  <p class="mono" style="font-size:11px; color:var(--steel-light); letter-spacing:2px; text-transform:uppercase; text-align:center; margin-top:24px;">Have a real Fault Line story? <a href="feedback.html" style="color:var(--tile-hot);">Tell us</a> — with your consent, we&apos;ll publish it here.</p>
 </section>
 
 <section class="section">
@@ -494,13 +501,14 @@
   <h2>Stop complaining.<br><em>Start fixing.</em></h2>
   <p>Every report you submit is a vote for better infrastructure. Together, we make it impossible to ignore.</p>
   <div class="hero-cta" style="justify-content:center;">
-    <a href="#" class="btn btn-primary">Download for Android</a>
-    <a href="#" class="btn btn-outline">Download for iOS</a>
+    <a href="https://app.fault-line.dev" class="btn btn-primary">Open the web app</a>
+    <a href="feedback.html" class="btn btn-outline">Send feedback</a>
   </div>
   <div>
     <a href="https://ko-fi.com/moonlitsociallabs" target="_blank" rel="noopener" class="kofi-btn">☕ Support on Ko-fi</a>
   </div>
-  <p class="mono" style="font-size:11px; color:var(--steel-light); letter-spacing:2px; text-transform:uppercase; margin-top:32px;">Free forever · No account required · Anonymous reporting supported</p>
+  <p style="font-family:var(--ff-body); font-size:13px; color:var(--tile-dim); max-width:520px; margin:14px auto 0; line-height:1.6;">Fault Line runs on solo-maintainer infrastructure. <strong>$20/month keeps the escalation email pipeline and hosting running</strong> for New England reporters. Every dollar past that funds statute review, more state coverage, and pilot city onboarding.</p>
+  <p class="mono" style="font-size:11px; color:var(--steel-light); letter-spacing:2px; text-transform:uppercase; margin-top:24px;">Free forever · No account required · Anonymous reporting supported · Native mobile apps in development · <a href="cities.html" style="color:var(--tile-hot);">For cities →</a></p>
 </section>
 
 <!-- AdSense: bottom banner -->
@@ -522,15 +530,20 @@
 <footer>
   <a href="index.html">Home</a> &middot;
   <a href="features-plain.html">Features</a> &middot;
+  <a href="cities.html">For Cities</a> &middot;
   <a href="blog.html">Blog</a> &middot;
   <a href="about.html">About</a> &middot;
+  <a href="methodology.html">Methodology</a> &middot;
+  <a href="faq.html">FAQ</a> &middot;
+  <a href="changelog.html">Changelog</a> &middot;
   <a href="privacy.html">Privacy</a> &middot;
   <a href="terms.html">Terms</a> &middot;
   <a href="feedback.html">Feedback</a> &middot;
+  <a href="https://app.fault-line.dev" target="_blank" rel="noopener">Web app</a> &middot;
   <a href="https://ko-fi.com/moonlitsociallabs" target="_blank" rel="noopener">Ko-fi</a>
   <br><br>
   <p style="font-family:var(--ff-body); font-style:italic; color:var(--tile-dim); letter-spacing:0.3px; text-transform:none; margin-top:12px;">
-    Contact: <a data-email="moonlit-social-labs|proton.me" style="font-family:var(--ff-body); letter-spacing:0;">loading...</a> · Michael Wylde · Moonlit Social Labs
+    Contact: <a data-email="moonlit-social-labs|proton.me" href="feedback.html" style="font-family:var(--ff-body); letter-spacing:0;">email Moonlit Social Labs</a> · Michael Wylde · Moonlit Social Labs
   </p>
   <br>&copy; 2026 Moonlit Social Labs · Fault Line is a product of Moonlit Social Labs · Built with frustration and optimism
 </footer>

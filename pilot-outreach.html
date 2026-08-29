@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow, noarchive, nosnippet">
+<title>Pilot Outreach Worksheet — Fault Line (internal)</title>
+
+<link rel="stylesheet" href="theme.css?v=20260506">
+
+<style>
+main { max-width: 1100px; margin: 0 auto; padding: 24px 32px 80px; }
+main h1 { font-size: clamp(30px, 5vw, 46px); letter-spacing: -1px; margin-bottom: 6px; }
+main .updated { font-family: var(--ff-mono); font-size: 11px; color: var(--steel-light); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 24px; }
+main .lede { font-family: var(--ff-body); font-size: 15px; line-height: 1.6; color: var(--tile-dim); margin-bottom: 24px; max-width: 780px; }
+
+.internal-banner {
+  border: 1px solid var(--tile-hot);
+  background: rgba(244, 184, 50, 0.08);
+  padding: 12px 18px;
+  margin-bottom: 28px;
+  font-family: var(--ff-mono);
+  font-size: 12px;
+  color: var(--tile-hot);
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+}
+
+.state-block {
+  margin: 34px 0 8px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  padding-top: 22px;
+}
+.state-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-bottom: 6px;
+}
+.state-header h2 {
+  font-size: 26px;
+  margin: 0;
+  letter-spacing: -0.5px;
+}
+.state-header h2 .state-code {
+  color: var(--tile-hot);
+  font-family: var(--ff-mono);
+  font-size: 20px;
+  margin-right: 10px;
+}
+.state-header .county-count {
+  font-family: var(--ff-mono);
+  font-size: 11px;
+  color: var(--steel-light);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+.state-note {
+  font-family: var(--ff-body);
+  font-size: 13px;
+  color: var(--tile-dim);
+  margin: 0 0 14px;
+  font-style: italic;
+  line-height: 1.55;
+}
+
+.county-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 4px 20px;
+  font-family: var(--ff-mono);
+  font-size: 13px;
+  color: var(--tile);
+  margin: 0 0 6px;
+  padding: 0;
+  list-style: none;
+}
+.county-grid li {
+  padding: 3px 0;
+  border-bottom: 1px dotted rgba(255, 255, 255, 0.06);
+}
+.county-grid li::before {
+  content: "▸ ";
+  color: var(--steel-light);
+}
+
+.priority-panel {
+  margin-top: 14px;
+  padding: 14px 18px;
+  border-left: 2px solid var(--tile-hot);
+  background: rgba(0, 0, 0, 0.18);
+}
+.priority-panel h3 {
+  font-size: 12px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--tile-hot);
+  margin: 0 0 8px;
+  font-family: var(--ff-mono);
+}
+.priority-panel ul {
+  margin: 0;
+  padding-left: 20px;
+  font-family: var(--ff-body);
+  font-size: 14px;
+  color: var(--tile-dim);
+  line-height: 1.7;
+}
+.priority-panel li { margin-bottom: 4px; }
+.priority-panel strong { color: var(--tile); }
+
+.totals {
+  margin-top: 44px;
+  padding: 18px 22px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  font-family: var(--ff-mono);
+  font-size: 14px;
+  color: var(--tile);
+}
+.totals span { color: var(--tile-hot); font-weight: 700; }
+
+.query {
+  font-family: var(--ff-body);
+  font-size: 13px;
+  color: var(--steel-light);
+  border-top: 1px solid rgba(255,255,255,0.06);
+  padding-top: 20px;
+  margin-top: 40px;
+  line-height: 1.6;
+}
+</style>
+</head>
+<body>
+
+<div class="hazard"></div>
+
+<nav class="nav">
+  <a href="index.html" class="nav-brand"><span class="brand-fault">Fault</span><span class="brand-slash">\</span><span class="brand-line">Line</span><span class="beta-badge">BETA</span></a>
+  <div class="nav-links">
+    <a href="index.html">Home</a>
+    <a href="cities.html">For Cities</a>
+    <span class="active-dev-status"><span class="nav-dot"></span> Internal worksheet</span>
+  </div>
+</nav>
+
+<main>
+<h1>Pilot outreach worksheet</h1>
+<p class="updated">Internal · not indexed · 2026-08-29 · Michael only</p>
+
+<div class="internal-banner">Internal working document — noindex/nofollow · Disallowed in robots.txt · Not linked from public nav · Not in sitemap. Do not share this URL externally.</div>
+
+<p class="lede">Every county in the 10 states targeted for pilot expansion. Use this as a coverage map: cross off counties as at least one municipality inside them agrees to a pilot conversation. Priority-target panels list the highest-ROI municipalities in each state — usually the county seat plus 1&ndash;2 secondary population centers.</p>
+
+<!-- ─────────────────────────────────────────────  MASSACHUSETTS  ───────────────────────────────────────────── -->
+<section class="state-block">
+  <div class="state-header">
+    <h2><span class="state-code">MA</span>Massachusetts</h2>
+    <span class="county-count">14 counties</span>
+  </div>
+  <p class="state-note">Home base. Statute dataset is drafted (MA v0.1.0, pending review). ~44 municipalities already seeded via Commonwealth Connect / Open311 routing. Boston 311 is proprietary — separate outreach track.</p>
+  <ul class="county-grid">
+    <li>Barnstable</li><li>Berkshire</li><li>Bristol</li><li>Dukes</li><li>Essex</li>
+    <li>Franklin</li><li>Hampden</li><li>Hampshire</li><li>Middlesex</li><li>Nantucket</li>
+    <li>Norfolk</li><li>Plymouth</li><li>Suffolk</li><li>Worcester</li>
+  </ul>
+  <div class="priority-panel">
+    <h3>Priority targets</h3>
+    <ul>
+      <li><strong>Cambridge</strong> (Middlesex) — SeeClickFix already in place; DPW receptive to civic-tech partnerships.</li>
+      <li><strong>Somerville</strong> (Middlesex) — QScend 311; small enough to move; council actively vocal on infrastructure equity.</li>
+      <li><strong>Worcester</strong> (Worcester) — Gateway city; second-largest MA population; grant-relevant.</li>
+      <li><strong>Lowell / New Bedford / Springfield</strong> — Gateway trio; SeeClickFix backend already in DB.</li>
+      <li><strong>Boston</strong> (Suffolk) — separate proprietary-311 track; needs Open311 API key request first.</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ─────────────────────────────────────────────  CONNECTICUT  ───────────────────────────────────────────── -->
+<section class="state-block">
+  <div class="state-header">
+    <h2><span class="state-code">CT</span>Connecticut</h2>
+    <span class="county-count">8 counties · no county government</span>
+  </div>
+  <p class="state-note">CT abolished county governments in 1960; counties remain as geographic areas only. Municipal government is the sole layer for outreach. In 2022 CT designated 9 Councils of Government (COGs) for federal statistical purposes — the COGs matter for regional grant work.</p>
+  <ul class="county-grid">
+    <li>Fairfield</li><li>Hartford</li><li>Litchfield</li><li>Middlesex</li>
+    <li>New Haven</li><li>New London</li><li>Tolland</li><li>Windham</li>
+  </ul>
+  <div class="priority-panel">
+    <h3>Priority targets</h3>
+    <ul>
+      <li><strong>New Haven</strong> (New Haven Co.) — already seeded via SeeClickFix; university partnerships possible.</li>
+      <li><strong>Hartford</strong> (Hartford Co.) — state capital; council packet exposure.</li>
+      <li><strong>Stamford / Danbury / Waterbury</strong> — Gateway cities; SeeClickFix backends in DB.</li>
+      <li><strong>Bridgeport</strong> (Fairfield Co.) — largest CT city by population; not yet seeded.</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ─────────────────────────────────────────────  RHODE ISLAND  ───────────────────────────────────────────── -->
+<section class="state-block">
+  <div class="state-header">
+    <h2><span class="state-code">RI</span>Rhode Island</h2>
+    <span class="county-count">5 counties · no county government</span>
+  </div>
+  <p class="state-note">Like CT, RI has no county government — counties are geographic only. Statute dataset RI v0.1.0 is drafted, pending review (clerk-of-record delivery is the audit point). 39 municipalities total; small state means comprehensive coverage is achievable in a single quarter of outreach.</p>
+  <ul class="county-grid">
+    <li>Bristol</li><li>Kent</li><li>Newport</li><li>Providence</li><li>Washington</li>
+  </ul>
+  <div class="priority-panel">
+    <h3>Priority targets</h3>
+    <ul>
+      <li><strong>Providence</strong> — capital + largest city; proprietary 311 (PVD 311), separate track.</li>
+      <li><strong>Warwick / Cranston</strong> — largest suburbs of Providence; sizable DPW operations.</li>
+      <li><strong>Pawtucket / East Providence</strong> — dense, older infrastructure; high report density likely.</li>
+      <li><strong>Newport</strong> (Newport Co.) — tourism-driven; visible infrastructure has outsized political salience.</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ─────────────────────────────────────────────  MAINE  ───────────────────────────────────────────── -->
+<section class="state-block">
+  <div class="state-header">
+    <h2><span class="state-code">ME</span>Maine <span style="font-size:11px;color:var(--tile-hot);letter-spacing:2px;text-transform:uppercase;margin-left:12px;">(interpreted from your list — see footer)</span></h2>
+    <span class="county-count">16 counties</span>
+  </div>
+  <p class="state-note">Portland ME already in DB via SeeClickFix. Statute dataset NOT yet drafted — ME is a Tier-2 expansion candidate for the reviewer queue after MA/RI/NH clear. Rural counties (Aroostook, Piscataquis) will have low report volume; focus outreach on the coastal / I-95 corridor.</p>
+  <ul class="county-grid">
+    <li>Androscoggin</li><li>Aroostook</li><li>Cumberland</li><li>Franklin</li>
+    <li>Hancock</li><li>Kennebec</li><li>Knox</li><li>Lincoln</li>
+    <li>Oxford</li><li>Penobscot</li><li>Piscataquis</li><li>Sagadahoc</li>
+    <li>Somerset</li><li>Waldo</li><li>Washington</li><li>York</li>
+  </ul>
+  <div class="priority-panel">
+    <h3>Priority targets</h3>
+    <ul>
+      <li><strong>Portland</strong> (Cumberland Co.) — already seeded; SeeClickFix; largest ME city.</li>
+      <li><strong>Lewiston / Auburn</strong> (Androscoggin Co.) — second-largest metro; strong civic infrastructure identity.</li>
+      <li><strong>Bangor</strong> (Penobscot Co.) — regional hub for eastern ME.</li>
+      <li><strong>Augusta</strong> (Kennebec Co.) — state capital; council-packet exposure.</li>
+      <li><strong>South Portland / Westbrook</strong> — Portland suburbs; growing population, aging streets.</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ─────────────────────────────────────────────  VERMONT  ───────────────────────────────────────────── -->
+<section class="state-block">
+  <div class="state-header">
+    <h2><span class="state-code">VT</span>Vermont</h2>
+    <span class="county-count">14 counties</span>
+  </div>
+  <p class="state-note">Small state, small municipalities — most VT towns run public works with a handful of staff. Fault Line's model is disproportionately useful here because tiny DPWs cannot afford commercial 311 vendors. Statute dataset NOT yet drafted.</p>
+  <ul class="county-grid">
+    <li>Addison</li><li>Bennington</li><li>Caledonia</li><li>Chittenden</li>
+    <li>Essex</li><li>Franklin</li><li>Grand Isle</li><li>Lamoille</li>
+    <li>Orange</li><li>Orleans</li><li>Rutland</li><li>Washington</li>
+    <li>Windham</li><li>Windsor</li>
+  </ul>
+  <div class="priority-panel">
+    <h3>Priority targets</h3>
+    <ul>
+      <li><strong>Burlington</strong> (Chittenden Co.) — largest VT city; progressive civic-tech posture; university partnership potential.</li>
+      <li><strong>South Burlington / Winooski / Colchester</strong> — Chittenden suburbs; concentrated population.</li>
+      <li><strong>Montpelier</strong> (Washington Co.) — state capital; smallest US state capital; council-packet exposure.</li>
+      <li><strong>Rutland / Bennington / Brattleboro</strong> — regional hubs across VT.</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ─────────────────────────────────────────────  NEW HAMPSHIRE  ───────────────────────────────────────────── -->
+<section class="state-block">
+  <div class="state-header">
+    <h2><span class="state-code">NH</span>New Hampshire</h2>
+    <span class="county-count">10 counties</span>
+  </div>
+  <p class="state-note">Statute dataset NH v0.1.0 drafted, pending review ($50k statutory cap is the audit point). Compact state, 234 municipalities total; expansion is manageable. NH has strong local-government tradition — DPWs are decision-makers, unlike states where public works reports to a city manager buried under other priorities.</p>
+  <ul class="county-grid">
+    <li>Belknap</li><li>Carroll</li><li>Cheshire</li><li>Coos</li><li>Grafton</li>
+    <li>Hillsborough</li><li>Merrimack</li><li>Rockingham</li><li>Strafford</li><li>Sullivan</li>
+  </ul>
+  <div class="priority-panel">
+    <h3>Priority targets</h3>
+    <ul>
+      <li><strong>Manchester</strong> (Hillsborough Co.) — largest NH city; DPW autonomy.</li>
+      <li><strong>Nashua</strong> (Hillsborough Co.) — second-largest; Gateway city.</li>
+      <li><strong>Concord</strong> (Merrimack Co.) — state capital.</li>
+      <li><strong>Portsmouth</strong> (Rockingham Co.) — coastal, tourism, visible infrastructure salience.</li>
+      <li><strong>Dover / Rochester</strong> (Strafford Co.) — Seacoast growth region.</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ─────────────────────────────────────────────  NEW YORK  ───────────────────────────────────────────── -->
+<section class="state-block">
+  <div class="state-header">
+    <h2><span class="state-code">NY</span>New York</h2>
+    <span class="county-count">62 counties</span>
+  </div>
+  <p class="state-note">Largest state on this list. NYC 311 is the dominant proprietary system — separate track. Focus outreach on the ~55 upstate counties where 311 coverage is patchy and municipal DPWs have no comparable tool. Statute dataset NOT yet drafted — NY has NYS Highway Law §58 and §139 plus municipal charter provisions; will require attorney review specifically for the NYC/upstate distinction.</p>
+  <ul class="county-grid">
+    <li>Albany</li><li>Allegany</li><li>Bronx</li><li>Broome</li><li>Cattaraugus</li>
+    <li>Cayuga</li><li>Chautauqua</li><li>Chemung</li><li>Chenango</li><li>Clinton</li>
+    <li>Columbia</li><li>Cortland</li><li>Delaware</li><li>Dutchess</li><li>Erie</li>
+    <li>Essex</li><li>Franklin</li><li>Fulton</li><li>Genesee</li><li>Greene</li>
+    <li>Hamilton</li><li>Herkimer</li><li>Jefferson</li><li>Kings</li><li>Lewis</li>
+    <li>Livingston</li><li>Madison</li><li>Monroe</li><li>Montgomery</li><li>Nassau</li>
+    <li>New York</li><li>Niagara</li><li>Oneida</li><li>Onondaga</li><li>Ontario</li>
+    <li>Orange</li><li>Orleans</li><li>Oswego</li><li>Otsego</li><li>Putnam</li>
+    <li>Queens</li><li>Rensselaer</li><li>Richmond</li><li>Rockland</li><li>St. Lawrence</li>
+    <li>Saratoga</li><li>Schenectady</li><li>Schoharie</li><li>Schuyler</li><li>Seneca</li>
+    <li>Steuben</li><li>Suffolk</li><li>Sullivan</li><li>Tioga</li><li>Tompkins</li>
+    <li>Ulster</li><li>Warren</li><li>Washington</li><li>Wayne</li><li>Westchester</li>
+    <li>Wyoming</li><li>Yates</li>
+  </ul>
+  <div class="priority-panel">
+    <h3>Priority targets</h3>
+    <ul>
+      <li><strong>Buffalo</strong> (Erie Co.) — second-largest NY city; rust-belt DPW; grant-relevant.</li>
+      <li><strong>Rochester</strong> (Monroe Co.) — third-largest; open data reputation.</li>
+      <li><strong>Syracuse</strong> (Onondaga Co.) — university, Rust Belt, active civic-tech community.</li>
+      <li><strong>Albany</strong> (Albany Co.) — state capital; regional influence.</li>
+      <li><strong>Yonkers</strong> (Westchester Co.) — largest suburb of NYC, aging streets.</li>
+      <li><strong>Utica / Schenectady / Troy / Binghamton</strong> — mid-size Rust Belt cities with visible infrastructure salience.</li>
+      <li><strong>Ithaca</strong> (Tompkins Co.) — small but civic-tech-friendly; Cornell partnership potential.</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ─────────────────────────────────────────────  COLORADO  ───────────────────────────────────────────── -->
+<section class="state-block">
+  <div class="state-header">
+    <h2><span class="state-code">CO</span>Colorado</h2>
+    <span class="county-count">64 counties</span>
+  </div>
+  <p class="state-note">CO has home-rule cities (Denver, Boulder, Colorado Springs, Aurora) with proprietary 311s — separate tracks. Most mountain / plains counties are sparsely populated. Statute dataset NOT yet drafted — CO's Governmental Immunity Act (C.R.S. §24-10-101 et seq.) is the relevant framework; property damage claims have specific 182-day notice requirements.</p>
+  <ul class="county-grid">
+    <li>Adams</li><li>Alamosa</li><li>Arapahoe</li><li>Archuleta</li><li>Baca</li>
+    <li>Bent</li><li>Boulder</li><li>Broomfield</li><li>Chaffee</li><li>Cheyenne</li>
+    <li>Clear Creek</li><li>Conejos</li><li>Costilla</li><li>Crowley</li><li>Custer</li>
+    <li>Delta</li><li>Denver</li><li>Dolores</li><li>Douglas</li><li>Eagle</li>
+    <li>Elbert</li><li>El Paso</li><li>Fremont</li><li>Garfield</li><li>Gilpin</li>
+    <li>Grand</li><li>Gunnison</li><li>Hinsdale</li><li>Huerfano</li><li>Jackson</li>
+    <li>Jefferson</li><li>Kiowa</li><li>Kit Carson</li><li>Lake</li><li>La Plata</li>
+    <li>Larimer</li><li>Las Animas</li><li>Lincoln</li><li>Logan</li><li>Mesa</li>
+    <li>Mineral</li><li>Moffat</li><li>Montezuma</li><li>Montrose</li><li>Morgan</li>
+    <li>Otero</li><li>Ouray</li><li>Park</li><li>Phillips</li><li>Pitkin</li>
+    <li>Prowers</li><li>Pueblo</li><li>Rio Blanco</li><li>Rio Grande</li><li>Routt</li>
+    <li>Saguache</li><li>San Juan</li><li>San Miguel</li><li>Sedgwick</li><li>Summit</li>
+    <li>Teller</li><li>Washington</li><li>Weld</li><li>Yuma</li>
+  </ul>
+  <div class="priority-panel">
+    <h3>Priority targets</h3>
+    <ul>
+      <li><strong>Fort Collins</strong> (Larimer Co.) — civic-tech reputation; open-data ordinance; university.</li>
+      <li><strong>Boulder</strong> (Boulder Co.) — proprietary 311; strong open data posture; separate outreach track.</li>
+      <li><strong>Colorado Springs</strong> (El Paso Co.) — second-largest CO city; proprietary 311; separate track.</li>
+      <li><strong>Aurora</strong> (Arapahoe Co.) — Denver suburb; proprietary 311; separate track.</li>
+      <li><strong>Pueblo</strong> (Pueblo Co.) — Rust Belt analog; grant-relevant.</li>
+      <li><strong>Grand Junction</strong> (Mesa Co.) — regional hub for western slope.</li>
+      <li><strong>Longmont / Loveland / Greeley</strong> — Front Range mid-size cities.</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ─────────────────────────────────────────────  OREGON  ───────────────────────────────────────────── -->
+<section class="state-block">
+  <div class="state-header">
+    <h2><span class="state-code">OR</span>Oregon</h2>
+    <span class="county-count">36 counties</span>
+  </div>
+  <p class="state-note">Portland OR uses the PDX Reporter system (historically Open311 but the endpoint has been unstable) — needs a runtime probe rather than a static integration. Salem / Gresham / Hillsboro use QScend. Eugene has SeeClickFix. Statute dataset NOT yet drafted — OR Tort Claims Act (ORS 30.260-30.302) governs municipal claims with 180-day notice.</p>
+  <ul class="county-grid">
+    <li>Baker</li><li>Benton</li><li>Clackamas</li><li>Clatsop</li><li>Columbia</li>
+    <li>Coos</li><li>Crook</li><li>Curry</li><li>Deschutes</li><li>Douglas</li>
+    <li>Gilliam</li><li>Grant</li><li>Harney</li><li>Hood River</li><li>Jackson</li>
+    <li>Jefferson</li><li>Josephine</li><li>Klamath</li><li>Lake</li><li>Lane</li>
+    <li>Lincoln</li><li>Linn</li><li>Malheur</li><li>Marion</li><li>Morrow</li>
+    <li>Multnomah</li><li>Polk</li><li>Sherman</li><li>Tillamook</li><li>Umatilla</li>
+    <li>Union</li><li>Wallowa</li><li>Wasco</li><li>Washington</li><li>Wheeler</li>
+    <li>Yamhill</li>
+  </ul>
+  <div class="priority-panel">
+    <h3>Priority targets</h3>
+    <ul>
+      <li><strong>Eugene</strong> (Lane Co.) — already seeded via SeeClickFix; university partnership potential.</li>
+      <li><strong>Portland</strong> (Multnomah Co.) — largest OR city; proprietary PDX Reporter; separate track.</li>
+      <li><strong>Salem</strong> (Marion Co.) — state capital; QScend backend.</li>
+      <li><strong>Bend</strong> (Deschutes Co.) — fast-growing; visible infrastructure salience.</li>
+      <li><strong>Corvallis</strong> (Benton Co.) — Oregon State University; civic-tech friendly.</li>
+      <li><strong>Medford / Gresham / Hillsboro / Beaverton</strong> — mid-size cities with active DPWs.</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ─────────────────────────────────────────────  NEW MEXICO  ───────────────────────────────────────────── -->
+<section class="state-block">
+  <div class="state-header">
+    <h2><span class="state-code">NM</span>New Mexico</h2>
+    <span class="county-count">33 counties</span>
+  </div>
+  <p class="state-note">Albuquerque already seeded via SeeClickFix. Santa Fe, Las Cruces, Rio Rancho all in DB. Statute dataset NOT yet drafted — NM Tort Claims Act (NMSA §41-4-1 et seq.) governs; 90-day notice window is shorter than most western states. Rural counties have very sparse population density.</p>
+  <ul class="county-grid">
+    <li>Bernalillo</li><li>Catron</li><li>Chaves</li><li>Cibola</li><li>Colfax</li>
+    <li>Curry</li><li>De Baca</li><li>Doña Ana</li><li>Eddy</li><li>Grant</li>
+    <li>Guadalupe</li><li>Harding</li><li>Hidalgo</li><li>Lea</li><li>Lincoln</li>
+    <li>Los Alamos</li><li>Luna</li><li>McKinley</li><li>Mora</li><li>Otero</li>
+    <li>Quay</li><li>Rio Arriba</li><li>Roosevelt</li><li>Sandoval</li><li>San Juan</li>
+    <li>San Miguel</li><li>Santa Fe</li><li>Sierra</li><li>Socorro</li><li>Taos</li>
+    <li>Torrance</li><li>Union</li><li>Valencia</li>
+  </ul>
+  <div class="priority-panel">
+    <h3>Priority targets</h3>
+    <ul>
+      <li><strong>Albuquerque</strong> (Bernalillo Co.) — largest NM city; already seeded via SeeClickFix.</li>
+      <li><strong>Santa Fe</strong> (Santa Fe Co.) — state capital; tourism + progressive civic posture.</li>
+      <li><strong>Las Cruces</strong> (Doña Ana Co.) — second-largest; NMSU partnership potential.</li>
+      <li><strong>Rio Rancho</strong> (Sandoval Co.) — Albuquerque suburb; fast-growing; already in DB.</li>
+      <li><strong>Farmington</strong> (San Juan Co.) — regional hub for the Four Corners.</li>
+      <li><strong>Roswell / Hobbs / Carlsbad</strong> — southeastern NM oil economy; infrastructure wear.</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ─────────────────────────────────────────────  TOTALS  ───────────────────────────────────────────── -->
+<div class="totals">
+  Total counties across all 10 states: <span>262</span> ·
+  Population-weighted priority targets: <span>~55 municipalities</span> ·
+  States with drafted statute dataset: <span>3 of 10</span> (MA, RI, NH — all pending legal review)
+</div>
+
+<p class="query">
+  <strong>Note on interpretation:</strong> your original request listed <code>ma, ct, ri, ct, vt, nh, ny, co, or, and nm</code> — with CT appearing twice. I interpreted the second CT as ME (Maine) because (a) ME is the only New England state otherwise missing from a clearly complete NE grouping, and (b) your ROADMAP already groups ME/VT/CT together. If you actually meant CT and something else (or just wanted CT once), tell me which state to swap ME for and I'll rebuild the section.
+</p>
+
+<p class="query">
+  <strong>Data sources:</strong> County lists cross-referenced against U.S. Census 2020 county FIPS records. Priority-target notes draw from ROADMAP's authority-coverage summary (795 US authorities seeded via Migration 013/014) and the SeeClickFix / Open311 / QScend routing state documented in DEFERRED items 9a–9g. When outreach begins, verify each priority target against the current <code>authorities</code> table before contacting.
+</p>
+
+</main>
+
+</body>
+</html>

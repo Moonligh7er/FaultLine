@@ -5,7 +5,7 @@
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://pagead2.googlesyndication.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: https:; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://www.google-analytics.com https://analytics.google.com https://pagead2.googlesyndication.com; frame-src https://googleads.g.doubleclick.net https://tpc.googlesyndication.com https://pagead2.googlesyndication.com; object-src 'none'; base-uri 'self';">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Fault Line — The Last Pothole You'll Ever Have To Yell About</title>
-<meta name="description" content="Stop hitting the same pothole every morning. Stop calling 311 into the void. Fault Line turns a 10-second photo into legal pressure your city can't ignore. Free on Android & iOS.">
+<meta name="description" content="Stop hitting the same pothole every morning. Stop calling 311 into the void. Fault Line turns a 10-second photo into legal pressure your city can't ignore. Free web app — no account required.">
 <meta name="keywords" content="pothole reporter, fix this faster, infrastructure accountability, civic tech, 311 alternative, community reporting app, free pothole app">
 <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large">
 <link rel="canonical" href="https://fault-line.dev/landing.html">
@@ -13,7 +13,7 @@
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://fault-line.dev/landing.html">
 <meta property="og:title" content="Fault Line — Your Tax Dollars Should Fix This Faster">
-<meta property="og:description" content="A 10-second report becomes legal pressure your city can't ignore. Free on Android & iOS.">
+<meta property="og:description" content="A 10-second report becomes legal pressure your city can't ignore. Free web app — no account required.">
 <meta property="og:site_name" content="Fault Line">
 <meta property="og:image" content="https://fault-line.dev/og/og-home.png">
 <meta name="twitter:card" content="summary_large_image">
@@ -27,12 +27,12 @@
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
-  "@type": "SoftwareApplication",
+  "@type": "WebApplication",
   "name": "Fault Line",
-  "operatingSystem": "Android, iOS",
+  "url": "https://app.fault-line.dev",
+  "browserRequirements": "Requires a modern web browser.",
   "applicationCategory": "UtilitiesApplication",
-  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
-  "aggregateRating": { "@type": "AggregateRating", "ratingValue": "4.8", "ratingCount": "100" }
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
 }
 </script>
 
@@ -336,9 +336,12 @@ section { padding: 120px 24px; position: relative; }
     <a href="landing.html" class="topnav-brand">Fault<span>Line</span></a>
     <div class="topnav-links">
       <a href="features-plain.html">Features</a>
+      <a href="cities.html">For Cities</a>
+      <a href="faq.html">FAQ</a>
+      <a href="changelog.html">Changelog</a>
       <a href="blog.html">Blog</a>
       <a href="about.html">About</a>
-      <a href="#download" class="topnav-cta">Get the App</a>
+      <a href="https://app.fault-line.dev" class="topnav-cta">Open the web app</a>
     </div>
   </div>
 </nav>
@@ -359,9 +362,9 @@ section { padding: 120px 24px; position: relative; }
   <div class="hero-content">
     <span class="hero-pretitle">Free · Anonymous · Built by one person who got tired of it</span>
     <h1>Stop yelling<br>at <span class="strikethrough">311</span>.<br><span class="gradient">Make them listen.</span></h1>
-    <p class="hero-sub">A 10-second photo becomes a community-verified, GPS-stamped, legally documented hazard your city is now <strong>liable</strong> for ignoring. Free on Android & iOS.</p>
+    <p class="hero-sub">A 10-second photo becomes a community-verified, GPS-stamped, legally documented hazard your city is now <strong>liable</strong> for ignoring. Free web app — no account required.</p>
     <div class="hero-cta-row">
-      <a href="#download" class="btn btn-primary">Get Fault Line — Free →</a>
+      <a href="https://app.fault-line.dev" class="btn btn-primary">Open the web app →</a>
       <a href="#how" class="btn btn-secondary">See how it works</a>
     </div>
     <div class="hero-trust">
@@ -435,12 +438,12 @@ section { padding: 120px 24px; position: relative; }
   <div class="container">
     <div class="moment-grid">
       <div class="moment-text">
-        <span class="timestamp">Tuesday, 8:43 AM · Brockton, MA</span>
+        <span class="timestamp">Illustration · a 27-second scenario</span>
         <h2>This is what 27 seconds looks like.</h2>
-        <p>Maria pulls over. She holds up her phone. The pothole is forty feet behind her. She taps the orange button. The camera opens.</p>
-        <p>She takes one photo. The AI looks at it. It says: <em>medium pothole, paved road, severe hazard</em>. It fills in everything for her. She taps Submit.</p>
-        <p>27 seconds later, the report is in the cluster of three other neighbors who hit the same hole this week. The cluster is now community-verified. The cluster is now in line for escalation. Maria gets back in her car.</p>
-        <p style="font-size:15px;color:var(--text-muted);margin-top:24px;">Two weeks later, the pothole was filled. Maria didn't have to do anything else.</p>
+        <p>You pull over. You hold up your phone. The pothole is forty feet behind you. You tap the orange button. The camera opens.</p>
+        <p>You take one photo. The AI looks at it. It says: <em>medium pothole, paved road, severe hazard</em>. It fills in everything for you. You tap Submit.</p>
+        <p>27 seconds later, the report is in a cluster with three other neighbors who hit the same hole this week. The cluster is now community-verified and in line for escalation. You get back in your car.</p>
+        <p style="font-size:15px;color:var(--text-muted);margin-top:24px;">If the cluster reaches escalation threshold, the app drafts a demand letter for you to send. From there, the statutory clock is running.</p>
       </div>
       <div class="moment-visual">
         <div class="timeline">
@@ -448,7 +451,7 @@ section { padding: 120px 24px; position: relative; }
           <div class="timeline-step"><div class="timeline-dot">📍</div><div class="timeline-content"><h4>GPS locks the spot</h4><p>Address auto-fills. Drag the pin if you need to.</p><span class="time">0:10 → 0:18</span></div></div>
           <div class="timeline-step"><div class="timeline-dot">✅</div><div class="timeline-content"><h4>Tap submit, you're done</h4><p>You can leave. The app does the rest.</p><span class="time">0:27</span></div></div>
           <div class="timeline-step"><div class="timeline-dot">👥</div><div class="timeline-content"><h4>Community verifies</h4><p>3 nearby reports = "community-verified." 10 reports = automatic escalation to the right authority.</p><span class="time">Over hours/days</span></div></div>
-          <div class="timeline-step"><div class="timeline-dot">⚖️</div><div class="timeline-content"><h4>Legal pressure activates</h4><p>Demand letter sent. Statutory clock starts. The whole community sees it.</p><span class="time">Day 1 → 30</span></div></div>
+          <div class="timeline-step"><div class="timeline-dot">⚖️</div><div class="timeline-content"><h4>Legal pressure activates</h4><p>Demand letter drafted for you to send. Once sent, the statutory clock starts. The whole community sees the response.</p><span class="time">Day 1 → 30</span></div></div>
         </div>
       </div>
     </div>
@@ -464,13 +467,13 @@ section { padding: 120px 24px; position: relative; }
       <div class="diff-card">
         <div class="diff-icon">📊</div>
         <h3>Public health grades</h3>
-        <p>Every city gets a real-time A-F grade. Updated by community data. Embeddable. Shareable. Impossible to hide from. Local journalists love this.</p>
+        <p>Cities that clear the data threshold get an A–F grade updated by community reports. Embeddable, shareable, methodology published. <a href="methodology.html" style="color:inherit;text-decoration:underline;">Grading methodology →</a></p>
         <span class="vs">311: <strong>nothing public</strong></span>
       </div>
       <div class="diff-card">
         <div class="diff-icon">⚖️</div>
-        <h3>Legal demand letters</h3>
-        <p>Auto-generated. Cites your state's specific statute. Tracks the deadline. One tap and it's in the right inbox. Cities take notice.</p>
+        <h3>Legal demand letter templates</h3>
+        <p>The app generates a letter citing your state's specific statute and tracks the deadline. You review it, sign it, and send it — from your own email — to the right department.</p>
         <span class="vs">311: <strong>not even close</strong></span>
       </div>
       <div class="diff-card">
@@ -494,10 +497,11 @@ section { padding: 120px 24px; position: relative; }
       <div class="diff-card">
         <div class="diff-icon">🚀</div>
         <h3>Direct city integration</h3>
-        <p>For Boston, Cambridge, and hundreds more: reports flow into their existing ticket system with real numbers. Status updates flow back to you.</p>
+        <p>Where cities publish an Open311 or SeeClickFix endpoint, reports flow into the existing ticket system with real numbers. Status updates flow back to you.</p>
         <span class="vs">311: <strong>black box</strong></span>
       </div>
     </div>
+    <p style="font-family:var(--ff-mono);font-size:11px;color:var(--text-muted);letter-spacing:1.5px;text-transform:uppercase;text-align:center;margin-top:36px;max-width:640px;margin-left:auto;margin-right:auto;line-height:1.7;">Fault Line is a self-help documentation tool, not a law firm. Letters and evidence packages are generated for you to review and send yourself. This is not legal advice. For a live claim against a municipality, consult a licensed attorney in your state.</p>
   </div>
 </section>
 
@@ -508,8 +512,8 @@ section { padding: 120px 24px; position: relative; }
     <h2 class="section-title">No tutorial. No account. No friction.</h2>
     <p class="section-lead">Most apps demand 12 onboarding screens before you can do anything. Fault Line lets you submit your first report 10 seconds after install. Here's the entire workflow.</p>
     <div class="onboarding-steps">
-      <div class="ob-step"><h4>Install</h4><p>App Store or Play Store. About 28 MB. No account screen. No email field.</p></div>
-      <div class="ob-step"><h4>Open it</h4><p>Tap "Allow location" once. The map shows reports near you. Skip onboarding if you want.</p></div>
+      <div class="ob-step"><h4>Open</h4><p>Load the web app in your browser. No install. No account screen. No email field.</p></div>
+      <div class="ob-step"><h4>Allow location</h4><p>Tap "Allow location" once. The map shows reports near you. Skip onboarding if you want.</p></div>
       <div class="ob-step"><h4>Tap the orange button</h4><p>That's the report button. It's the biggest thing on the screen. Hard to miss.</p></div>
       <div class="ob-step"><h4>Snap one photo</h4><p>The AI takes it from there. Pre-fills category, severity, dimensions. You just tap Submit.</p></div>
       <div class="ob-step"><h4>Done</h4><p>Your report is in the system. The app handles community verification, escalation, and follow-up automatically.</p></div>
@@ -520,20 +524,21 @@ section { padding: 120px 24px; position: relative; }
 <!-- SOCIAL PROOF -->
 <section class="proof">
   <div class="container">
-    <span class="section-eyebrow">Real People · Real Outcomes</span>
-    <h2 class="section-title">Stories from the field.</h2>
+    <span class="section-eyebrow">Illustrative Scenarios</span>
+    <h2 class="section-title">The workflows Fault Line is built for.</h2>
+    <p class="section-lead" style="opacity:0.85;">These are illustrative — not real users. Be one of our first real stories.</p>
     <div class="proof-grid">
       <div class="quote-card">
         <p>I hit the same pothole on my commute for six months. It finally destroyed my tire and cost me $400 I didn't have. I reported it to 311 twice. Nothing. I reported it on Fault Line. Seven neighbors did too. It was filled within two weeks.</p>
-        <div class="author"><strong>Maria</strong> · Brockton, MA</div>
+        <div class="author"><strong>Illustrative</strong> · commuter workflow</div>
       </div>
       <div class="quote-card">
         <p>The streetlight on our corner had been out for a year. My daughter walks to school in the dark. I didn't know who to call. Fault Line did it all — found the right department, sent the report, tracked the response. Light was fixed in 9 days.</p>
-        <div class="author"><strong>James</strong> · Providence, RI</div>
+        <div class="author"><strong>Illustrative</strong> · resident workflow</div>
       </div>
       <div class="quote-card">
         <p>As a city council member, I actually appreciate this app. It shows me where the problems are in my district with data I can take to budget meetings. My constituents don't have to call me anymore — I can see it all in real time.</p>
-        <div class="author"><strong>Council Member (anonymous)</strong> · Massachusetts</div>
+        <div class="author"><strong>Illustrative</strong> · municipal workflow</div>
       </div>
     </div>
   </div>
@@ -544,13 +549,14 @@ section { padding: 120px 24px; position: relative; }
   <h2>Stop complaining.<br><span class="line2">Start fixing.</span></h2>
   <p>Every report you submit is a vote for better infrastructure. Together, we make it impossible to ignore.</p>
   <div class="hero-cta-row">
-    <a href="#" class="btn btn-primary">Download for Android →</a>
-    <a href="#" class="btn btn-secondary">Download for iOS →</a>
+    <a href="https://app.fault-line.dev" class="btn btn-primary">Open the web app →</a>
+    <a href="feedback.html" class="btn btn-secondary">Send feedback</a>
   </div>
-  <p class="small">Free forever. No account required. Anonymous reporting supported. Built by Moonlit Social Labs.</p>
+  <p class="small">Free forever. No account required. Anonymous reporting supported. Native mobile apps in development. Built by Moonlit Social Labs. Public works department? <a href="cities.html" style="color:inherit;text-decoration:underline;">See the city dashboard →</a></p>
   <div style="margin-top:24px;">
-    <a href="https://ko-fi.com/moonlitsociallabs" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:8px;background:#FF5E5B;color:#fff;padding:12px 24px;border-radius:100px;font-size:15px;font-weight:700;text-decoration:none;">☕ Support development on Ko-fi</a>
+    <a href="https://ko-fi.com/moonlitsociallabs" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:8px;background:#FF5E5B;color:#fff;padding:12px 24px;border-radius:100px;font-size:15px;font-weight:700;text-decoration:none;">☕ Support on Ko-fi</a>
   </div>
+  <p style="font-family:var(--ff-body);font-size:13px;color:var(--text-muted);max-width:520px;margin:14px auto 0;line-height:1.6;"><strong>$20/month keeps the escalation email pipeline and hosting running</strong> for New England reporters. Every dollar past that funds statute review, more state coverage, and pilot city onboarding.</p>
 </section>
 
 <!-- AdSense bottom -->
@@ -578,9 +584,10 @@ section { padding: 120px 24px; position: relative; }
       <div class="footer-col">
         <h5>Product</h5>
         <a href="features-plain.html">Features</a>
+        <a href="cities.html">For Cities</a>
         <a href="blog.html">Blog</a>
         <a href="feedback.html">Feedback</a>
-        <a href="#download">Download</a>
+        <a href="https://app.fault-line.dev">Open the web app</a>
       </div>
       <div class="footer-col">
         <h5>Company</h5>
