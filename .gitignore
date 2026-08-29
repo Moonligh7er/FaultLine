@@ -98,3 +98,8 @@ flux1-prompts-preview.html
 image-review.html
 scripts/prompts.json
 scripts/decisions.txt
+
+# Grants strategy — funder tiering, positioning, and skeleton packet.
+# Kept local only per the doc's own §8 guidance:
+# "Do not commit funder-specific application text to the public repo."
+GRANTS.md
