@@ -749,6 +749,121 @@ The taxonomy is out. It's what a public works director, ADA coordinator, transit
 
 Access & Equity is directly fundable by equity-focused civic-tech funders (Ford Foundation Civic Engagement, MacArthur Foundation, Rita Allen, Robert Wood Johnson for public-health-adjacent categories). The taxonomy page + one pilot city partnership on ADA categories is a strong Tier A application skeleton on its own. See `GRANTS.md §2` (asset table) and `§4` (funder tiers).
 
+---
+
+## 26. Digital Public Infrastructure — URL-First Reporting Flow & Automated Snapshot
+
+**Status:** Public deep-dive page shipped at `digital-infrastructure.html` (2026-08-30). Twelve categories documented with named responsible authorities, legal frameworks, and the DOJ 2024 rule compliance-deadline context. **The URL-first reporting flow needed to submit these reports does not exist in the current app.**
+
+**What's needed:** Four engineering deliverables.
+
+### 1. URL-first reporting flow
+
+The current reporting UI is photo-first (10-second capture flow). Digital-infrastructure reports need an alternate flow:
+- Primary input: URL of the broken page + short text description of the failure
+- Optional inputs: screenshot, screen-reader/assistive-tech identifier, browser + platform metadata
+- No photo required (some failures aren't visually observable — screen-reader traps, invisible keyboard traps, missing alt text on programmatic content)
+
+The report submission form needs a new category-conditional branch: when the user selects a digital-infrastructure category, the UI switches from photo-first to URL-first. Categories that photograph well (missing translation on physical signage) can still use the photo path.
+
+### 2. Automated page-snapshot on submission
+
+When a URL-first report is submitted, a backend worker captures a snapshot of the page state at submission time:
+- HTML source
+- Screenshot at full-page resolution
+- Response headers (indicates server-side language selection, redirects, etc.)
+- HTTP status code
+- Snapshot timestamp
+
+Snapshots prevent cities from remediating the URL and claiming the report was inaccurate. The evidence is the snapshot, not the current page state.
+
+Implementation approach: extend the existing Modal browser-automation worker (`modal/web_form_submitter/main.py`) with a new `capture_snapshot` endpoint using Playwright. Store snapshots in a new Supabase bucket (`digital-infra-snapshots`, private, signed-URL access for authorized viewers only — reporter, ADA coordinator, DOJ complaint if filed).
+
+### 3. ADA Title II demand-letter template
+
+New template in the letter generator that:
+- Cites 28 CFR Part 35 + specific WCAG 2.1 AA success criterion violated
+- Includes the URL and the automated snapshot reference
+- Cites the applicable compliance deadline (April 2026 for 50k+ entities, April 2027 for smaller)
+- Notes the DOJ complaint pathway at civilrights.justice.gov/report/
+- Same "not legal advice" + versioned-dataset chain-of-custody footer as physical-infrastructure letters
+
+### 4. Right-sized reporter guidance in the UI
+
+The app should surface WCAG success-criterion identification hints when a user describes a failure. Not a full WCAG audit tool — a small helper: "Sounds like this might be a missing alt-text issue (WCAG 1.1.1) or a keyboard-trap issue (WCAG 2.1.2). Want to include this in your report?" Reduces the burden on residents who don't know WCAG jargon while producing structured data that strengthens the resulting demand letter.
+
+### Effort
+
+Rough estimate: ~1 week for #1 (UI branch on the reporting form), ~4-5 days for #2 (Playwright worker + bucket + retrieval flow), ~2 days for #3 (letter template), ~3 days for #4 (WCAG helper). Total: ~2.5 weeks.
+
+### Why deferred
+
+The category page is out. The 2024 DOJ rule stakes are documented publicly. Cities that read the deep-dive can already act (audit their sites, engage their ADA coordinator). The engineering plumbing to accept reports at scale can wait until (a) a pilot city commits, or (b) a specific resident advocacy group requests the workflow — either would prioritize which subset of the 12 categories to ship first.
+
+### Grant relevance
+
+Digital public infrastructure is the strongest single-category grant hook Fault Line has. Ford Public Interest Technology, Mozilla Foundation open-web accessibility tracks, and Ash Center Government Innovators Network all have live portfolios that fit. When the URL-first flow ships, the grant application writes itself: "We built the first consumer path from resident-affected digital-accessibility failure to statutory demand letter." See `GRANTS.md §4 Tier A`.
+
+---
+
+## 27. Briefing Packets — Generator, Distribution, and Right-of-Reply Infrastructure
+
+**Status:** Public design page shipped at `briefing-packets.html` (2026-08-30). Two output types specified: monthly council-member district briefings and event-driven press-ready cluster summaries. **The generator, distribution pipeline, and right-of-reply infrastructure do not exist in the current app.**
+
+**What's needed:** Five engineering deliverables.
+
+### 1. Council-district boundary ingestion (per pilot city)
+
+Fault Line has census-tract boundaries via TIGER; council districts are city-specific. Some cities publish district shapefiles openly; some publish PDF maps only; some don't publish at all. Ingestion is manual per city during pilot:
+- Table: `districts (jurisdiction, district_id, boundary_geojson, elected_official_current, contact_email)`
+- Boundary import: shapefile → PostGIS geometry column
+- Point-in-polygon lookup: `find_district_by_point(lat, lng, jurisdiction)` — extends the pattern already established for `find_authority_by_point`.
+
+Pilot cities that don't publish district boundaries can provide them during onboarding as a term of the pilot agreement.
+
+### 2. Verified official-address list
+
+Every city publishes elected-official contact addresses somewhere. Ingestion is manual per city during pilot:
+- `elected_officials (jurisdiction, district_id, name, role, email, verified_at, verification_source_url)`
+- Email verification: each address gets a soft-delivery test on ingestion; bounced addresses flag the row for re-verification.
+
+### 3. Packet generator service
+
+New backend service (Supabase Edge Function `generate-briefing-packet`) that takes `(jurisdiction, district_id, date_range)` and produces:
+- PDF (via Puppeteer or a lightweight template renderer)
+- JSON companion (same content, machine-readable)
+- Static HTML at `fault-line.dev/briefings/<jurisdiction>/<district>/<date>.html`
+
+Content pulls from existing tables: `reports`, `clusters`, `escalation_log`, `resolutions` (from DEFERRED #24), `districts` (from #1 above). Every packet includes a methodology-link footer with dataset versions.
+
+Trigger: cron on the first of each month for council briefings; event-driven on threshold-crossing detection for press summaries.
+
+### 4. Right-of-reply infrastructure
+
+Before a press-ready summary distributes to journalists, the responsible authority contact of record receives a 24-hour pre-notification with the summary content and an append-response endpoint. Authority responses are appended to the packet before distribution.
+
+Implementation: new `packet_pre_notifications` table with `sent_at`, `response_deadline_at`, `response_received_at`, `response_content`. Distribution cron blocks on `response_deadline_at` before sending.
+
+### 5. Journalist verification workflow
+
+Reporters subscribe with a byline URL. Verification is manual during pilot:
+- `journalist_subscriptions (email, byline_url, jurisdictions, threshold_triggers, delivery_format, verified_at, verification_method)`
+- Manual review by the maintainer during pilot
+- Automatable later (byline verification services, official newsroom domain lookups)
+
+### Effort
+
+Rough estimate: ~1 week for #1 + #2 combined (mostly per-pilot-city data entry, some geometry work), ~2 weeks for #3 (generator + templates), ~3 days for #4 (right-of-reply flow), ~2 days for #5 (subscription form + manual verification workflow). Total: ~4 weeks.
+
+### Why deferred
+
+The design is out. Council members and reporters can review the format before Fault Line invests engineering time in a generator they don't want. Council briefings are the natural first ship (simpler distribution — every elected official gets one regardless of subscription); press summaries follow once a pilot city has data volume worth summarizing.
+
+### Grant relevance
+
+The council-briefing use case is a direct fit for Knight Foundation Journalism / Local News, MacArthur Journalism & Media, and Ford Civic Engagement programs. "Structured constituent-services data delivered to elected officials without editorial intermediation" is unusually clean grant framing. See `GRANTS.md §4 Tier A`.
+
+
 
 
 
