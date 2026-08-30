@@ -128,6 +128,8 @@ main .lede { font-family: var(--ff-body); font-size: 18px; line-height: 1.6; col
     <a href="faq.html">FAQ</a>
     <a href="rapid-response.html">Rapid Response Roll</a>
     <a href="access-equity.html">Access &amp; Equity</a>
+    <a href="digital-infrastructure.html">Digital Infra</a>
+    <a href="briefing-packets.html">Briefings</a>
     <a href="changelog.html" aria-current="page">Changelog</a>
     <a href="feedback.html">Feedback</a>
     <a href="https://ko-fi.com/moonlitsociallabs" target="_blank" rel="noopener" class="nav-kofi">Support on Ko-Fi</a>
@@ -142,6 +144,31 @@ main .lede { font-family: var(--ff-body); font-size: 18px; line-height: 1.6; col
 <p class="lede">Fault Line is built in the open by one person. This is the running log of what's shipped, versioned honestly. If something isn't listed here, it hasn't happened yet &mdash; a running theme in civic tech is to promise more than gets shipped, and this page is our defense against that pattern.</p>
 
 <!-- ─────────────────────────────  AUGUST 2026  ───────────────────────────── -->
+<div class="entry">
+  <p class="entry-date">2026-08-30</p>
+  <p class="entry-title">Briefing Packets — automated council briefings + press-ready cluster summaries</p>
+  <ul>
+    <li><strong>New <a href="briefing-packets.html">/briefing-packets</a> page.</strong> Two output types the underlying report data doesn&rsquo;t currently reach: monthly council-member district briefings (delivered to every council member of record, non-partisan by design) and press-ready cluster summaries (event-driven when a cluster crosses a threshold, delivered to subscribed local journalists).</li>
+    <li><strong>Both formats specified with sample packet content.</strong> Council briefing shows district-level metrics, top items likely to reach constituent services, fastest resolutions (Rapid Response Roll integration), access &amp; equity flags, and talking-point suggestions. Press summary shows suggested headline, draft lede, key numbers, GPS-tagged evidence, right-of-reply record, methodology footer.</li>
+    <li><strong>Guardrails documented up front:</strong> no editorial embellishment, not partisan (every council member of record receives the briefing regardless of party), 24-hour right-of-reply to responsible authority before press distribution, no cherry-picking (methodology defines inclusion; staffers cannot omit unflattering items), no paid placements, council members can add annotations but cannot alter Fault Line&rsquo;s methodology-cited numbers.</li>
+    <li><strong>Distribution model:</strong> all briefings that are distributed are also public at fault-line.dev/briefings/&lt;jurisdiction&gt;/&lt;date&gt;. No gated access, no preferential information.</li>
+    <li><strong>Engineering scope in DEFERRED #27</strong> &mdash; council-district boundary ingestion per pilot city, verified official-address list, packet generator service, right-of-reply infrastructure, journalist verification workflow.</li>
+  </ul>
+</div>
+
+<div class="entry">
+  <p class="entry-date">2026-08-30</p>
+  <p class="entry-title">Digital Public Infrastructure — deep-dive on Access &amp; Equity Group F, DOJ 2024 rule framing</p>
+  <ul>
+    <li><strong>New <a href="digital-infrastructure.html">/digital-infrastructure</a> page.</strong> Broken city website forms, screen-reader-inaccessible PDFs, missing translations, and other digital-infrastructure failures that lock residents out of services they&rsquo;re legally entitled to. Almost no civic-tech tool systematically tracks these &mdash; owning this category is a moat.</li>
+    <li><strong>DOJ 2024 rule stakes documented.</strong> The April 2024 rule under Title II of the ADA made WCAG 2.1 AA the required conformance standard for state and local government web content and mobile apps. April 24, 2026 deadline for 50,000+ resident entities has already passed; April 26, 2027 deadline for smaller entities is running. Cities need to know this before DOJ or a plaintiff&rsquo;s attorney tells them.</li>
+    <li><strong>12 categories</strong> extending the initial 5 from Access &amp; Equity Group F: broken city form, screen-reader-inaccessible PDF, missing translation, ADA website violation, missing plain-language version, missing captions, broken mobile app accessibility, missing digital equivalent of in-person service, broken government email delivery, broken phone accessibility, missing responsive design, missing subscription mechanism.</li>
+    <li><strong>URL-first reporting flow specified</strong> (photo optional, automated snapshot on submission, assistive-tech context capture) &mdash; different from physical-infrastructure reporting because these failures don&rsquo;t photograph well.</li>
+    <li><strong>Guardrails:</strong> no offensive auditing (resident-initiated reports only, not automated scans), no zero-day disclosure (statutory response window before public), verification standard (2 independent reproductions required before escalation).</li>
+    <li><strong>Engineering scope in DEFERRED #26</strong> &mdash; URL-first reporting flow, automated page-snapshot service, ADA Title II demand-letter template with WCAG citation.</li>
+  </ul>
+</div>
+
 <div class="entry">
   <p class="entry-date">2026-08-30</p>
   <p class="entry-title">Access &amp; Equity taxonomy — 32 categories, published routing, ADA / Fair Housing / Title VI framing</p>

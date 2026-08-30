@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://pagead2.googlesyndication.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: https:; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://www.google-analytics.com https://analytics.google.com https://pagead2.googlesyndication.com; frame-src https://googleads.g.doubleclick.net https://tpc.googlesyndication.com https://pagead2.googlesyndication.com; object-src 'none'; base-uri 'self';">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Digital Public Infrastructure — Fault Line | Broken Gov Websites, Inaccessible PDFs, Missing Translations</title>
+<meta name="description" content="Fault Line's Digital Public Infrastructure category tracks broken government websites, screen-reader-hostile PDFs, missing translations, ADA web-accessibility violations, and other digital failures that lock residents out of services they're legally entitled to.">
+<meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large">
+<link rel="canonical" href="https://fault-line.dev/digital-infrastructure.html">
+
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://fault-line.dev/digital-infrastructure.html">
+<meta property="og:title" content="Digital Public Infrastructure — Fault Line">
+<meta property="og:description" content="No civic-tech tool is systematically tracking the digital-infrastructure failure class. Broken city forms, screen-reader-inaccessible PDFs, missing translations. The 2024 DOJ ADA rule made these legal violations. This is the moat.">
+<meta property="og:image" content="https://fault-line.dev/og/og-home.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://fault-line.dev/og/og-home.png">
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-XXXXXXXXXX');</script>
+
+<link rel="stylesheet" href="theme.css?v=20260506">
+
+<style>
+main { max-width: 900px; margin: 0 auto; padding: 24px 32px 80px; }
+main h1 { font-size: clamp(38px, 6vw, 60px); letter-spacing: -1.5px; margin-bottom: 6px; line-height: 1.05; }
+main h1 em { font-style: italic; color: var(--tile-hot); }
+main .updated { font-family: var(--ff-mono); font-size: 12px; color: var(--steel-light); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 34px; }
+main .lede { font-family: var(--ff-body); font-size: 19px; line-height: 1.6; color: var(--tile); margin-bottom: 34px; }
+main h2 { font-size: 26px; margin: 46px 0 14px; letter-spacing: -0.5px; }
+main h3 { font-size: 19px; font-weight: 700; margin: 22px 0 8px; color: var(--tile); }
+main p, main li { font-family: var(--ff-body); color: var(--tile-dim); font-size: 16px; line-height: 1.7; margin-bottom: 14px; }
+main ul, main ol { padding-left: 24px; margin-bottom: 18px; }
+main li { margin-bottom: 8px; }
+main strong { color: var(--tile); font-weight: 600; }
+
+.callout {
+  border-left: 3px solid var(--tile-hot);
+  padding: 14px 20px;
+  margin: 24px 0;
+  background: rgba(0, 0, 0, 0.15);
+  font-family: var(--ff-body);
+}
+.callout p:last-child { margin-bottom: 0; }
+.callout.danger { border-left-color: var(--signal-red, #E8463E); }
+
+table.deadline {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 16px 0 24px;
+  font-family: var(--ff-mono);
+  font-size: 14px;
+}
+table.deadline th, table.deadline td {
+  text-align: left;
+  padding: 12px 14px;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  vertical-align: top;
+}
+table.deadline th {
+  color: var(--tile);
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  font-size: 11px;
+}
+table.deadline td.date {
+  color: var(--tile-hot);
+  font-weight: 700;
+  white-space: nowrap;
+}
+table.deadline td.pop { color: var(--tile); font-weight: 600; white-space: nowrap; }
+
+.cat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 14px;
+  margin: 20px 0 32px;
+}
+.cat {
+  border: 1px solid rgba(255,255,255,0.08);
+  padding: 16px 18px;
+  background: rgba(0,0,0,0.15);
+}
+.cat h3 { margin: 0 0 6px; font-size: 15px; color: var(--tile); }
+.cat p { font-size: 13px; margin: 0 0 6px; }
+.cat .legal {
+  font-family: var(--ff-mono);
+  font-size: 10px;
+  color: var(--tile-hot);
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+}
+.cat .legal a { color: var(--tile-hot); }
+
+.example {
+  border: 1px dashed rgba(255,255,255,0.12);
+  padding: 18px 22px;
+  margin: 22px 0;
+  background: rgba(0,0,0,0.1);
+  font-family: var(--ff-mono);
+  font-size: 13px;
+  color: var(--tile-dim);
+  line-height: 1.65;
+}
+.example .lbl {
+  color: var(--tile-hot);
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  font-size: 10px;
+  display: block;
+  margin-bottom: 4px;
+}
+
+.disclaimer {
+  font-family: var(--ff-mono);
+  font-size: 11px;
+  color: var(--steel-light);
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  text-align: center;
+  margin: 44px auto 0;
+  max-width: 700px;
+  line-height: 1.7;
+}
+</style>
+</head>
+<body>
+
+<div class="hazard"></div>
+
+<nav class="nav">
+  <a href="index.html" class="nav-brand"><span class="brand-fault">Fault</span><span class="brand-slash">\</span><span class="brand-line">Line</span><span class="beta-badge">BETA</span></a>
+  <div class="nav-links">
+    <a href="index.html">Home</a>
+    <a href="features-plain.html">Features</a>
+    <a href="cities.html">For Cities</a>
+    <a href="blog.html">Blog</a>
+    <a href="about.html">About</a>
+    <a href="feedback.html">Feedback</a>
+    <a href="faq.html">FAQ</a>
+    <a href="access-equity.html">Access &amp; Equity</a>
+    <a href="rapid-response.html">Rapid Response Roll</a>
+    <a href="changelog.html">Changelog</a>
+    <a href="https://ko-fi.com/moonlitsociallabs" target="_blank" rel="noopener" class="nav-kofi">Support on Ko-Fi</a>
+    <span class="active-dev-status"><span class="nav-dot"></span> Active Development</span>
+  </div>
+</nav>
+
+<main>
+<h1>Digital public <em>infrastructure</em>.</h1>
+<p class="updated">Deep dive on Access &amp; Equity Group F · 2026-08-30 · Categories not yet enabled in the app UI</p>
+
+<p class="lede">A broken pothole is visible. A broken pothole is <em>reported.</em> A broken city website form, a PDF that won&rsquo;t open in a screen reader, an English-only benefit application in a neighborhood where 40% of residents speak Spanish at home &mdash; those are just as consequential to the residents affected, and virtually invisible to everyone else. Nobody in civic tech is systematically tracking them. That&rsquo;s the opportunity.</p>
+
+<div class="callout danger">
+  <p><strong>The stakes just got higher:</strong> the <a href="https://www.federalregister.gov/documents/2024/04/24/2024-07758/nondiscrimination-on-the-basis-of-disability-accessibility-of-web-information-and-services-of-state" target="_blank" rel="noopener">DOJ&rsquo;s April 2024 rule</a> under Title II of the ADA made government website and mobile-app accessibility a legally enforceable obligation. WCAG 2.1 AA is now the required conformance standard for state and local government digital services. The compliance deadlines are already running &mdash; and most cities don&rsquo;t know it.</p>
+</div>
+
+<h2>1. Compliance deadlines under the 2024 DOJ rule</h2>
+<table class="deadline">
+  <thead>
+    <tr><th>Deadline</th><th>Applies to</th><th>Standard</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td class="date">April 24, 2026</td>
+      <td class="pop">Public entities with 50,000+ residents</td>
+      <td>WCAG 2.1 AA for all web content &amp; mobile apps</td>
+    </tr>
+    <tr>
+      <td class="date">April 26, 2027</td>
+      <td class="pop">Public entities with &lt; 50,000 residents<br>+ special-district governments</td>
+      <td>WCAG 2.1 AA for all web content &amp; mobile apps</td>
+    </tr>
+  </tbody>
+</table>
+<p>The April 2026 deadline has already passed. Cities of 50,000+ residents that have not remediated their web accessibility are, as of this document&rsquo;s writing, in ongoing violation. The April 2027 deadline is now the more common status &mdash; smaller municipalities have a shrinking window.</p>
+
+<h2>2. Why this category is a moat</h2>
+<p>Municipal digital-infrastructure failures are systematically underreported for three structural reasons:</p>
+<ul>
+  <li><strong>The people affected can&rsquo;t easily complain <em>through the broken channel</em>.</strong> A blind resident locked out of a screen-reader-hostile city site cannot use that site&rsquo;s contact form to report the problem. A Spanish-speaker locked out of an English-only benefit application cannot navigate the same application to report the language gap. The failure mode is self-silencing.</li>
+  <li><strong>The failures are invisible to sighted / literate / English-fluent city staff.</strong> A DPW director does not notice a screen-reader trap the way they notice a pothole because they never encounter it. Which means the failure is not on any internal dashboard until someone external audits it &mdash; typically DOJ or a plaintiff&rsquo;s attorney.</li>
+  <li><strong>No civic-tech reporting tool has systematically routed these categories.</strong> 311 systems assume physical infrastructure. Web-accessibility audit tools exist (aXe, WAVE) but they&rsquo;re operated by developers, not residents. There is no existing consumer path from &ldquo;this city thing is broken for me&rdquo; to the responsible authority.</li>
+</ul>
+<p>Fault Line&rsquo;s reporting model &mdash; ten-second submission, community verification, statutory-cited escalation &mdash; maps onto digital-infrastructure failures cleanly. And since almost no competitor is touching this category, being the tool that <em>does</em> is a defensive position that&rsquo;s hard to attack.</p>
+
+<h2>3. Reportable categories</h2>
+<p>Categories in this document extend the initial five from <a href="access-equity.html#group-f">Access &amp; Equity Group F</a> to twelve. Each maps to a named responsible authority and a cited legal framework.</p>
+
+<div class="cat-grid">
+  <div class="cat">
+    <h3>Broken city website form</h3>
+    <p>Form can&rsquo;t be submitted; validation traps user; JavaScript required but blocks assistive tech.</p>
+    <p class="legal"><a href="https://www.federalregister.gov/documents/2024/04/24/2024-07758/nondiscrimination-on-the-basis-of-disability-accessibility-of-web-information-and-services-of-state" target="_blank" rel="noopener">28 CFR Part 35 (2024)</a> · WCAG 2.1 AA</p>
+  </div>
+  <div class="cat">
+    <h3>Screen-reader-inaccessible PDF</h3>
+    <p>Untagged PDF, image-only PDF without OCR, missing document structure, unlabeled form fields.</p>
+    <p class="legal">28 CFR Part 35 · <a href="https://www.w3.org/TR/WCAG21/" target="_blank" rel="noopener">WCAG 2.1 AA</a> §&nbsp;1.3.1</p>
+  </div>
+  <div class="cat">
+    <h3>Missing translation</h3>
+    <p>English-only signage or online form for a service where community demographics require translation.</p>
+    <p class="legal"><a href="https://www.justice.gov/crt/fcs/TitleVI" target="_blank" rel="noopener">Title VI</a> · EO 13166</p>
+  </div>
+  <div class="cat">
+    <h3>ADA violation on city website</h3>
+    <p>Missing alt text on informational images, low contrast, keyboard traps, missing focus indicators, missing skip links.</p>
+    <p class="legal">28 CFR Part 35 (2024) · WCAG 2.1 AA</p>
+  </div>
+  <div class="cat">
+    <h3>Missing plain-language version</h3>
+    <p>Important form or notice uses jargon-heavy or high-reading-level language with no accessible alternative.</p>
+    <p class="legal">Plain Writing Act (federal analog); state benefits-access statutes</p>
+  </div>
+  <div class="cat">
+    <h3>Missing captions on official video</h3>
+    <p>City council meetings, public service announcements, mayor&rsquo;s office videos without captions or transcripts.</p>
+    <p class="legal">28 CFR Part 35 · WCAG 2.1 AA § 1.2.2</p>
+  </div>
+  <div class="cat">
+    <h3>Broken accessibility on mobile city app</h3>
+    <p>Native app fails accessibility service integration (VoiceOver, TalkBack); unlabeled controls; missing accessible actions.</p>
+    <p class="legal">28 CFR Part 35 (2024, explicitly covers mobile apps)</p>
+  </div>
+  <div class="cat">
+    <h3>Missing digital equivalent of in-person service</h3>
+    <p>Service was in-person only and closed; digital replacement doesn&rsquo;t exist, forcing residents with mobility or transportation barriers offline entirely.</p>
+    <p class="legal">28 CFR Part 35.150 (program access)</p>
+  </div>
+  <div class="cat">
+    <h3>Broken government email delivery</h3>
+    <p>City &ldquo;contact us&rdquo; addresses bouncing; official notifications land in spam; email replies from residents never receive acknowledgment.</p>
+    <p class="legal">28 CFR Part 35 (effective communication)</p>
+  </div>
+  <div class="cat">
+    <h3>Broken phone accessibility</h3>
+    <p>City phone tree has no accessible menu for TTY / relay; option menus require timing that&rsquo;s incompatible with cognitive disability.</p>
+    <p class="legal">28 CFR Part 35 · <a href="https://www.fcc.gov/consumers/guides/telecommunications-relay-service-trs" target="_blank" rel="noopener">FCC TRS rules</a></p>
+  </div>
+  <div class="cat">
+    <h3>Missing responsive design</h3>
+    <p>Site or form is desktop-only in a demographic where most residents are mobile-only for internet access.</p>
+    <p class="legal">28 CFR Part 35 (indirect) · Title VI (digital divide impact)</p>
+  </div>
+  <div class="cat">
+    <h3>Missing / broken subscription mechanism</h3>
+    <p>Public notice RSS feed, email subscription, or emergency-alert enrollment is broken or hidden &mdash; residents don&rsquo;t get warnings they&rsquo;re legally entitled to.</p>
+    <p class="legal">28 CFR Part 35 (effective communication) · state open-meeting laws</p>
+  </div>
+</div>
+
+<h2>4. How a resident reports one of these</h2>
+<p>Digital-infrastructure failures need a different report flow than a pothole. A pothole photographs well; a screen-reader trap doesn&rsquo;t. The reporting UI (scoped in <code>DEFERRED.md #25</code> and #26) will support:</p>
+<ul>
+  <li><strong>URL + short description as primary evidence.</strong> The URL of the broken page or PDF, plus a text description of what fails and how.</li>
+  <li><strong>Screenshot optional but not required.</strong> Where a screenshot captures the failure (visible layout break, missing alt text visible via inspector), include it. Where it doesn&rsquo;t (screen-reader failure), the description carries the report.</li>
+  <li><strong>Screen-reader / assistive-tech context.</strong> Which assistive technology was in use (NVDA, JAWS, VoiceOver, TalkBack), what platform, what browser. Not required for submission but strengthens evidence when included.</li>
+  <li><strong>Automated snapshot on submission.</strong> When Fault Line accepts a URL, the system captures a snapshot of the page state at submission time. Cities can&rsquo;t later remediate the URL and claim the report was inaccurate; the snapshot is the evidence.</li>
+</ul>
+
+<div class="example">
+<span class="lbl">Sample report — Broken city website form</span>
+URL: https://example-city.gov/permits/apply<br>
+Category: Broken city website form<br>
+Description: The permit application form&rsquo;s submit button is bound to a JavaScript handler that never fires. Any user without JavaScript enabled &mdash; including many users of assistive tech configured for stability &mdash; cannot complete the application. Reproduced with keyboard-only navigation, Firefox 128, NoScript enabled.<br>
+Automated snapshot: captured 2026-08-30T14:22:00Z<br>
+Assistive tech: NVDA + Firefox<br>
+Impact: Blocks residents from applying for a permit the city otherwise requires them to apply for.
+</div>
+
+<h2>5. How this reaches the responsible authority</h2>
+<p>The routing dataset (per <code>DEFERRED.md #25</code>) maps each digital-infrastructure category to:</p>
+<ol>
+  <li><strong>Primary authority:</strong> Municipal IT / web team + the department that owns the specific page or form.</li>
+  <li><strong>Escalation authority:</strong> Municipal ADA coordinator. Every public entity with 50+ employees is required by 28 CFR &sect; 35.107 to designate one.</li>
+  <li><strong>Federal fallback:</strong> The <a href="https://civilrights.justice.gov/report/" target="_blank" rel="noopener">DOJ Civil Rights Division</a> for ADA Title II violations. This is a real complaint pathway that has resulted in consent decrees against municipalities, some involving large monetary settlements.</li>
+</ol>
+
+<h2>6. Guardrails</h2>
+<ol>
+  <li><strong>No offensive auditing.</strong> Fault Line does not automatically scan city websites for accessibility failures at scale. Reports are resident-initiated, on the specific pages residents actually try to use. Wide-net auditing without a specific resident-affected use case shifts this from accountability tooling into vulnerability discovery, which has different ethical and legal considerations.</li>
+  <li><strong>No zero-day disclosure.</strong> Reports of accessibility failures give the responsible authority a reasonable window to remediate before public disclosure. Same statutory-notice model as the physical-infrastructure demand letter flow.</li>
+  <li><strong>No malicious use.</strong> The DOJ complaint pathway is a real remedy. It is not a lever for filing spam complaints against a city as a form of harassment. Automated bulk-submission is a violation of terms of service.</li>
+  <li><strong>Verification standard.</strong> Digital-infrastructure reports require the same community-verification threshold as physical reports before escalation. Two independent reporters must reproduce the failure at the same URL before a demand-letter template is generated.</li>
+</ol>
+
+<h2>7. For cities: get ahead of this</h2>
+<div class="callout">
+  <p>If you&rsquo;re a municipal ADA coordinator, IT director, or city attorney reading this: <strong>the 2024 DOJ rule is not going away, the deadlines are not being extended, and the enforcement mechanism includes both DOJ Title II investigations and private plaintiff&rsquo;s attorney claims under 42 USC &sect; 12132</strong>. Fault Line reports document specific failures your city can remediate before a complaint is filed. That is genuinely useful to you, not just adversarial.</p>
+</div>
+<p>Public works directors and IT leadership should look at Fault Line reports the way you look at Snyk security scans: a signal that something specific is broken and can be fixed. See <a href="cities.html">/cities</a> for the pilot dashboard.</p>
+
+<h2>8. What still needs to happen before this ships</h2>
+<ol>
+  <li>Category constants + routing dataset (in scope with <code>DEFERRED.md #25</code>).</li>
+  <li>URL-first + automated-snapshot reporting flow (new in <code>DEFERRED.md #26</code>).</li>
+  <li>ADA Title II demand-letter template with WCAG citation (in scope with <code>DEFERRED.md #25</code>).</li>
+  <li>First municipal ADA coordinator to accept pilot reports through the workflow &mdash; this is the pilot-city conversation.</li>
+</ol>
+
+<h2>9. Grant relevance</h2>
+<p>Digital public infrastructure is <em>directly</em> fundable by:</p>
+<ul>
+  <li><strong>Ford Foundation Public Interest Technology</strong> &mdash; the flagship funder for civic-tech-adjacent digital access work.</li>
+  <li><strong>Mozilla Foundation</strong> &mdash; open-web accessibility is a stated priority; Fault Line&rsquo;s OSS webapp meets their portfolio criteria.</li>
+  <li><strong>Ash Center Government Innovators Network</strong> &mdash; recognition + distribution channel to municipal IT and ADA leadership.</li>
+  <li><strong>State-level Assistive Technology programs</strong> &mdash; every state has an AT Act-funded program; several have small-grant lines for civic-tech that expands access.</li>
+</ul>
+<p>See <code>GRANTS.md &sect;4 Tier A/B</code> for the current funder-tier map. Digital public infrastructure is the strongest single-category grant hook Fault Line has &mdash; nothing else in the taxonomy is this cleanly aligned with public-interest-technology funders.</p>
+
+<p class="disclaimer">Not legal advice. Municipal digital-accessibility obligations under the 2024 DOJ rule are complex and jurisdiction-specific. For live compliance questions, consult a licensed attorney with ADA Title II experience. For a live claim against a public entity, consult a plaintiff&rsquo;s attorney &mdash; there is a private right of action under 42 USC &sect; 12132.</p>
+
+</main>
+
+<footer>
+  <a href="index.html">Home</a> &middot;
+  <a href="features-plain.html">Features</a> &middot;
+  <a href="cities.html">For Cities</a> &middot;
+  <a href="about.html">About</a> &middot;
+  <a href="methodology.html">Methodology</a> &middot;
+  <a href="rapid-response.html">Rapid Response Roll</a> &middot;
+  <a href="access-equity.html">Access &amp; Equity</a> &middot;
+  <a href="digital-infrastructure.html">Digital Public Infrastructure</a> &middot;
+  <a href="privacy.html">Privacy</a> &middot;
+  <a href="terms.html">Terms</a> &middot;
+  <a href="blog.html">Blog</a> &middot;
+  <a href="faq.html">FAQ</a> &middot;
+  <a href="changelog.html">Changelog</a> &middot;
+  <a href="feedback.html">Feedback</a> &middot;
+  <a href="https://app.fault-line.dev" target="_blank" rel="noopener">Web app</a> &middot;
+  <a href="https://ko-fi.com/moonlitsociallabs" target="_blank" rel="noopener">Ko-fi</a>
+  <br><br>&copy; 2026 Moonlit Social Labs &middot; Fault Line is a product of Moonlit Social Labs
+</footer>
+
+</body>
+</html>
