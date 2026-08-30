@@ -5,6 +5,7 @@
 // --- Report Types ---
 
 export type ReportCategory =
+  // Physical infrastructure — roads / traffic / pedestrian / utilities / environmental / community
   | 'pothole'
   | 'streetlight'
   | 'sidewalk'
@@ -28,6 +29,51 @@ export type ReportCategory =
   | 'parking_meter'
   | 'park_playground'
   | 'utility_pole'
+  // Access & Equity Group A — Physical mobility / ADA (see /access-equity.html)
+  | 'missing_curb_cut'
+  | 'broken_curb_cut'
+  | 'broken_accessibility_ramp'
+  | 'ada_blocked_path'
+  | 'sidewalk_dead_end'
+  | 'broken_aps'
+  | 'missing_aps'
+  // Group B — Sensory & cognitive access
+  | 'missing_braille_signage'
+  | 'english_only_signage'
+  | 'missing_large_print'
+  | 'illegible_signage'
+  | 'missing_audible_signage_transit'
+  // Group C — Age & vulnerability
+  | 'missing_bench_senior_route'
+  | 'missing_shade_heat_vulnerable'
+  | 'broken_drinking_fountain'
+  | 'missing_public_restroom'
+  | 'missing_crossing_guard'
+  | 'dangerous_school_walk_route'
+  // Group D — Housing & shelter equity
+  | 'broken_elevator_public_housing'
+  | 'broken_heat_ac_public_housing'
+  | 'mold_public_housing'
+  | 'missing_accessibility_public_housing'
+  // Group E — Transit equity
+  | 'missing_bus_shelter'
+  | 'broken_bus_shelter'
+  | 'missing_transit_bench'
+  | 'ada_inaccessible_platform'
+  | 'broken_wayfinding_transit'
+  // Group F — Digital public infrastructure (see /digital-infrastructure.html)
+  | 'broken_city_website_form'
+  | 'screen_reader_inaccessible_pdf'
+  | 'missing_translation'
+  | 'city_website_ada_violation'
+  | 'missing_plain_language_version'
+  | 'missing_captions_official_video'
+  | 'broken_mobile_app_accessibility'
+  | 'missing_digital_service_equivalent'
+  | 'broken_government_email'
+  | 'broken_phone_accessibility'
+  | 'missing_responsive_design'
+  | 'broken_subscription_mechanism'
   | 'other';
 
 export type SizeRating = 'small' | 'medium' | 'large' | 'massive';

@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://pagead2.googlesyndication.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: https:; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://www.google-analytics.com https://analytics.google.com https://pagead2.googlesyndication.com; frame-src https://googleads.g.doubleclick.net https://tpc.googlesyndication.com https://pagead2.googlesyndication.com; object-src 'none'; base-uri 'self';">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Commercial Property Reporting — Fault Line | ADA Title III, Code Enforcement, Physical Safety</title>
+<meta name="description" content="Fault Line's Commercial Property report type: how residents can document physical / infrastructural conditions on privately-owned commercial property — narrowly scoped, evidence-required, aggregate-only publication, right-of-reply preserved. Never subjective, never single-report attribution.">
+<meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large">
+<link rel="canonical" href="https://fault-line.dev/business-property.html">
+
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://fault-line.dev/business-property.html">
+<meta property="og:title" content="Commercial Property Reporting — Fault Line">
+<meta property="og:description" content="Broken sidewalk in front of a chain store. ADA-inaccessible entrance. Dangerous parking lot lighting. The design commitment for how Fault Line handles commercial property — physical conditions only, evidence-required, aggregate-only publication, right-of-reply preserved.">
+<meta property="og:image" content="https://fault-line.dev/og/og-home.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://fault-line.dev/og/og-home.png">
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-XXXXXXXXXX');</script>
+
+<link rel="stylesheet" href="theme.css?v=20260506">
+
+<style>
+main { max-width: 860px; margin: 0 auto; padding: 24px 32px 80px; }
+main h1 { font-size: clamp(38px, 6vw, 60px); letter-spacing: -1.5px; margin-bottom: 6px; line-height: 1.05; }
+main h1 em { font-style: italic; color: var(--tile-hot); }
+main .updated { font-family: var(--ff-mono); font-size: 12px; color: var(--steel-light); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 34px; }
+main .lede { font-family: var(--ff-body); font-size: 19px; line-height: 1.6; color: var(--tile); margin-bottom: 34px; }
+main h2 { font-size: 26px; margin: 46px 0 14px; letter-spacing: -0.5px; }
+main h3 { font-size: 19px; font-weight: 700; margin: 22px 0 8px; color: var(--tile); }
+main p, main li { font-family: var(--ff-body); color: var(--tile-dim); font-size: 16px; line-height: 1.7; margin-bottom: 14px; }
+main ul, main ol { padding-left: 24px; margin-bottom: 18px; }
+main li { margin-bottom: 8px; }
+main strong { color: var(--tile); font-weight: 600; }
+
+.callout {
+  border-left: 3px solid var(--tile-hot);
+  padding: 14px 20px;
+  margin: 24px 0;
+  background: rgba(0, 0, 0, 0.15);
+  font-family: var(--ff-body);
+}
+.callout p:last-child { margin-bottom: 0; }
+.callout.warn { border-left-color: var(--signal-red, #E8463E); }
+
+.split {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin: 20px 0 32px;
+}
+.split-col {
+  border: 1px solid rgba(255,255,255,0.08);
+  padding: 18px 20px;
+  background: rgba(0,0,0,0.15);
+}
+.split-col h3 { margin: 0 0 10px; font-size: 15px; }
+.split-col.in-scope h3 { color: var(--signal-green, #46C37A); }
+.split-col.out-scope h3 { color: var(--signal-red, #E8463E); }
+.split-col ul { margin: 0; padding-left: 18px; }
+.split-col li { font-size: 13px; color: var(--tile-dim); margin-bottom: 6px; line-height: 1.55; }
+@media (max-width: 640px) {
+  .split { grid-template-columns: 1fr; }
+}
+
+table.routing-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 16px 0 24px;
+  font-family: var(--ff-body);
+  font-size: 14px;
+}
+table.routing-table th, table.routing-table td {
+  text-align: left;
+  padding: 12px 12px;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  vertical-align: top;
+}
+table.routing-table th {
+  color: var(--tile);
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  font-size: 11px;
+  font-family: var(--ff-mono);
+  background: rgba(0,0,0,0.15);
+}
+table.routing-table td.tier { color: var(--tile-hot); font-weight: 700; font-family: var(--ff-mono); font-size: 12px; white-space: nowrap; }
+table.routing-table td.target { color: var(--tile); font-weight: 600; }
+
+.example {
+  border: 1px dashed rgba(255,255,255,0.14);
+  padding: 18px 22px;
+  margin: 22px 0;
+  background: rgba(0,0,0,0.12);
+  font-family: var(--ff-mono);
+  font-size: 13px;
+  color: var(--tile-dim);
+  line-height: 1.65;
+}
+.example .lbl {
+  color: var(--tile-hot);
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  font-size: 10px;
+  display: block;
+  margin-bottom: 6px;
+}
+.example .kv {
+  display: grid;
+  grid-template-columns: 200px 1fr;
+  gap: 6px 12px;
+  margin-top: 8px;
+}
+.example .kv .k { color: var(--steel-light); text-transform: uppercase; font-size: 10px; letter-spacing: 1px; }
+.example .kv .v { color: var(--tile); }
+
+.disclaimer {
+  font-family: var(--ff-mono);
+  font-size: 11px;
+  color: var(--steel-light);
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  text-align: center;
+  margin: 44px auto 0;
+  max-width: 720px;
+  line-height: 1.7;
+}
+</style>
+</head>
+<body>
+
+<div class="hazard"></div>
+
+<nav class="nav">
+  <a href="index.html" class="nav-brand"><span class="brand-fault">Fault</span><span class="brand-slash">\</span><span class="brand-line">Line</span><span class="beta-badge">BETA</span></a>
+  <div class="nav-links">
+    <a href="index.html">Home</a>
+    <a href="features-plain.html">Features</a>
+    <a href="cities.html">For Cities</a>
+    <a href="blog.html">Blog</a>
+    <a href="about.html">About</a>
+    <a href="feedback.html">Feedback</a>
+    <a href="faq.html">FAQ</a>
+    <a href="access-equity.html">Access &amp; Equity</a>
+    <a href="digital-infrastructure.html">Digital Infra</a>
+    <a href="rapid-response.html">Rapid Response Roll</a>
+    <a href="briefing-packets.html">Briefings</a>
+    <a href="corridor-reports.html">Corridors</a>
+    <a href="whistleblower.html">Insider</a>
+    <a href="changelog.html">Changelog</a>
+    <a href="https://ko-fi.com/moonlitsociallabs" target="_blank" rel="noopener" class="nav-kofi">Support on Ko-Fi</a>
+    <span class="active-dev-status"><span class="nav-dot"></span> Active Development</span>
+  </div>
+</nav>
+
+<main>
+<h1>Commercial property <em>reporting</em>.</h1>
+<p class="updated">Design v0.1 · Draft · 2026-08-30 · Report type not yet enabled in the app UI</p>
+
+<p class="lede">A broken sidewalk in front of a chain retailer. A dangerous parking-lot lighting situation at a shopping center after dark. An ADA-inaccessible entrance at a national bank branch. These are physical conditions on commercial property that affect the public, and they&rsquo;re just as reportable as a pothole on the street outside &mdash; but the guardrails have to be different. This page is Fault Line&rsquo;s design commitment for how commercial property reports work: narrowly scoped, evidence-required, aggregate-only publication, right-of-reply preserved, never single-report attribution.</p>
+
+<div class="callout warn">
+  <p><strong>Status:</strong> Design and methodology page. <strong>The commercial property report type is not yet enabled in the app UI</strong> &mdash; the underlying report subtype, aggregation window, right-of-reply infrastructure, and property-ownership lookup are scoped in <code>DEFERRED.md #31</code>. This page commits the design in public before the plumbing exists because the design constraints are the whole point &mdash; a poorly-designed commercial-reporting feature is worse than none. Publishing the guardrails publicly first makes them auditable and hard to walk back.</p>
+</div>
+
+<h2>1. Why the guardrails matter more than the feature</h2>
+<p>Adding commercial-property reporting to Fault Line without guardrails would create three predictable failures:</p>
+<ul>
+  <li><strong>Bad-faith review brigading.</strong> Small-business competitors and disgruntled ex-employees would use the platform as a defamation vector. This is the well-documented failure mode of every consumer review platform in existence.</li>
+  <li><strong>Racial and class-biased targeting patterns.</strong> Existing consumer-reporting infrastructure (Yelp, Nextdoor) shows measurable disparate impact on immigrant-owned, Black-owned, and small-business commerce. Fault Line inherits this risk the moment it accepts commercial reports.</li>
+  <li><strong>Evidence discipline collapse.</strong> Fault Line&rsquo;s power on the municipal side comes from strict, objective, verifiable evidence claims. Adding a subjective consumer-review layer would corrupt the discipline that makes the municipal side defensible.</li>
+</ul>
+<p>The design below solves each failure explicitly. If any guardrail cannot be enforced in code, that guardrail is not shipped &mdash; and the commercial-report type does not ship either. The guardrails are the feature.</p>
+
+<h2>2. In scope / out of scope &mdash; the bright line</h2>
+
+<div class="split">
+  <div class="split-col in-scope">
+    <h3>&#10003; In scope</h3>
+    <ul>
+      <li>Physical infrastructure conditions on commercial property that affect public safety (broken sidewalk in front of a business, dangerous parking-lot pavement, hazardous outdoor lighting)</li>
+      <li>ADA Title III physical access barriers (inaccessible entrance, non-compliant ramp, blocked accessible parking, inaccessible restrooms available to the public)</li>
+      <li>Municipal code violations visible from public view (illegal dumping on commercial property, unpermitted structures, expired occupancy signs)</li>
+      <li>Environmental / safety hazards observable from public view (chemical leaks, exposed wires, structural damage, unremediated storm damage)</li>
+      <li>Chain-property patterns (same accessibility failure across multiple locations of the same franchise) &mdash; aggregation across a chain, not attribution to one location</li>
+    </ul>
+  </div>
+  <div class="split-col out-scope">
+    <h3>&#10007; Out of scope</h3>
+    <ul>
+      <li>Service quality, food quality, employee behavior, aesthetics, subjective experience</li>
+      <li>Any consumer-review-style rating (star ratings, "would recommend," etc.)</li>
+      <li>Personnel disputes involving specific employees</li>
+      <li>Allegations of criminal conduct by named individuals (report to police, IG, AG)</li>
+      <li>Reports about businesses operating out of a private residence</li>
+      <li>Businesses under active regulatory action (avoid duplicating the regulator&rsquo;s process)</li>
+      <li>Anything the reporter learned as an employee (see <a href="whistleblower.html">Public-Employee Reporting</a> for a scoped-down insider path &mdash; and note that page&rsquo;s explicit exclusion of private-sector personnel matters)</li>
+    </ul>
+  </div>
+</div>
+
+<h2>3. Evidence requirements &mdash; stricter than resident reports</h2>
+<p>Standard resident reports require GPS, timestamp, and category. Commercial-property reports require all of that <em>plus</em>:</p>
+<ol>
+  <li><strong>Photo required &mdash; no exceptions.</strong> Commercial reports cannot be text-only. The photo must show the reported condition clearly enough that a third party could evaluate it without additional context.</li>
+  <li><strong>Property identification.</strong> Business name and physical address of the affected property, so the responsible party can be looked up in public records. Chain identification if applicable (which corporate brand the location operates under).</li>
+  <li><strong>Public-view confirmation.</strong> The reporter must confirm the reported condition was observed from public view or from a portion of the property open to the public (parking lot, sidewalk, storefront). Reports about back-of-house conditions, employee-only areas, or private residences are not accepted through this flow.</li>
+  <li><strong>Reporter attestation.</strong> Reporter must affirm the report is a factual observation of a physical condition, not a complaint about service or a competitive attack. False attestations are grounds for reporter suspension and potential legal liability under state anti-SLAPP frameworks for the accused business.</li>
+</ol>
+
+<h2>4. Routing &mdash; three tiers</h2>
+<table class="routing-table">
+  <thead>
+    <tr>
+      <th>Tier</th>
+      <th>Target</th>
+      <th>When it applies</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td class="tier">Primary</td>
+      <td class="target">Property owner of record</td>
+      <td>Where public records identify a specific property owner (via assessor / registry of deeds), notice goes to them directly.</td>
+    </tr>
+    <tr>
+      <td class="tier">Escalation</td>
+      <td class="target">Local code enforcement + municipal ADA coordinator (for accessibility categories)</td>
+      <td>If the primary channel receives no response within the applicable notice window (typically 30-60 days), the report escalates to the municipal enforcement office. This is the enforcement mechanism that already exists for privately-owned conditions &mdash; Fault Line adds documented notice.</td>
+    </tr>
+    <tr>
+      <td class="tier">Federal fallback</td>
+      <td class="target">DOJ CRD (for ADA Title III), state AG office (for consumer-protection issues)</td>
+      <td>For repeat pattern failures across a chain that municipal enforcement will not touch (regulatory-capture cases). Federal ADA Title III private right of action exists under 42 USC § 12188.</td>
+    </tr>
+  </tbody>
+</table>
+
+<h2>5. Publication model &mdash; aggregate only</h2>
+<p>Individual commercial-property reports are <strong>not published to the public map or feeds</strong>. Reports flow into the routing pipeline privately. The public visibility model is deliberately different from resident reports about public infrastructure:</p>
+<ul>
+  <li><strong>Aggregation threshold:</strong> a specific commercial property is publicly named only after <strong>5+ independent verified reports</strong> at that address, from <strong>3+ distinct reporters</strong>, over a <strong>90-day window</strong>. Below this threshold, no public attribution.</li>
+  <li><strong>Chain-wide patterns:</strong> a commercial chain is publicly named for a pattern only after <strong>15+ verified reports across at least 5 distinct locations</strong>, from at least <strong>10 distinct reporters</strong>, over a <strong>180-day window</strong>. Chain-wide aggregation is the strongest evidentiary claim Fault Line makes on the commercial side and requires the highest threshold.</li>
+  <li><strong>Right of reply:</strong> before any public attribution, the property owner (or franchisor for chains) receives a <strong>14-day pre-notification</strong> with the aggregated evidence and an append-response endpoint. Responses are appended to any public listing.</li>
+  <li><strong>Delisting on remediation:</strong> if the property owner remediates all reported conditions within the notice window, no public listing appears. The point is to document and drive remediation, not to catalog blame.</li>
+</ul>
+
+<h2>6. Sample commercial-property report</h2>
+<div class="example">
+  <span class="lbl">Sample &mdash; illustrative only</span>
+  <div class="kv">
+    <div class="k">Property</div><div class="v">&lt;Retail chain&gt; store #NNNN, 123 Main St, City &lt;example&gt;, MA</div>
+    <div class="k">Reported condition</div><div class="v">ADA-inaccessible entrance &mdash; primary entrance ramp non-compliant slope (measured &gt; 1:12), no compliant alternate accessible entrance identified</div>
+    <div class="k">Category</div><div class="v">ADA Title III / accessible entrance</div>
+    <div class="k">Public-view confirmation</div><div class="v">Observed from public sidewalk</div>
+    <div class="k">Photo evidence</div><div class="v">Attached (2 photos, GPS-tagged, EXIF preserved)</div>
+    <div class="k">Chain identifier</div><div class="v">&lt;Corporate brand name&gt;</div>
+    <div class="k">Reporter attestation</div><div class="v">Confirmed factual observation, not service complaint</div>
+    <div class="k">Status</div><div class="v">Pending aggregation (currently 1 of 5 reports required for property-level attribution)</div>
+    <div class="k">Statute</div><div class="v">ADA Title III (42 USC &sect; 12181 et seq.) + 28 CFR Part 36</div>
+  </div>
+</div>
+
+<h2>7. Legal framework &mdash; ADA Title III as the primary lens</h2>
+<p>Commercial reports are anchored in <a href="https://www.ada.gov/topics/title-iii/" target="_blank" rel="noopener">ADA Title III</a> (public accommodations) rather than Title II (public entities). Key differences:</p>
+<ul>
+  <li>Title III applies to <strong>businesses open to the public</strong>: retail, restaurants, banks, hotels, professional offices, private schools, transit terminals, gyms. Not private residences. Not employee-only areas.</li>
+  <li><strong>Private right of action</strong> under <a href="https://www.law.cornell.edu/uscode/text/42/12188" target="_blank" rel="noopener">42 USC &sect; 12188</a> allows individuals to sue for injunctive relief (and, in some jurisdictions, damages) for Title III violations. This is a real remedy, not just a complaint pathway.</li>
+  <li><strong>2010 ADA Standards for Accessible Design</strong> (specifically <a href="https://www.ada.gov/law-and-regs/design-standards/2010-stds/" target="_blank" rel="noopener">28 CFR Part 36</a>) define the technical requirements for physical accessibility of commercial facilities. Fault Line reports cite specific standard violations where identifiable.</li>
+  <li><strong>State-law parallels:</strong> most states (including MA, RI, NH) have parallel accessibility statutes with similar or stronger requirements. See <a href="claim-by-state.html">per-state statutory table</a> for the physical-infrastructure analogs; Title III commercial framings will be added when the reporter dataset expands.</li>
+</ul>
+
+<div class="callout">
+  <p>ADA + physical-safety framing is the strongest legal anchor because <strong>the underlying facts are objective and legally significant</strong>. Slope of a ramp is a number. Presence or absence of a compliant entrance is a fact. Neither is a matter of opinion. That objectivity is what protects commercial reports from becoming a subjective review vector.</p>
+</div>
+
+<h2>8. Guardrails (complete list)</h2>
+<ol>
+  <li><strong>Photo required, no text-only submissions.</strong> Removes anonymous drive-by attacks that cost nothing to file.</li>
+  <li><strong>Public-view attestation.</strong> Removes trespass and back-of-house reports.</li>
+  <li><strong>Reporter attestation with liability language.</strong> False-report submitters may face anti-SLAPP counterclaim exposure &mdash; making bad-faith reporting materially costly.</li>
+  <li><strong>Aggregation threshold before any public attribution.</strong> Individual reports never publish; property named only after 5+ reports from 3+ distinct reporters over 90 days.</li>
+  <li><strong>14-day pre-notification + right of reply.</strong> Property owners see the aggregated evidence and can respond, correct, or remediate before public listing.</li>
+  <li><strong>Delisting on remediation.</strong> If the owner fixes reported conditions before threshold or during the notification window, no public listing appears.</li>
+  <li><strong>Higher chain-wide threshold.</strong> 15+ reports across 5+ locations from 10+ reporters before a corporate brand is publicly named.</li>
+  <li><strong>Objective categories only.</strong> Report categories are physical-condition specific (ADA slope non-compliance, blocked accessible parking, exposed wiring). No "quality" categories, no "vibe," no subjective assessment.</li>
+  <li><strong>No businesses under active regulatory action.</strong> If a property is already under an enforcement order for the same category, Fault Line does not accept new public reports for that address until the enforcement action concludes &mdash; avoids duplicating the regulator&rsquo;s process and creating parallel-track confusion.</li>
+  <li><strong>Reporter reputation tracking (internal only, never public).</strong> Reporters with a pattern of dismissed / withdrawn / owner-corrected commercial reports get their submissions weighted lower and eventually gated. Not visible to residents; not a public trust score; a spam-reduction tool.</li>
+  <li><strong>No competitive-reporter blocking, but the burden of proof escalates.</strong> If two reports of the same commercial property come from GPS locations near a competing business, both reports get flagged for enhanced review before contributing to aggregation. The report isn&rsquo;t rejected; the standard is higher.</li>
+  <li><strong>Legal-review chain of custody for the ADA standards dataset.</strong> Same pattern as the statute and routing datasets: 2010 ADA Standards references in letters carry a version + review-status footer. Categories aren&rsquo;t promoted from <code>pending-review</code> to <code>verified</code> without a qualified reviewer.</li>
+</ol>
+
+<h2>9. What Fault Line does not promise</h2>
+<ul>
+  <li><strong>Individual case remedy.</strong> Fault Line documents. Legal remedy for an ADA Title III violation requires an attorney and a Title III lawsuit or a DOJ complaint. Fault Line reports strengthen those actions; they don&rsquo;t replace them.</li>
+  <li><strong>Small-business protection review.</strong> Small businesses that receive a Fault Line report have the same right of reply and delisting-on-remediation as chains. There is no small-business exemption &mdash; but the aggregation threshold means a single bad-faith report never causes public damage.</li>
+  <li><strong>Regulatory action.</strong> Fault Line does not initiate code enforcement, ADA lawsuits, or state AG action. It creates documented evidence that residents, journalists, plaintiffs&rsquo; attorneys, and municipal enforcement can use.</li>
+  <li><strong>Franchisor accountability where a franchisee is the responsible party.</strong> Some corporate chains have franchisee-owned locations where the corporate brand is not the legal responsible party for premises conditions. Fault Line surfaces the ambiguity in the aggregate listing rather than resolving it prematurely.</li>
+</ul>
+
+<h2>10. What still needs to happen before this ships</h2>
+<ol>
+  <li><strong>Report subtype in schema.</strong> New field on <code>reports</code>: <code>report_subject</code> enum (public_infrastructure / commercial_property). Commercial reports flag `is_commercial: true` and require additional fields.</li>
+  <li><strong>Property-ownership lookup service.</strong> Ingest public assessor data per pilot jurisdiction so a given GPS + property maps to a responsible owner. Manual per city during pilot.</li>
+  <li><strong>Aggregation + right-of-reply pipeline.</strong> Extension of the existing right-of-reply infrastructure from <code>DEFERRED.md #27</code>. Property-owner pre-notification, 14-day window, append-response endpoint.</li>
+  <li><strong>Chain-identifier database.</strong> Corporate brand identifiers with franchisor compliance contacts where publicly available. Seeded with the top ~200 US commercial chains, updated per pilot.</li>
+  <li><strong>Reporter-reputation tracking.</strong> Internal-only signal, never publicly displayed. Extension of the existing user profile schema.</li>
+  <li><strong>Attestation and false-report legal-copy review.</strong> The reporter-attestation language and anti-SLAPP-adjacent posture need attorney review before this ships. Same qualified-reviewer standard as the statute dataset.</li>
+  <li><strong>ADA Title III standards dataset.</strong> Analogous to the current statute dataset but scoped to Title III commercial-property standards (2010 ADA Standards for Accessible Design). Versioned, chain of custody, published at <code>src/services/ada-title-iii/</code>.</li>
+</ol>
+<p>Full engineering scope in <code>DEFERRED.md #31</code>.</p>
+
+<h2>11. Grant relevance</h2>
+<p>Commercial-property accessibility reporting is a live civic-tech gap. Disability-rights funders (Ford Foundation Disability Rights portfolio, the Disability Rights Fund, Christopher &amp; Dana Reeve Foundation, state Assistive Technology programs) all have live portfolios that fit. The strict guardrail architecture &mdash; aggregate-only, right-of-reply, evidence-required &mdash; is grant-worthy on its own because it responds directly to the well-documented failure modes of prior consumer-review approaches. See <code>GRANTS.md &sect;4 Tier A/B</code>.</p>
+
+<p class="disclaimer">Not legal advice. Commercial-property reports are documentation, not remedy. ADA Title III lawsuits, DOJ complaints, state AG complaints, and municipal code enforcement actions all require their own process; consult a licensed attorney for live claims. Reporter attestations are contractual affirmations with legal consequences for knowingly false submissions.</p>
+
+</main>
+
+<footer>
+  <a href="index.html">Home</a> &middot;
+  <a href="features-plain.html">Features</a> &middot;
+  <a href="cities.html">For Cities</a> &middot;
+  <a href="about.html">About</a> &middot;
+  <a href="methodology.html">Methodology</a> &middot;
+  <a href="rapid-response.html">Rapid Response Roll</a> &middot;
+  <a href="access-equity.html">Access &amp; Equity</a> &middot;
+  <a href="digital-infrastructure.html">Digital Public Infrastructure</a> &middot;
+  <a href="briefing-packets.html">Briefing Packets</a> &middot;
+  <a href="corridor-reports.html">Corridor &amp; Area Reports</a> &middot;
+  <a href="whistleblower.html">Public-Employee Reporting</a> &middot;
+  <a href="business-property.html">Commercial Property Reporting</a> &middot;
+  <a href="privacy.html">Privacy</a> &middot;
+  <a href="terms.html">Terms</a> &middot;
+  <a href="blog.html">Blog</a> &middot;
+  <a href="faq.html">FAQ</a> &middot;
+  <a href="changelog.html">Changelog</a> &middot;
+  <a href="feedback.html">Feedback</a> &middot;
+  <a href="https://app.fault-line.dev" target="_blank" rel="noopener">Web app</a> &middot;
+  <a href="https://ko-fi.com/moonlitsociallabs" target="_blank" rel="noopener">Ko-fi</a>
+  <br><br>&copy; 2026 Moonlit Social Labs &middot; Fault Line is a product of Moonlit Social Labs
+</footer>
+
+</body>
+</html>

@@ -3,6 +3,49 @@
 These items cannot be completed without external accounts, credentials, or assets.
 Each item includes what's needed and what has already been prepared.
 
+**HIGH PRIORITY items** (flagged in the section heading) should be evaluated first — they either unblock other work, close a real user-visible gap, or represent load-bearing plumbing whose absence quietly costs momentum.
+
+---
+
+## 🔥 HIGH PRIORITY · Wire Routing Module into `legalGenerator.ts`
+
+**Status:** The routing dataset (`src/services/routing/`) exists, is seeded with 17 records (MA/RI/NH + federal fallbacks), is versioned, has a chain-of-custody `routingDisclaimer()` helper, and passes `tsc --noEmit` cleanly. The letter generator (`src/services/legalGenerator.ts`) **does not yet consume it.** Instead, the letter generator receives an `authorityName` string as a parameter (currently sourced from a per-report authority lookup in `ReportDetailScreen`) and hardcodes it into the letter body.
+
+**Why HIGH PRIORITY:** the moment a pilot city says yes, the routing dataset needs to be live in the letter flow. Wiring it in now &mdash; before a pilot &mdash; means the plumbing is tested against every letter the current infrastructure generates, so when a pilot city actually files a demand letter through Fault Line, the routing works correctly on the first attempt. This is the difference between "we tested it end-to-end already" and "we hope it works." The former is what wins a pilot conversation; the latter loses it on day one.
+
+**The change is ~15 lines in one file:**
+
+1. Add imports at the top of `src/services/legalGenerator.ts`:
+   ```ts
+   import { getRouting, routingDisclaimer, type CategoryRouting } from './routing';
+   ```
+
+2. Inside `generateDemandLetter()`, after the existing `getStatuteRecord()` call:
+   ```ts
+   const routing = getRouting(report.category, report.location.state || DEFAULT_STATE);
+   const routingBanner = routing && routing.verificationStatus !== 'verified'
+     ? unreviewedBanner(routing as any)   // reuses existing banner helper
+     : '';
+   const routingFooter = routing ? routingDisclaimer(routing) : '';
+   ```
+
+3. In the letter body template, replace the hardcoded `authorityName` recipient with `routing?.primaryAuthority.name ?? authorityName`. Preserve the `authorityName` parameter as a fallback so existing callers don't break.
+
+4. Append `routingFooter` to the letter footer alongside the existing `disclaimer` line.
+
+5. Extend `DemandLetterData` interface with `routingVersion?: string` and `routingVerificationStatus?: string` so the UI can surface them.
+
+6. Add three cases to the letter-body top-banner logic: (a) statute unreviewed only, (b) routing unreviewed only, (c) both unreviewed. Currently the unreviewed banner fires only on statute; wiring routing means it fires on either.
+
+**Test surface after wiring:**
+- Generate a letter for a MA pothole report against a Boston test authority: routing record fires, footer shows "Routing reference: pothole / MA · dataset v0.1.0 · NOT YET LEGALLY REVIEWED."
+- Generate a letter for a category with no MA-specific record but a federal fallback (e.g., missing captions on an official video): routing falls through to the federal DOJ CRD record.
+- Generate a letter for a category with no routing at all: `routing === null`, letter still generates using the passed-in `authorityName`, footer omits the routing disclaimer. Backwards-compatible.
+
+**Why it's still called "deferred":** the pilot city has not yet been signed. Wiring the routing without a real recipient means the unreviewed-banner letters that get generated during internal testing are addressed at real municipal offices — which is fine for a small volume of testing (the responsible authority always has right to ignore) but should not scale until we have consent. Wire in, keep test volume small, expand when a pilot signs.
+
+**Effort:** ~30 minutes of code + 30 minutes of manual test against 3-5 report categories across MA/RI/NH. Half an afternoon.
+
 ---
 
 ## 1. Google Analytics — Replace Placeholder Measurement ID
@@ -995,6 +1038,83 @@ Insider infrastructure reporting is a genuine gap. Government transparency funde
 - **Do not position Fault Line as a substitute for SecureDrop or GlobaLeaks.** Those tools exist for a reason. Their threat model is different. Attempting to compete on absolute-anonymity grounds will produce a worse tool than either alternative and will encourage people to trust Fault Line for something it can't deliver.
 - **Do not accept classified information under any circumstances.** Not a policy discussion — accepting classified information could create serious legal liability for Fault Line, for reporters, and potentially for anyone in a chain of custody. The submission flow must reject anything the reporter marks as classified.
 - **Do not make retaliation claims or handle them.** Refer to whistleblower attorneys. Fault Line documents infrastructure conditions; retaliation is an employment-law matter.
+
+---
+
+## 31. Commercial Property Reporting — Report Subtype, Aggregation, Right-of-Reply, ADA Title III Dataset
+
+**Status:** Public design + methodology page shipped at `business-property.html` (2026-08-30). Scope narrowly bounded (physical / infrastructural / ADA Title III conditions only, never subjective), evidence requirements strict (photo required, public-view attestation, reporter attestation with liability language), publication model aggregate-only (5+ reports from 3+ reporters over 90 days for property attribution; 15+ reports across 5+ locations over 180 days for chain attribution), right-of-reply preserved. **None of the underlying plumbing exists in the current app.**
+
+**What's needed:** Seven engineering + review deliverables.
+
+### 1. Report subtype in schema
+
+Add to `reports` table:
+- `report_subject` enum: `public_infrastructure` (default) | `commercial_property`
+- When `commercial_property`: additional required fields — `business_name`, `business_address_full`, `chain_identifier` (nullable, for chain brand identifier), `public_view_confirmed` (boolean), `reporter_attestation` (boolean).
+
+Migration sketch: `supabase/migration_020_commercial_property_reports.sql`. Additive; backwards-compatible with existing point-report flow.
+
+### 2. Property-ownership lookup service
+
+For a given GPS + property, resolve the responsible owner. Data sources:
+- Municipal assessor / property tax databases (per-jurisdiction, manually ingested during pilot; some cities publish this as open data)
+- State registry of deeds (for verification of current owner when the assessor is stale)
+- Franchisor compliance contact database (for chain brands — seeded with the top ~200 US commercial chains + manually expanded as pilot cities engage)
+
+New table: `commercial_properties (jurisdiction, address, owner_of_record, franchisor_brand, franchisor_compliance_contact, verified_at, verification_source)`.
+
+### 3. Aggregation + right-of-reply pipeline
+
+Extension of the right-of-reply infrastructure already scoped in `DEFERRED.md #27` (briefing packets). Adds:
+- `property_aggregations` table tracking (property_id, report_ids[], aggregation_status, threshold_status, pre_notification_sent_at, response_deadline_at, response_content)
+- Cron that checks aggregation thresholds nightly and fires the 14-day pre-notification to owner-of-record when a threshold is crossed
+- Append-response endpoint identical to press-summary right-of-reply
+
+### 4. Chain-identifier database
+
+`commercial_chains (chain_id, brand_name, brand_aliases[], compliance_email, compliance_url, notes)`. Seeded with top ~200 US commercial chains (national retail, restaurants, banks, hotels, gyms, pharmacies). Manually expanded per pilot city / per reporter-submitted correction.
+
+### 5. Reporter-reputation tracking (internal only, never public)
+
+Extension of the user profile schema:
+- `commercial_reports_submitted`
+- `commercial_reports_dismissed_or_owner_corrected`
+- Aggregation-weight modifier applied to commercial reports based on the ratio above. Low-quality reporters have their submissions weighted lower and eventually gated. Not visible to residents; not a public trust score; a spam-reduction tool.
+
+### 6. Competitive-reporter enhanced-review flag
+
+Nightly job that flags commercial reports where the reporter's most recent GPS locations are near a competing business (same category within 500 ft radius). Flagged reports get enhanced review before contributing to aggregation. Not a rejection; an elevated evidentiary standard.
+
+### 7. ADA Title III standards dataset + attestation legal review
+
+New versioned module: `src/services/ada-title-iii/`. Same pattern as the statute + routing datasets:
+- Records per (accessibility category, standard citation, notice pathway)
+- Chain of custody: `pending-review` until qualified reviewer flips to `verified`
+- README + CHANGELOG
+- Feeds the commercial-property letter templates with 2010 ADA Standards for Accessible Design citations
+
+Additionally: attorney review of the reporter-attestation language and the anti-SLAPP-adjacent posture. False-report submitter liability language needs legal-counsel review before it ships live.
+
+### Effort
+
+Rough estimate: ~1 week for #1 (schema + migration), ~2 weeks for #2 (per-pilot-city assessor data ingestion + lookup service), ~1 week for #3 (aggregation + right-of-reply, mostly reusing #27 infra), ~1 week for #4 (chain database seed), ~3 days for #5 (reputation tracking), ~4 days for #6 (competitive-reporter flag), ~2 weeks for #7 (Title III dataset + attorney review). Total: ~7 weeks engineering + external legal review.
+
+### Why deferred
+
+This is the most sensitive expansion in the roadmap. Every guardrail on the page must be enforced in code before it ships — a poorly-implemented commercial-reporting feature is worse than none because it damages the platform's evidence discipline on the municipal side. The engineering effort is not the blocker; the correctness bar is. Ship this only when at least (a) a disability-rights advocacy group has reviewed the design, (b) an attorney has reviewed the reporter-attestation language, and (c) one pilot city has confirmed local code enforcement will accept escalations from the pipeline.
+
+### Grant relevance
+
+Directly fundable by disability-rights and civic-tech funders: Ford Foundation Disability Rights portfolio, Disability Rights Fund, Christopher & Dana Reeve Foundation, state Assistive Technology programs. The strict guardrail architecture is grant-worthy on its own — it directly responds to the well-documented failure modes of prior consumer-review approaches. See `GRANTS.md §4 Tier A/B`.
+
+### What NOT to do
+
+- **Do not launch without every guardrail enforced in code.** Any guardrail that "will be added later" corrupts the promise from day one.
+- **Do not offer a small-business exemption.** A protected class of businesses that can't be reported is a corruption vector. The aggregation threshold protects all businesses equally from single bad-faith reports.
+- **Do not accept individual reports as evidence for public attribution.** Only aggregations publish. Single reports flow into the routing pipeline privately.
+- **Do not build a public API for commercial-report data before the aggregation model is battle-tested.** Public API for aggregated data is a v2 concern.
+
 
 
 
