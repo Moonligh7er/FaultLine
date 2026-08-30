@@ -7,44 +7,35 @@ Each item includes what's needed and what has already been prepared.
 
 ---
 
-## 🔥 HIGH PRIORITY · Wire Routing Module into `legalGenerator.ts`
+## ✅ SHIPPED (2026-08-30) · Routing Wire-In + Framing Templates + URL-First + Corridor + Insider + Commercial Scaffolds
 
-**Status:** The routing dataset (`src/services/routing/`) exists, is seeded with 17 records (MA/RI/NH + federal fallbacks), is versioned, has a chain-of-custody `routingDisclaimer()` helper, and passes `tsc --noEmit` cleanly. The letter generator (`src/services/legalGenerator.ts`) **does not yet consume it.** Instead, the letter generator receives an `authorityName` string as a parameter (currently sourced from a per-report authority lookup in `ReportDetailScreen`) and hardcodes it into the letter body.
+Extensive engineering delivery on 2026-08-30 replaced most of what was previously "gated on pilot city." What shipped:
 
-**Why HIGH PRIORITY:** the moment a pilot city says yes, the routing dataset needs to be live in the letter flow. Wiring it in now &mdash; before a pilot &mdash; means the plumbing is tested against every letter the current infrastructure generates, so when a pilot city actually files a demand letter through Fault Line, the routing works correctly on the first attempt. This is the difference between "we tested it end-to-end already" and "we hope it works." The former is what wins a pilot conversation; the latter loses it on day one.
+- **Routing wired into `legalGenerator.ts`** (formerly HIGH PRIORITY #30). Letters now consume `getRouting()` alongside `getStatuteRecord()`. `unreviewedBanner()` was generalized to fire on either statute-unverified or routing-unverified (or both). Recipient in letter body uses routing's `primaryAuthority.name` with the passed-in `authorityName` as backwards-compat fallback. `DemandLetterData` gained `routingVersion`, `routingVerificationStatus`, `routingDisclaimer`.
+- **Legal-templates module** (`src/services/legal-templates/`) — new versioned module with 5 framings (`defective-highway`, `ada-title-ii`, `fair-housing-504`, `title-vi-language`, `transit-ada`). Every A&E category maps to a framing via `getFraming()`. Letter generator dispatches on framing to produce framing-specific headline, citation, notice period, demand verbs, and federal-fallback complaint pathway. All templates `pending-review`.
+- **Digital-infrastructure context** (`src/services/digitalSnapshot.ts`) — `DigitalReportContext` type on `Report`, `URL_FIRST_CATEGORIES` list, `captureSnapshot()` stub with clear TODO for the Modal + Playwright worker (worker deployment stays in #26 remainder), `digitalContextForLetter()` producing an EVIDENCE-section block that gets appended to the letter when the report has `digital`.
+- **Corridor/area geometry** (`src/services/corridorAggregation.ts`) — `ReportGeometryType`, `CorridorGeometry`, `AreaGeometry` types on `Report`. `suggestCorridors()` and `suggestAreas()` algorithms compute suggestions from point-report clusters using published thresholds (5+ reports at 3+ distinct points for corridor; 8+ at 5+ for area). `shameIndexWeight()` returns 3× for corridors, 3.5× for areas per methodology. Letter generator NATURE OF THE CONDITION section renders corridor / area geometry when present.
+- **Insider-report support** (`src/services/insiderReports.ts`) — `InsiderReportContext` and `InsiderCategory` types on `Report`. `buildInsiderContext()`, `shouldStripMetadata()`, `requestMetadataStrip()`, 180-day `insiderVerificationDeadline()`, full referral table for 6 out-of-scope categories (personnel grievance → EEOC; criminal → IG/AG/FBI; classified → refuse + ICWPA/counsel; retaliation → whistleblower attorneys; policy dispute → councils/advocacy; confidential materials → describe only). Tor formal verification stays deferred per user instruction.
+- **Commercial-property module** (`src/services/commercial/`) — `ReportSubject` and `CommercialPropertyContext` types on `Report`. `aggregation.ts` computes property-level and chain-level aggregations against published thresholds (5/3/90 and 15/5/10/180). `chains.ts` seeded with ~40 US corporate chains including MA/RI/NH-relevant ones (Market Basket, Stop & Shop, Shaw's), all `pending-review`. `ada-title-iii.ts` versioned dataset of 5 2010 ADA Standards citations (accessible-route-slope, accessible-entrance, accessible-parking, accessible-restroom, signage-tactile). Right-of-reply pipeline itself is the remainder of #31.
+- **`ReportCategory` type** grew from 24 → 63 (39 new Access & Equity categories) as part of the earlier 2026-08-30 batch; commercial + digital + corridor + insider all reference these categories cleanly.
 
-**The change is ~15 lines in one file:**
+**Everything passes `tsc --noEmit --skipLibCheck` clean.** No new errors introduced.
 
-1. Add imports at the top of `src/services/legalGenerator.ts`:
-   ```ts
-   import { getRouting, routingDisclaimer, type CategoryRouting } from './routing';
-   ```
+### What actually remains for each item
 
-2. Inside `generateDemandLetter()`, after the existing `getStatuteRecord()` call:
-   ```ts
-   const routing = getRouting(report.category, report.location.state || DEFAULT_STATE);
-   const routingBanner = routing && routing.verificationStatus !== 'verified'
-     ? unreviewedBanner(routing as any)   // reuses existing banner helper
-     : '';
-   const routingFooter = routing ? routingDisclaimer(routing) : '';
-   ```
+The residual items below reflect what is *genuinely* still blocked (external hire / pilot-city data / real infrastructure deployment) — not just deprioritized.
 
-3. In the letter body template, replace the hardcoded `authorityName` recipient with `routing?.primaryAuthority.name ?? authorityName`. Preserve the `authorityName` parameter as a fallback so existing callers don't break.
+- **#22 (statute review):** truly BLOCKED-EXTERNAL. Requires paid qualified attorney per state.
+- **#23 (Open311 verification):** BUILDABLE-TODAY, deprioritized. ~4 hours for the top-10 pilot targets against public endpoints; run before the first pilot demo.
+- **#24 (Rapid Response Roll data model):** partly BUILDABLE (resolution-event schema in Supabase, community re-photo verification UI); partly BLOCKED-DATA (pilot city's DPW → crew mapping is theirs).
+- **#25 (A&E full ship):** partly SHIPPED (letter templates ✓, category constants ✓, legal-framing dispatch ✓). BUILDABLE remainder: photo-optional reporting-UI flow in `ReportScreen.tsx`. BLOCKED-DATA remainder: municipal ADA coordinator contacts per pilot city (already recorded per-category in `src/services/routing/dataset.ts` for MA/RI/NH placeholders — real coordinator names come from pilots).
+- **#26 (Digital infra):** partly SHIPPED (digital context type, URL-first category list, snapshot service interface, letter integration). BUILDABLE remainder: Modal + Playwright snapshot worker deployment (`modal/digital-snapshot/main.py`). Reporting-UI flow that switches to URL-first on category selection.
+- **#27 (Briefing packets):** BUILDABLE remainder: packet generator service + right-of-reply pipeline (which #31 also reuses). BLOCKED-DATA remainder: council-district boundaries + verified elected-official addresses per pilot city.
+- **#28 (Corridor/area):** partly SHIPPED (geometry types, auto-suggestion algorithm, Shame Index weight, letter integration). BUILDABLE remainder: Supabase migration for PostGIS linestring/polygon columns on `reports`; nightly cron to run `suggestCorridors()`; map-drawing UI in web + native reporting screens.
+- **#29 (Insider):** partly SHIPPED (insider-context types, EXIF strip helper, referral copy for out-of-scope categories, 180-day verification deadline computation). BLOCKED-EXTERNAL remainder: attorney review of MA/RI/NH whistleblower-protection landscape. DEFERRED remainder: Tor-compatibility formal verification (per user instruction).
+- **#31 (Commercial property):** partly SHIPPED (report subtype types, aggregation pipeline, chain database seed with 40 chains, Title III standards dataset with 5 standards). BUILDABLE remainder: right-of-reply pipeline (shared with #27); reporter-reputation tracking; competitive-reporter enhanced-review flag. BLOCKED-EXTERNAL remainder: attorney review of reporter-attestation + anti-SLAPP language.
 
-4. Append `routingFooter` to the letter footer alongside the existing `disclaimer` line.
-
-5. Extend `DemandLetterData` interface with `routingVersion?: string` and `routingVerificationStatus?: string` so the UI can surface them.
-
-6. Add three cases to the letter-body top-banner logic: (a) statute unreviewed only, (b) routing unreviewed only, (c) both unreviewed. Currently the unreviewed banner fires only on statute; wiring routing means it fires on either.
-
-**Test surface after wiring:**
-- Generate a letter for a MA pothole report against a Boston test authority: routing record fires, footer shows "Routing reference: pothole / MA · dataset v0.1.0 · NOT YET LEGALLY REVIEWED."
-- Generate a letter for a category with no MA-specific record but a federal fallback (e.g., missing captions on an official video): routing falls through to the federal DOJ CRD record.
-- Generate a letter for a category with no routing at all: `routing === null`, letter still generates using the passed-in `authorityName`, footer omits the routing disclaimer. Backwards-compatible.
-
-**Why it's still called "deferred":** the pilot city has not yet been signed. Wiring the routing without a real recipient means the unreviewed-banner letters that get generated during internal testing are addressed at real municipal offices — which is fine for a small volume of testing (the responsible authority always has right to ignore) but should not scale until we have consent. Wire in, keep test volume small, expand when a pilot signs.
-
-**Effort:** ~30 minutes of code + 30 minutes of manual test against 3-5 report categories across MA/RI/NH. Half an afternoon.
+**How to consume the honest gating table:** anything below marked "SHIPPED (partial)" has code in `src/services/` you can inspect and integrate. Anything marked "BLOCKED-EXTERNAL" needs a check to a lawyer or a signed pilot agreement. Anything marked "BUILDABLE-TODAY" is next-up engineering work.
 
 ---
 
@@ -725,6 +716,9 @@ The methodology page is out and immutable. When a public works director asks Fau
 
 ## 25. Access & Equity Taxonomy — Category Constants, Routing Dataset, Letter Templates
 
+**⚡ SHIPPED (partial, 2026-08-30):** Category constants (`src/constants/categories.ts` + `ReportCategory` type), routing dataset (`src/services/routing/`), and legal-framing letter templates for ADA Title II / Fair Housing + Section 504 / Title VI language / transit ADA (`src/services/legal-templates/`) are live and typecheck clean. Remaining: photo-optional reporting-UI flow (BUILDABLE-TODAY); municipal ADA coordinator contact verification per pilot city (BLOCKED-DATA per pilot).
+
+
 **Status:** Taxonomy design + public methodology page shipped at `access-equity.html` (2026-08-30). The page publicly commits 32 categories across 6 groups (Physical mobility / ADA · Sensory & cognitive · Age & vulnerability · Housing · Transit · Digital public infrastructure) plus 1 computed aggregation (Environmental justice). Each category is documented with named responsible authority, escalation path, and cited legal framework. **The categories are not yet enabled in the app UI.**
 
 **What's needed:** Four engineering deliverables, in dependency order.
@@ -795,6 +789,9 @@ Access & Equity is directly fundable by equity-focused civic-tech funders (Ford 
 ---
 
 ## 26. Digital Public Infrastructure — URL-First Reporting Flow & Automated Snapshot
+
+**⚡ SHIPPED (partial, 2026-08-30):** `DigitalReportContext` type on `Report`, `URL_FIRST_CATEGORIES` list, snapshot service scaffold (`src/services/digitalSnapshot.ts` — captureSnapshot() returns a placeholder until the Modal + Playwright worker deploys), `digitalContextForLetter()` producing an EVIDENCE-section block in letters. ADA Title II framing wired via #25 legal-templates. Remaining: Modal + Playwright snapshot worker deployment (BUILDABLE-TODAY); reporting-UI flow that switches to URL-first on category selection (BUILDABLE-TODAY).
+
 
 **Status:** Public deep-dive page shipped at `digital-infrastructure.html` (2026-08-30). Twelve categories documented with named responsible authorities, legal frameworks, and the DOJ 2024 rule compliance-deadline context. **The URL-first reporting flow needed to submit these reports does not exist in the current app.**
 
@@ -910,6 +907,9 @@ The council-briefing use case is a direct fit for Knight Foundation Journalism /
 
 ## 28. Corridor & Area Reports — Geometry, Aggregation, and Segment-Scale Escalation
 
+**⚡ SHIPPED (partial, 2026-08-30):** `ReportGeometryType` + `CorridorGeometry` + `AreaGeometry` types on `Report`, auto-suggestion algorithms (`src/services/corridorAggregation.ts` — `suggestCorridors()`, `suggestAreas()`, `haversineMeters()`, `pointInPolygon()`), Shame Index weight helper (`shameIndexWeight()` returns 3× for corridors, 3.5× for areas), corridor/area section rendered into letter body. Remaining: Supabase migration for PostGIS linestring/polygon columns on `reports` (BUILDABLE-TODAY); nightly cron to run `suggestCorridors()` in production (BUILDABLE-TODAY); map-drawing UI in web + native reporting screens (BUILDABLE-TODAY).
+
+
 **Status:** Public design page shipped at `corridor-reports.html` (2026-08-30). Three report types specified (point / corridor / area), two creation paths documented (auto-suggestion + resident-initiated), community-verification thresholds calibrated, integration with Shame Index / Rapid Response Roll / A&E Group G / briefings all specified. **The report schema, geometry columns, and reporting UI do not yet support corridors or areas.**
 
 **What's needed:** Five engineering deliverables.
@@ -971,6 +971,9 @@ Corridor/area reports directly enable federal infrastructure grant applications.
 ---
 
 ## 29. Public-Employee Reporting — Insider Fields, Tor Verification, EXIF Stripping, Legal Review
+
+**⚡ SHIPPED (partial, 2026-08-30):** `InsiderReportContext` + `InsiderCategory` types on `Report`, `insiderVerificationDeadline()` (180-day window), `shouldStripMetadata()` + `requestMetadataStrip()` helpers coordinating with the media pipeline, full referral table for 6 out-of-scope categories in `src/services/insiderReports.ts` (personnel grievance / criminal / classified / retaliation / policy dispute / confidential materials). Remaining: attorney review of MA/RI/NH whistleblower-protection landscape (BLOCKED-EXTERNAL). Tor-compatibility formal verification stays deferred per user instruction — the web app is already largely Tor-usable but formal validation is separate work.
+
 
 **Status:** Public design page shipped at `whistleblower.html` (2026-08-30). Scope explicitly bounded (physical / digital / access / environmental infrastructure only, not personnel / criminal / classified / retaliation). Legal-protection landscape summarized with primary-source links. Honest technical claims about what Fault Line can and cannot deliver. **The insider-report submission flow does not exist in the current app.**
 
@@ -1042,6 +1045,9 @@ Insider infrastructure reporting is a genuine gap. Government transparency funde
 ---
 
 ## 31. Commercial Property Reporting — Report Subtype, Aggregation, Right-of-Reply, ADA Title III Dataset
+
+**⚡ SHIPPED (partial, 2026-08-30):** `ReportSubject` + `CommercialPropertyContext` types on `Report`, aggregation pipeline (`src/services/commercial/aggregation.ts` — `aggregateByProperty()`, `aggregateByChain()` with published thresholds), chain-brand registry (`src/services/commercial/chains.ts` — 40 US chains seeded, all `pending-review`, including MA/RI/NH-relevant Market Basket / Stop & Shop / Shaw's), 2010 ADA Standards for Accessible Design dataset (`src/services/commercial/ada-title-iii.ts` — 5 standards seeded, all `pending-review`). Remaining: right-of-reply pipeline shared with #27 (BUILDABLE-TODAY); reporter-reputation tracking (BUILDABLE-TODAY); competitive-reporter enhanced-review flag (BUILDABLE-TODAY); attorney review of reporter-attestation + anti-SLAPP language (BLOCKED-EXTERNAL).
+
 
 **Status:** Public design + methodology page shipped at `business-property.html` (2026-08-30). Scope narrowly bounded (physical / infrastructural / ADA Title III conditions only, never subjective), evidence requirements strict (photo required, public-view attestation, reporter attestation with liability language), publication model aggregate-only (5+ reports from 3+ reporters over 90 days for property attribution; 15+ reports across 5+ locations over 180 days for chain attribution), right-of-reply preserved. **None of the underlying plumbing exists in the current app.**
 

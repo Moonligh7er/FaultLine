@@ -8,6 +8,19 @@ import {
   StateStatuteRecord,
   VerificationStatus,
 } from './statutes';
+import {
+  getRouting,
+  routingDisclaimer,
+  type CategoryRouting,
+} from './routing';
+import {
+  getFraming,
+  getTemplate,
+  templateDisclaimer,
+  type LegalFraming,
+  type LegalTemplate,
+} from './legal-templates';
+import { digitalContextForLetter } from './digitalSnapshot';
 
 // ============================================================
 // Legal Demand Letter Generator
@@ -35,20 +48,46 @@ export interface DemandLetterData {
   verificationStatus: VerificationStatus;
   statuteVersion: string;
   disclaimer: string;
+  // Routing chain of custody — same pattern, but for the addressee lookup.
+  routingVersion?: string;
+  routingVerificationStatus?: CategoryRouting['verificationStatus'];
+  routingDisclaimer?: string;
+  // Framing template — which legal framework the letter is anchored in.
+  framing: LegalFraming;
+  templateVersion: string;
+  templateDisclaimer: string;
 }
 
 const DEFAULT_STATE = 'MA';
 
-function unreviewedBanner(record: StateStatuteRecord): string {
-  if (record.verificationStatus === 'verified') return '';
+function unreviewedBanner(
+  statute: StateStatuteRecord,
+  routing: CategoryRouting | null,
+): string {
+  const statuteUnreviewed = statute.verificationStatus !== 'verified';
+  const routingUnreviewed = routing !== null && routing.verificationStatus !== 'verified';
+  if (!statuteUnreviewed && !routingUnreviewed) return '';
+
+  const concerns: string[] = [];
+  if (statuteUnreviewed) {
+    concerns.push(
+      `The statutory citation and notice period (${statute.statute}, ${statute.noticePeriodDays}-day notice) come from a dataset entry that has NOT yet been reviewed by a licensed attorney.`,
+    );
+  }
+  if (routingUnreviewed && routing) {
+    concerns.push(
+      `The addressee routing (${routing.primaryAuthority.name}) has NOT yet been reviewed against current municipal contact information — verify the recipient office and mailing address before sending.`,
+    );
+  }
+
   return [
     '',
     '━'.repeat(60),
     '⚠ UNREVIEWED LEGAL CONTENT',
     '━'.repeat(60),
-    `The statutory citation and notice period in this letter (${record.statute}, ${record.noticePeriodDays}-day notice) come from a dataset entry that has NOT yet been reviewed by a licensed attorney.`,
+    ...concerns.map((c) => `• ${c}`),
     '',
-    'Before you send this letter for a live claim, verify the statute text and deadline against your state\'s current law, or consult an attorney admitted in your state. Fault Line is a documentation aid, not a law firm.',
+    'Before you send this letter for a live claim, verify the statute text, deadline, and recipient against your state\'s current law, or consult an attorney admitted in your state. Fault Line is a documentation aid, not a law firm.',
     '━'.repeat(60),
     '',
     '',
@@ -80,57 +119,89 @@ export function generateDemandLetter(
   // Fall back to MA if the state is not in the dataset, but keep the
   // verification chain of custody honest by tagging the fallback.
   const record = getStatuteRecord(state) || getStatuteRecord(DEFAULT_STATE)!;
+  const routing = getRouting(report.category, state);
+  const framing = getFraming(report.category);
+  const template = getTemplate(framing);
   const category = CATEGORIES.find((c) => c.key === report.category);
   const hazard = HAZARD_LEVELS.find((h) => h.key === report.severity.hazardLevel);
+
+  // For defective-highway framing, statute record supplies the notice period.
+  // For other framings, the template's noticePeriodDays applies (federal frameworks
+  // are jurisdiction-agnostic at the notice-window level).
+  const effectiveNoticePeriodDays =
+    framing === 'defective-highway' ? record.noticePeriodDays : template.noticePeriodDays;
+  const effectiveStatute =
+    framing === 'defective-highway' ? record.statute : template.statuteCitation;
+  const effectiveStatuteTitle =
+    framing === 'defective-highway' ? record.title : template.statuteTitle;
+  const effectiveLegalBasis =
+    framing === 'defective-highway' ? record.description : template.legalBasisText;
+  const effectiveFilingRequirements =
+    framing === 'defective-highway' ? record.filingRequirements : template.filingRequirements;
 
   const reportDate = new Date(report.createdAt);
   const now = new Date();
   const daysSinceReport = Math.floor((now.getTime() - reportDate.getTime()) / 86400000);
-  const isOverdue = daysSinceReport > record.noticePeriodDays;
+  const isOverdue = daysSinceReport > effectiveNoticePeriodDays;
 
   const location = report.location;
   const locationStr = [location.address, location.city, location.state].filter(Boolean).join(', ');
   const dateStr = reportDate.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
   const todayStr = now.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
 
-  const banner = unreviewedBanner(record);
+  // Recipient: prefer the routing dataset's named authority, fall back to the
+  // per-report authority name passed in by the caller (backwards-compatible).
+  const recipient = routing?.primaryAuthority.name ?? authorityName;
+  const recipientAddressLine = routing?.primaryAuthority.address
+    ? `\n${routing.primaryAuthority.address}`
+    : '';
+
+  const banner = unreviewedBanner(record, routing);
   const ambiguityNotes = knownAmbiguityFootnote(record);
   const disclaimer = statuteDisclaimer(record);
+  const routingFooter = routing ? routingDisclaimer(routing) : '';
+  const templateFooter = templateDisclaimer(template);
+  const federalPathwayLine =
+    framing !== 'defective-highway'
+      ? `\n\nFEDERAL COMPLAINT PATHWAY\n${'━'.repeat(50)}\nIf this notice does not receive an adequate response, a federal complaint may be filed with: ${template.federalComplaintPathway}`
+      : '';
 
   const letterText = `
 ${banner}${todayStr}
 
-${authorityName}
+${recipient}${recipientAddressLine}
 ${location.city || ''}${location.state ? `, ${location.state}` : ''}
 
-RE: FORMAL NOTICE OF DEFECTIVE CONDITION — ${(category?.label || report.category).toUpperCase()}
+RE: ${template.headline} — ${(category?.label || report.category).toUpperCase()}
 Location: ${locationStr}
 GPS: ${location.latitude.toFixed(6)}, ${location.longitude.toFixed(6)}
 Original Report Date: ${dateStr}
 Days Since Notice: ${daysSinceReport}
 
-Dear ${authorityName},
+Dear ${recipient},
 
-${claimantName ? `I, ${claimantName}, am` : 'This letter serves as'} formal notice pursuant to ${record.statute} ("${record.title}") regarding a hazardous condition on a public way within your jurisdiction.
+${claimantName ? `I, ${claimantName}, am` : 'This letter serves as'} formal notice pursuant to ${effectiveStatute} ("${effectiveStatuteTitle}") regarding the condition described below within your jurisdiction.
 
-NATURE OF DEFECT
+NATURE OF THE CONDITION
 ${'━'.repeat(50)}
 Type: ${category?.label || report.category}
-Location: ${locationStr}
+Location: ${locationStr}${report.geometryType === 'corridor' && report.corridor ? `
+Corridor: ${report.corridor.streetName || 'unnamed segment'}${report.corridor.fromCrossStreet ? ` from ${report.corridor.fromCrossStreet}` : ''}${report.corridor.toCrossStreet ? ` to ${report.corridor.toCrossStreet}` : ''} (${report.corridor.start.latitude.toFixed(5)},${report.corridor.start.longitude.toFixed(5)} → ${report.corridor.end.latitude.toFixed(5)},${report.corridor.end.longitude.toFixed(5)})` : ''}${report.geometryType === 'area' && report.area ? `
+Area: ${report.area.boundaryName || 'user-defined polygon'}${report.area.censusTractGeoid ? ` (census tract ${report.area.censusTractGeoid})` : ''}` : ''}
 Hazard Level: ${hazard?.label || report.severity.hazardLevel} (as assessed by ${clusterReportCount} independent community reporters)
 ${report.description ? `Description: ${report.description}` : ''}
 
 NOTICE HISTORY
 ${'━'.repeat(50)}
-This condition was first reported to your office on ${dateStr} — ${daysSinceReport} days ago. Since that date, ${clusterReportCount} independent community member${clusterReportCount > 1 ? 's have' : ' has'} reported the same hazard through the Fault Line community infrastructure reporting platform.
+This condition was first reported to your office on ${dateStr} — ${daysSinceReport} days ago. Since that date, ${clusterReportCount} independent community member${clusterReportCount > 1 ? 's have' : ' has'} reported the same condition through the Fault Line community infrastructure reporting platform.
 
-${isOverdue ? `NOTICE: The statutory response period of ${record.noticePeriodDays} days under ${record.statute} has EXPIRED. Your office has had ${daysSinceReport} days of notice — ${daysSinceReport - record.noticePeriodDays} days beyond the statutory period.` : `Under ${record.statute}, your office has ${record.noticePeriodDays} days from the date of notice to remedy the condition. ${record.noticePeriodDays - daysSinceReport} days remain.`}
+${isOverdue ? `NOTICE: The response period of ${effectiveNoticePeriodDays} days under ${effectiveStatute} has EXPIRED. Your office has had ${daysSinceReport} days of notice — ${daysSinceReport - effectiveNoticePeriodDays} days beyond the applicable period.` : `Under ${effectiveStatute}, your office has ${effectiveNoticePeriodDays} days from the date of notice to remedy the condition. ${effectiveNoticePeriodDays - daysSinceReport} days remain.`}
 
 LEGAL BASIS
 ${'━'.repeat(50)}
-${record.description}
+${effectiveLegalBasis}
 
-Filing requirements: ${record.filingRequirements}
+Filing requirements: ${effectiveFilingRequirements}${federalPathwayLine}
 
 ${damageDescription ? `DAMAGES CLAIMED
 ${'━'.repeat(50)}
@@ -140,12 +211,12 @@ ${damageDescription}
 ${'━'.repeat(50)}
 ${claimantName ? 'I' : 'The community'} hereby demand${claimantName ? 's' : ''} that your office:
 
-1. Immediately inspect the reported location;
-2. Remedy the hazardous condition within the statutory timeframe;
-3. ${damageDescription ? 'Compensate for damages incurred as a result of the defect; and' : 'Prevent further hazard to the public; and'}
+1. Immediately ${template.demandLanguage.inspectVerb};
+2. ${template.demandLanguage.remedyClause} within the applicable timeframe;
+3. ${damageDescription ? 'Compensate for damages incurred as a result of the defect; and' : 'Prevent further harm to the public; and'}
 4. Provide written confirmation of remedial action taken.
 
-Failure to address this condition may result in ${claimantName ? 'a formal claim for damages' : 'individual damage claims from affected community members'} and public disclosure of the ${daysSinceReport}-day response record.
+Failure to address this condition may result in ${claimantName ? 'a formal claim for damages' : 'individual claims from affected community members'} and public disclosure of the ${daysSinceReport}-day response record.
 
 EVIDENCE
 ${'━'.repeat(50)}
@@ -154,7 +225,7 @@ The following evidence is available and preserved:
 - GPS-verified location data (${location.latitude.toFixed(6)}, ${location.longitude.toFixed(6)})
 - ${report.media.length > 0 ? `${report.media.length} photographic/video documentation file(s)` : 'Community severity assessments'}
 - Complete escalation and notification log
-- Google Maps: https://maps.google.com/?q=${location.latitude},${location.longitude}
+- Google Maps: https://maps.google.com/?q=${location.latitude},${location.longitude}${report.digital ? `\n\nDIGITAL RESOURCE CONTEXT\n${'━'.repeat(50)}\n${digitalContextForLetter(report.digital)}` : ''}
 
 This notice is sent in good faith to ensure public safety and proper maintenance of public ways.
 
@@ -163,18 +234,19 @@ ${ambiguityNotes}
 ---
 Report ID: ${report.id}
 ${report.clusterId ? `Cluster ID: ${report.clusterId}` : ''}
-${disclaimer}
+${disclaimer}${routingFooter ? '\n' + routingFooter : ''}
+${templateFooter}
 `.trim();
 
   return {
     letterText,
-    statute: record.statute,
-    statuteTitle: record.title,
-    noticePeriodDays: record.noticePeriodDays,
+    statute: effectiveStatute,
+    statuteTitle: effectiveStatuteTitle,
+    noticePeriodDays: effectiveNoticePeriodDays,
     reportDate: dateStr,
     daysSinceReport,
     isOverdue,
-    recipientAuthority: authorityName,
+    recipientAuthority: recipient,
     location,
     category: category?.label || report.category,
     reportCount: clusterReportCount,
@@ -182,6 +254,12 @@ ${disclaimer}
     verificationStatus: record.verificationStatus,
     statuteVersion: record.version,
     disclaimer,
+    routingVersion: routing?.version,
+    routingVerificationStatus: routing?.verificationStatus,
+    routingDisclaimer: routingFooter || undefined,
+    framing,
+    templateVersion: template.version,
+    templateDisclaimer: templateFooter,
   };
 }
 
