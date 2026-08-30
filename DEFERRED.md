@@ -863,6 +863,140 @@ The design is out. Council members and reporters can review the format before Fa
 
 The council-briefing use case is a direct fit for Knight Foundation Journalism / Local News, MacArthur Journalism & Media, and Ford Civic Engagement programs. "Structured constituent-services data delivered to elected officials without editorial intermediation" is unusually clean grant framing. See `GRANTS.md §4 Tier A`.
 
+---
+
+## 28. Corridor & Area Reports — Geometry, Aggregation, and Segment-Scale Escalation
+
+**Status:** Public design page shipped at `corridor-reports.html` (2026-08-30). Three report types specified (point / corridor / area), two creation paths documented (auto-suggestion + resident-initiated), community-verification thresholds calibrated, integration with Shame Index / Rapid Response Roll / A&E Group G / briefings all specified. **The report schema, geometry columns, and reporting UI do not yet support corridors or areas.**
+
+**What's needed:** Five engineering deliverables.
+
+### 1. Report schema extension
+
+Add to `reports` table:
+- `report_type` enum: `point` | `corridor` | `area` (default `point` for backwards compatibility)
+- `corridor_geometry` PostGIS `LINESTRING` (nullable — only for corridor reports)
+- `area_geometry` PostGIS `POLYGON` (nullable — only for area reports)
+- `parent_cluster_id` (nullable — for corridors/areas that aggregated from point reports)
+
+Migration sketch: `supabase/migration_019_corridor_area_reports.sql`. Adds columns, indexes on geometry columns, preserves existing point-report behavior unchanged.
+
+### 2. Auto-suggestion algorithm
+
+Nightly cron job (`supabase/functions/suggest-corridor-aggregations`) that:
+- Scans point-report clusters within active jurisdictions
+- Detects linear concentrations (5+ reports within 500 ft corridor over 60 days) → suggests corridor aggregation
+- Detects polygonal concentrations (8+ reports within a defined neighborhood boundary over 60 days) → suggests area aggregation
+- Writes suggestions to a new `corridor_suggestions` table
+- Surfaces suggestions in the app UI ("These 7 reports look like they're part of the same problem. Convert into a corridor report?")
+
+Community members (any nearby resident) can accept the suggestion. Algorithm does not auto-promote — human acceptance required.
+
+### 3. Reporting UI
+
+Longer-form flow for resident-initiated corridor/area reports:
+- Web app: extend the existing Leaflet map with corridor-drawing (2-point linestring) and polygon-drawing tools
+- Mobile app: same, using `react-native-maps` polyline / polygon rendering
+- Both platforms: primary + secondary hazard type selection, multi-point photo upload along the corridor
+
+### 4. Demand-letter template extensions
+
+Corridor-scale letter templates that cite:
+- Segment identifier (street name, from-to intersections)
+- Pattern of failures (categories, count, distribution)
+- Applicable statute at corridor scale (still M.G.L. c. 84 § 15 or equivalents, framed around the segment)
+- Suggested municipal work-order response scope
+
+Templates gain the same `pending-review` chain of custody as the current physical-infrastructure templates.
+
+### 5. Shame Index weight adjustment
+
+Corridor reports weighted at ~3x point reports (empirically calibrated once the first pilot city has enough data to fit). Prevents the accountability-arbitrage failure where a department "closes" ten point reports at 100% closure rate while the corridor continues to fail.
+
+### Effort
+
+Rough estimate: ~1 week for #1 (schema + migration), ~1 week for #2 (auto-suggestion algorithm + UI surfacing), ~2 weeks for #3 (UI on both platforms), ~3 days for #4 (letter template), ~2 days for #5 (Shame Index calibration + weight parameter). Total: ~4.5 weeks.
+
+### Why deferred
+
+The design is out. Pilot cities and mapping-savvy residents can review the shape before Fault Line invests engineering time. Point reports remain the workhorse; corridor/area are the next layer up. The engineering ships when a pilot city says "yes, we would treat corridor reports as more actionable than point clusters."
+
+### Grant relevance
+
+Corridor/area reports directly enable federal infrastructure grant applications. USDOT SS4A, FEMA BRIC, USDOT Reconnecting Communities — all award to segments and networks, not points. Cities using Fault Line corridor data in applications have quantified need analyses most other applicants can't produce. See `GRANTS.md §4 Tier C`.
+
+---
+
+## 29. Public-Employee Reporting — Insider Fields, Tor Verification, EXIF Stripping, Legal Review
+
+**Status:** Public design page shipped at `whistleblower.html` (2026-08-30). Scope explicitly bounded (physical / digital / access / environmental infrastructure only, not personnel / criminal / classified / retaliation). Legal-protection landscape summarized with primary-source links. Honest technical claims about what Fault Line can and cannot deliver. **The insider-report submission flow does not exist in the current app.**
+
+**What's needed:** Six engineering + review deliverables.
+
+### 1. Legal review of the whistleblower-protection landscape
+
+Same qualified-reviewer standard as the statute dataset (`src/services/statutes/README.md`): attorney admitted in the state, or a credentialed legal researcher with whistleblower-protection specialization. Software engineer is not qualified. Claude Code is not qualified.
+
+Priority states (matching the statute-dataset priority):
+1. **MA** — c. 149 § 185 audit points: what constitutes "violation of law, rule, or regulation," how *Garcetti v. Ceballos* interacts with state protection, retaliation-claim procedural requirements.
+2. **RI** — Whistleblowers' Protection Act audit points: notice requirements, protected-activity scope.
+3. **NH** — RSA 275-E audit points: coverage of municipal employees, damages framework.
+
+Output: `src/services/whistleblower-protections/dataset.ts` mirroring the pattern of the statute dataset — versioned, chain-of-custody, per-state, `pending-review` until qualified reviewer signs off.
+
+### 2. Insider-context fields in report schema
+
+Add to `reports` table:
+- `insider_context` JSONB nullable — with optional fields: `insider_category` (public works / IT / facilities / public housing / transit / etc.), `observed_duration_days`, `prior_internal_report_ref` (free text), `documentary_ref` (free text)
+- Fields collected but not displayed publicly. Used to enrich demand letters and internal cluster analysis.
+
+### 3. Longer verification window for insider-only observations
+
+Insider reports without any resident confirmation get a 180-day verification window (vs. current shorter default). Sit in the map with a visible "pending community confirmation" state. If a resident independently observes and files, the reports link and escalation proceeds. If not, the report expires without escalation.
+
+Schema: add `verification_deadline_at` to `reports` table.
+
+### 4. EXIF-stripping option in photo upload
+
+When an insider-report flag is set, the upload pipeline strips EXIF metadata (GPS coordinates, device model, timestamps) before storing the photo. Existing Modal image-processing worker can be extended for this.
+
+Optional for all reports, mandatory for insider reports.
+
+### 5. Tor-compatibility formal verification
+
+The web app is already largely Tor-compatible. Formal verification: test the full submission flow via Tor Browser end-to-end, document any friction points (CAPTCHAs, image uploads, geolocation prompts), remediate. Publish results in the `whistleblower.html` page footnotes.
+
+Also add: HTTP header hygiene to reduce fingerprinting surface (minimal server headers, no third-party embeds on the submission page).
+
+### 6. Referral copy for out-of-scope categories
+
+When a user selects an out-of-scope report category during submission (personnel grievance, criminal misconduct, retaliation claim, classified info, policy dispute), the reporting UI surfaces a referral panel:
+- State EEOC / civil rights office contact
+- State Inspector General / Attorney General contact
+- Whistleblower attorney referral networks (National Whistleblower Center, Government Accountability Project)
+- Explanation of why Fault Line is not the right channel and why routing to the right one matters
+
+Jurisdiction-specific referrals mean this table extends per state, keyed to the same jurisdiction identifier used by the statute dataset.
+
+### Effort
+
+Rough estimate: legal review (external, gated on hiring a qualified reviewer — ~$1,000–$2,000 per state); ~3 days for #2 (schema + insider-context fields); ~2 days for #3 (verification-window changes); ~2 days for #4 (EXIF stripping in Modal worker); ~1 week for #5 (Tor verification + fingerprinting hygiene, most of which is validation not new code); ~1 week for #6 (referral panel + per-jurisdiction referral database). Engineering total: ~2.5 weeks.
+
+### Why deferred
+
+The design is out. What Fault Line can and cannot deliver is documented honestly. Public employees reading the page can decide whether Fault Line is appropriate for their situation *right now* — and if the answer is "not without additional legal counsel," that's the correct answer. Engineering ships when we have (a) a qualified legal reviewer, and (b) at least one pilot request from a public-employee advocacy group or union to validate the design.
+
+### Grant relevance
+
+Insider infrastructure reporting is a genuine gap. Government transparency funders (Sunlight Foundation successors, OpenGov Foundation, Knight democracy programs) have historically funded whistleblower-adjacent infrastructure. Fault Line's carefully-scoped approach — infrastructure only, honest technical claims, referral to real whistleblower counsel for anything larger — is a more grant-worthy posture than tools that overclaim protection. See `GRANTS.md §4 Tier A/B`.
+
+### What NOT to do
+
+- **Do not position Fault Line as a substitute for SecureDrop or GlobaLeaks.** Those tools exist for a reason. Their threat model is different. Attempting to compete on absolute-anonymity grounds will produce a worse tool than either alternative and will encourage people to trust Fault Line for something it can't deliver.
+- **Do not accept classified information under any circumstances.** Not a policy discussion — accepting classified information could create serious legal liability for Fault Line, for reporters, and potentially for anyone in a chain of custody. The submission flow must reject anything the reporter marks as classified.
+- **Do not make retaliation claims or handle them.** Refer to whistleblower attorneys. Fault Line documents infrastructure conditions; retaliation is an employment-law matter.
+
+
 
 
 

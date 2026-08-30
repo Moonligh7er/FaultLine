@@ -130,6 +130,8 @@ main .lede { font-family: var(--ff-body); font-size: 18px; line-height: 1.6; col
     <a href="access-equity.html">Access &amp; Equity</a>
     <a href="digital-infrastructure.html">Digital Infra</a>
     <a href="briefing-packets.html">Briefings</a>
+    <a href="corridor-reports.html">Corridors</a>
+    <a href="whistleblower.html">Insider</a>
     <a href="changelog.html" aria-current="page">Changelog</a>
     <a href="feedback.html">Feedback</a>
     <a href="https://ko-fi.com/moonlitsociallabs" target="_blank" rel="noopener" class="nav-kofi">Support on Ko-Fi</a>
@@ -144,6 +146,34 @@ main .lede { font-family: var(--ff-body); font-size: 18px; line-height: 1.6; col
 <p class="lede">Fault Line is built in the open by one person. This is the running log of what's shipped, versioned honestly. If something isn't listed here, it hasn't happened yet &mdash; a running theme in civic tech is to promise more than gets shipped, and this page is our defense against that pattern.</p>
 
 <!-- ─────────────────────────────  AUGUST 2026  ───────────────────────────── -->
+<div class="entry">
+  <p class="entry-date">2026-08-30</p>
+  <p class="entry-title">Public-Employee Reporting — honest scope, honest legal-protection landscape, honest technical claims</p>
+  <ul>
+    <li><strong>New <a href="whistleblower.html">/whistleblower</a> page.</strong> Public employees frequently know infrastructure failures residents cannot see. This page is Fault Line&rsquo;s design commitment for how they can report safely &mdash; and the equally important commitment about what Fault Line can <em>not</em> deliver (not a specialized whistleblower channel, no classified information, no personnel grievances, no legal protection beyond what state statutes already provide).</li>
+    <li><strong>Scope explicitly bounded.</strong> In-scope: physical / digital / access / environmental infrastructure conditions the employee observed in the course of work. Out-of-scope: personnel grievances, criminal misconduct allegations, classified info, retaliation claims &mdash; each with a referral to the appropriate channel (state EEOC, IG, AG, whistleblower attorney).</li>
+    <li><strong>Legal-protection landscape summarized</strong> with primary-source links to MA c. 149 &sect; 185, RI whistleblower statute, NH RSA 275-E, plus federal Whistleblower Protection Act and the <em>Garcetti v. Ceballos</em> caveat on official-duties speech. Consult-an-attorney callouts throughout.</li>
+    <li><strong>Technical honesty:</strong> what we can do (no IP logging, Tor-compatible, EXIF stripping option, no marker distinguishing insider vs. resident reports publicly), what we cannot do (guarantee legal protection, guarantee absolute anonymity against a determined adversary). Anyone who needs absolute technical anonymity is directed to SecureDrop / GlobaLeaks instead.</li>
+    <li><strong>Verification model:</strong> insider reports that align with existing resident clusters strengthen verification. Insider-only reports without any resident confirmation get a 180-day verification window and expire without escalation if no resident confirms &mdash; insider observations alone are not sufficient for a demand letter.</li>
+    <li><strong>Engineering scope in DEFERRED #29</strong> &mdash; legal review of whistleblower-protection landscape, insider-context fields in report schema, EXIF-stripping upload option, Tor-compatibility formal verification, referral copy for out-of-scope categories.</li>
+  </ul>
+</div>
+
+<div class="entry">
+  <p class="entry-date">2026-08-30</p>
+  <p class="entry-title">Corridor &amp; Area Reports — systemic patterns, not just points</p>
+  <ul>
+    <li><strong>New <a href="corridor-reports.html">/corridor-reports</a> page.</strong> A single pothole is a point. A quarter-mile of Beacon Street with nine reports across three months is what actually needs a paving contract. Fault Line has been treating every hazard as a point &mdash; corridor and area reports close that gap.</li>
+    <li><strong>Three report types</strong> specified: point (existing behavior), corridor (linear geometry, street segment), area (polygon geometry, census tract or user-drawn boundary). Point-first workflow does not change &mdash; corridor and area are separate flows in the longer-form UI.</li>
+    <li><strong>Two paths to creation:</strong> (a) auto-suggested when point reports concentrate along a linear/polygonal feature (community accepts the aggregation, algorithm does not auto-promote), (b) resident-initiated with map-drawing for residents who see the systemic problem from the start.</li>
+    <li><strong>Higher verification thresholds</strong> calibrated to the higher factual claim: corridor needs 5+ reporters at 3+ distinct points; area needs 8+ reporters at 5+ distinct points; geographic-distinctness minimums prevent one reporter from verifying a corridor by submitting at one intersection five times.</li>
+    <li><strong>Integrations documented:</strong> Shame Index weights corridors ~3x point reports (prevents accountability-arbitrage where 10 point-closures paper over an ongoing corridor failure); Rapid Response Roll credits corridor-level resolutions; Access &amp; Equity Group G aggregation extends to area reports; council briefings get a dedicated corridor section.</li>
+    <li><strong>Guardrails:</strong> boundaries must be verifiable (real streets, real polygons), aggregation is community-approved (algorithm suggests, humans accept), corridors shrink/grow with data, cross-jurisdiction corridors are auto-split so one municipality is never blamed for another&rsquo;s failure.</li>
+    <li><strong>Grant relevance called out</strong> &mdash; federal infrastructure funding (SS4A, BRIC, Reconnecting Communities) is awarded to segments and networks, not points. Cities using Fault Line corridor data in applications are more competitive than cities applying with bags of GPS pins.</li>
+    <li><strong>Engineering scope in DEFERRED #28</strong> &mdash; PostGIS linestring + polygon columns, auto-suggestion nightly job, map-drawing UI, corridor-scale letter templates.</li>
+  </ul>
+</div>
+
 <div class="entry">
   <p class="entry-date">2026-08-30</p>
   <p class="entry-title">Briefing Packets — automated council briefings + press-ready cluster summaries</p>

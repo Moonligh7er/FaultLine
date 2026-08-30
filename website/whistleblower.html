@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://pagead2.googlesyndication.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: https:; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://www.google-analytics.com https://analytics.google.com https://pagead2.googlesyndication.com; frame-src https://googleads.g.doubleclick.net https://tpc.googlesyndication.com https://pagead2.googlesyndication.com; object-src 'none'; base-uri 'self';">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Public-Employee Reporting Protections — Fault Line | Insider-Safe Infrastructure Reports</title>
+<meta name="description" content="Public employees frequently know infrastructure failures residents cannot see. Fault Line's insider-report design lays out what public employees can safely report through the platform, what they cannot, the legal-protection landscape, and the platform's technical + policy commitments.">
+<meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large">
+<link rel="canonical" href="https://fault-line.dev/whistleblower.html">
+
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://fault-line.dev/whistleblower.html">
+<meta property="og:title" content="Public-Employee Reporting Protections — Fault Line">
+<meta property="og:description" content="A DPW inspector who sees the deferred-maintenance list. A city IT manager who knows which forms are broken. A school facilities lead who saw the elevator inspection lapse. This is the design commitment for how they can report safely.">
+<meta property="og:image" content="https://fault-line.dev/og/og-home.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://fault-line.dev/og/og-home.png">
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-XXXXXXXXXX');</script>
+
+<link rel="stylesheet" href="theme.css?v=20260506">
+
+<style>
+main { max-width: 840px; margin: 0 auto; padding: 24px 32px 80px; }
+main h1 { font-size: clamp(38px, 6vw, 60px); letter-spacing: -1.5px; margin-bottom: 6px; line-height: 1.05; }
+main h1 em { font-style: italic; color: var(--tile-hot); }
+main .updated { font-family: var(--ff-mono); font-size: 12px; color: var(--steel-light); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 34px; }
+main .lede { font-family: var(--ff-body); font-size: 19px; line-height: 1.6; color: var(--tile); margin-bottom: 34px; }
+main h2 { font-size: 26px; margin: 46px 0 14px; letter-spacing: -0.5px; }
+main h3 { font-size: 19px; font-weight: 700; margin: 22px 0 8px; color: var(--tile); }
+main p, main li { font-family: var(--ff-body); color: var(--tile-dim); font-size: 16px; line-height: 1.7; margin-bottom: 14px; }
+main ul, main ol { padding-left: 24px; margin-bottom: 18px; }
+main li { margin-bottom: 8px; }
+main strong { color: var(--tile); font-weight: 600; }
+
+.callout {
+  border-left: 3px solid var(--tile-hot);
+  padding: 14px 20px;
+  margin: 24px 0;
+  background: rgba(0, 0, 0, 0.15);
+  font-family: var(--ff-body);
+}
+.callout p:last-child { margin-bottom: 0; }
+.callout.warn { border-left-color: var(--signal-red, #E8463E); }
+
+.split {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin: 20px 0 32px;
+}
+.split-col {
+  border: 1px solid rgba(255,255,255,0.08);
+  padding: 18px 20px;
+  background: rgba(0,0,0,0.15);
+}
+.split-col h3 { margin: 0 0 10px; font-size: 15px; }
+.split-col.in-scope h3 { color: var(--signal-green, #46C37A); }
+.split-col.out-scope h3 { color: var(--signal-red, #E8463E); }
+.split-col ul { margin: 0; padding-left: 18px; }
+.split-col li { font-size: 13px; color: var(--tile-dim); margin-bottom: 6px; line-height: 1.55; }
+@media (max-width: 640px) {
+  .split { grid-template-columns: 1fr; }
+}
+
+.rights-box {
+  border: 1px solid var(--tile-hot);
+  padding: 20px 24px;
+  margin: 24px 0;
+  background: rgba(244, 184, 50, 0.05);
+  font-family: var(--ff-body);
+}
+.rights-box h3 { color: var(--tile-hot); margin: 0 0 10px; font-size: 15px; letter-spacing: 1.5px; text-transform: uppercase; font-family: var(--ff-mono); }
+.rights-box p { font-size: 15px; margin-bottom: 8px; }
+
+.disclaimer {
+  font-family: var(--ff-mono);
+  font-size: 11px;
+  color: var(--steel-light);
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  text-align: center;
+  margin: 44px auto 0;
+  max-width: 720px;
+  line-height: 1.7;
+}
+</style>
+</head>
+<body>
+
+<div class="hazard"></div>
+
+<nav class="nav">
+  <a href="index.html" class="nav-brand"><span class="brand-fault">Fault</span><span class="brand-slash">\</span><span class="brand-line">Line</span><span class="beta-badge">BETA</span></a>
+  <div class="nav-links">
+    <a href="index.html">Home</a>
+    <a href="features-plain.html">Features</a>
+    <a href="cities.html">For Cities</a>
+    <a href="blog.html">Blog</a>
+    <a href="about.html">About</a>
+    <a href="feedback.html">Feedback</a>
+    <a href="faq.html">FAQ</a>
+    <a href="access-equity.html">Access &amp; Equity</a>
+    <a href="digital-infrastructure.html">Digital Infra</a>
+    <a href="rapid-response.html">Rapid Response Roll</a>
+    <a href="briefing-packets.html">Briefings</a>
+    <a href="changelog.html">Changelog</a>
+    <a href="https://ko-fi.com/moonlitsociallabs" target="_blank" rel="noopener" class="nav-kofi">Support on Ko-Fi</a>
+    <span class="active-dev-status"><span class="nav-dot"></span> Active Development</span>
+  </div>
+</nav>
+
+<main>
+<h1>Public-employee <em>reporting</em>.</h1>
+<p class="updated">Design v0.1 · Draft · 2026-08-30 · Insider submission path not yet enabled</p>
+
+<p class="lede">A DPW inspector who saw the deferred-maintenance list. A city IT manager who knows which forms are broken. A school facilities lead who knows the elevator inspection lapsed. A public housing authority employee who can identify which units have mold. Public employees frequently know infrastructure failures that residents cannot see, and the internal channels for surfacing those failures often don&rsquo;t work &mdash; either because the failure implicates the reporter&rsquo;s supervisor, or because the internal process routes to the same office that created the problem. This page is Fault Line&rsquo;s design commitment for how public employees can safely report infrastructure conditions through the platform.</p>
+
+<div class="callout warn">
+  <p><strong>This is not a whistleblower channel in the specialized sense.</strong> Fault Line is not equipped to handle classified information, allegations of criminal misconduct against named individuals, personnel grievances, or claims of retaliation. Those categories require specialized legal counsel and dedicated whistleblower channels &mdash; not a civic infrastructure app. This page is about a narrower and useful thing: <strong>allowing public employees to file the same kind of infrastructure-condition report residents file, with additional insider context, under a safer submission model</strong>. We take that narrow scope seriously precisely because we don&rsquo;t want to promise more than we can deliver.</p>
+</div>
+
+<h2>1. What&rsquo;s in scope, what&rsquo;s out of scope</h2>
+
+<div class="split">
+  <div class="split-col in-scope">
+    <h3>&#10003; In scope</h3>
+    <ul>
+      <li>Physical infrastructure conditions the employee observed in the course of work (deteriorated road segments, failing bridges, broken accessibility features)</li>
+      <li>Facility safety issues (broken elevators, expired inspections, ADA-noncompliant remediation)</li>
+      <li>Digital infrastructure failures the employee has internal visibility into (forms known to be broken, systems that have been reported and ignored)</li>
+      <li>Environmental hazards observed in the course of work (chemical spills that weren&rsquo;t remediated, air-quality issues in facilities)</li>
+      <li>Access, equity, and language-access failures observed in service delivery (residents turned away, applications rejected without meaningful review)</li>
+      <li>Public health infrastructure gaps observed in the course of work</li>
+    </ul>
+  </div>
+  <div class="split-col out-scope">
+    <h3>&#10007; Out of scope</h3>
+    <ul>
+      <li>Personnel grievances (hostile work environment, harassment, discrimination against you personally) &mdash; go to state EEOC / civil rights office / union counsel</li>
+      <li>Allegations of criminal misconduct against named individuals &mdash; go to state Inspector General, Attorney General&rsquo;s office, or FBI</li>
+      <li>Classified or security-sensitive information</li>
+      <li>Retaliation claims &mdash; consult a licensed whistleblower attorney; state and federal whistleblower protections have specific procedural requirements</li>
+      <li>Policy disagreements or budget allocation disputes (these are not infrastructure failures &mdash; they&rsquo;re political questions)</li>
+      <li>Anything you have a duty of confidentiality about (attorney work-product, HIPAA-covered medical records, personnel records of others)</li>
+    </ul>
+  </div>
+</div>
+
+<h2>2. The legal-protection landscape &mdash; briefly</h2>
+<p>Whistleblower protections for public employees vary enormously by state, level of government, and category of report. A partial summary of what&rsquo;s generally true:</p>
+<ul>
+  <li><strong>Federal-level public employees</strong> have protections under the <a href="https://www.osc.gov/services/pages/wpa.aspx" target="_blank" rel="noopener">Whistleblower Protection Act</a> (5 U.S.C. &sect; 2302) with specific procedural requirements filed through the Office of Special Counsel or Merit Systems Protection Board.</li>
+  <li><strong>State and municipal public employees</strong> are covered by state whistleblower protection statutes. Massachusetts has <a href="https://malegislature.gov/Laws/GeneralLaws/PartI/TitleXXI/Chapter149/Section185" target="_blank" rel="noopener">M.G.L. c. 149, &sect; 185</a>; Rhode Island has the Rhode Island Whistleblowers&rsquo; Protection Act (R.I. Gen. Laws &sect; 28-50-1 et seq.); New Hampshire has RSA 275-E. All three protect employees who report violations of law, rule, or regulation.</li>
+  <li><strong>Reports &ldquo;in the course of official duties&rdquo;</strong> are treated differently from independent reports. Under <em>Garcetti v. Ceballos</em> (547 U.S. 410, 2006), speech pursuant to official duties is not protected by the First Amendment, even if it exposes government wrongdoing. State whistleblower statutes generally provide broader protection than the First Amendment does, but the interaction is jurisdiction-specific.</li>
+  <li><strong>Anonymous reporting</strong> does not by itself create legal protection. If an employer discovers the source of an anonymous report, retaliation is still legally actionable but requires evidence, which anonymity by design makes harder to establish.</li>
+</ul>
+
+<div class="callout">
+  <p><strong>Consult an attorney before making an insider report if you have any concern about retaliation.</strong> The National Whistleblower Center (<a href="https://www.whistleblowers.org/" target="_blank" rel="noopener">whistleblowers.org</a>) and Government Accountability Project (<a href="https://whistleblower.org/" target="_blank" rel="noopener">whistleblower.org</a>) both maintain referral networks for whistleblower attorneys and provide guidance on how to preserve legal protections. Fault Line is not a substitute for that counsel.</p>
+</div>
+
+<h2>3. What Fault Line can and cannot do technically</h2>
+
+<h3>What we <em>can</em> do</h3>
+<ul>
+  <li><strong>Accept reports with no account, no PII.</strong> Anonymous reporting is a first-class citizen on Fault Line for every report type. Insider reports are just a category of anonymous report with additional context fields.</li>
+  <li><strong>Avoid logging IP addresses of anonymous submitters.</strong> The submission path can be configured to strip IP at the edge before the request hits our application layer. Standard practice, but worth naming.</li>
+  <li><strong>Accept submissions over Tor.</strong> Fault Line&rsquo;s public web app is reachable via Tor Browser without special configuration. We do not block Tor exit nodes; we do not require CAPTCHAs that would fail under Tor.</li>
+  <li><strong>Strip metadata from uploaded evidence.</strong> Photos submitted with a report can have EXIF metadata (GPS coordinates, device model, timestamps) stripped before storage. Insider reporters concerned about metadata can request stripping at submission time.</li>
+  <li><strong>Provide a public URL for the report</strong> that&rsquo;s indistinguishable from a resident report at the URL level. Nothing in the public presentation identifies a report as from an insider.</li>
+</ul>
+
+<h3>What we <em>cannot</em> do</h3>
+<ul>
+  <li><strong>Guarantee legal protection.</strong> Legal whistleblower protection comes from state and federal statutes, not from technical anonymity. Anonymous submission is not the same as legally protected disclosure.</li>
+  <li><strong>Guarantee absolute technical anonymity.</strong> We commit to industry-standard privacy practices (no IP logging, HTTPS-only, Tor-compatible). But no online service can guarantee that a determined adversary with subpoena power, network-level observation, or a browser exploit couldn&rsquo;t identify a specific submitter. If your safety depends on absolute technical anonymity, use a dedicated leaks platform designed for that threat model (SecureDrop, GlobaLeaks) &mdash; not Fault Line.</li>
+  <li><strong>Verify the source without identifying you.</strong> A resident report gets verified by other residents in the same neighborhood. An insider report can&rsquo;t be verified that way &mdash; the whole point is that residents can&rsquo;t see the problem. We can accept the report, but its evidentiary weight is different from a community-verified resident report.</li>
+  <li><strong>Route around normal escalation.</strong> Insider reports go through the same escalation pipeline as resident reports. That means the responsible authority receives the report. If the responsible authority is the source of the problem the insider is reporting, that&rsquo;s a limitation Fault Line cannot solve alone &mdash; it&rsquo;s where the Inspector General / Attorney General / independent oversight channels become necessary.</li>
+</ul>
+
+<h2>4. Additional context fields (optional) for insider reports</h2>
+<p>Insider reporters can optionally attach context that residents can&rsquo;t &mdash; without revealing identity:</p>
+<ul>
+  <li><strong>Category of insider knowledge:</strong> which functional area gives the reporter visibility (public works · IT · facilities · public housing · transit · etc.). Not a role, not an employer &mdash; a category.</li>
+  <li><strong>Duration of the observed condition:</strong> &ldquo;this has been on the deferred-maintenance list for 18 months&rdquo; is context a resident cannot provide.</li>
+  <li><strong>Prior internal reports:</strong> &ldquo;this was reported through internal channel X on approximately Y date; no visible response&rdquo; establishes the failure of internal remediation.</li>
+  <li><strong>Documentary reference:</strong> a redacted work order number, inspection reference, or budget-line identifier that a knowledgeable recipient could look up on their side.</li>
+</ul>
+<p>These fields are optional. Insider reporters concerned about identification through granular context can omit them without penalty &mdash; the underlying infrastructure observation is still submittable as a plain report.</p>
+
+<h2>5. What happens to an insider report</h2>
+<ol>
+  <li><strong>Enters the report queue as anonymous.</strong> No public marker distinguishes it from a resident report.</li>
+  <li><strong>Cluster analysis runs normally.</strong> If the observation aligns with existing resident reports, it&rsquo;s counted toward the cluster verification threshold &mdash; residents plus insider observation is stronger evidence than either alone.</li>
+  <li><strong>Escalation runs normally.</strong> When threshold conditions are met, the responsible authority receives the escalation. Insider context (if provided) is included in the demand-letter body as part of the observation narrative.</li>
+  <li><strong>Response tracking runs normally.</strong> Statutory deadlines apply. Rapid Response Roll qualifies. Shame Index calculation includes.</li>
+  <li><strong>If the insider report doesn&rsquo;t align with any existing cluster</strong> (i.e., no resident has yet observed this), the report sits in the map with a longer verification window &mdash; up to 180 days &mdash; giving residents time to independently observe. If no confirmation arrives, the report expires without escalation. Insider-only observations without any resident confirmation are not sufficient for a demand letter.</li>
+</ol>
+
+<h2>6. Your rights matter more than this feature</h2>
+<div class="rights-box">
+  <h3>Before you file</h3>
+  <p><strong>Check your state&rsquo;s whistleblower protection statute.</strong> If you&rsquo;re in MA, RI, or NH: the statutes cited above generally protect reports of &ldquo;violations of law, rule, or regulation.&rdquo; A dangerous infrastructure condition that violates a statutory duty (defective highway statute, ADA compliance, HUD Housing Quality Standards) qualifies. A policy disagreement about budget priorities does not.</p>
+  <p><strong>Preserve evidence separately from the Fault Line submission.</strong> If your report ever becomes the basis of a formal complaint or a legal action, you may need to authenticate the underlying observations. Keep dated notes in a location outside your employer&rsquo;s systems. Do not use employer email or employer-issued devices for anything related to the report.</p>
+  <p><strong>Consult a whistleblower attorney if there is any risk of retaliation.</strong> Both the <a href="https://www.whistleblowers.org/" target="_blank" rel="noopener">National Whistleblower Center</a> and the <a href="https://whistleblower.org/" target="_blank" rel="noopener">Government Accountability Project</a> maintain attorney referral networks. Many whistleblower attorneys offer a free initial consultation.</p>
+  <p><strong>Do not send Fault Line documents you have a duty of confidentiality about.</strong> Attorney-client materials, HIPAA-covered records, personnel records of other employees, and classified information are not appropriate for a Fault Line submission and can create liability for the reporter. Describe the underlying infrastructure condition; do not send internal documents.</p>
+</div>
+
+<h2>7. Guardrails</h2>
+<ol>
+  <li><strong>Nothing on this page implies protection Fault Line cannot deliver.</strong> Technical anonymity is not legal protection. Every relevant assertion above is qualified honestly.</li>
+  <li><strong>No named individuals in insider reports.</strong> The reporting flow rejects submissions that name specific individuals as the target of the report. Fault Line is documenting infrastructure conditions, not accusing employees.</li>
+  <li><strong>No use as a personnel-grievance channel.</strong> The reporting flow surfaces the &ldquo;out of scope&rdquo; list at submission time. Attempted submissions in out-of-scope categories are refused with an explanation and referral to the appropriate channel (state EEOC, Inspector General, union counsel).</li>
+  <li><strong>Right of reply preserved for authorities.</strong> Insider-context reports that escalate include the same 24-hour authority pre-notification as press-summary flows (see <a href="briefing-packets.html">/briefing-packets</a>). Authorities can respond, dispute, or correct before public distribution.</li>
+  <li><strong>No public identification of insider category.</strong> The reporting UI collects insider-context fields optionally, but the fields are not displayed publicly. They&rsquo;re used to enrich the demand letter and internal cluster analysis; they don&rsquo;t appear on the resident-facing map.</li>
+</ol>
+
+<h2>8. What still needs to happen before this ships</h2>
+<ol>
+  <li>Legal review of the whistleblower-protection landscape in MA / RI / NH, and by extension the other states in Fault Line&rsquo;s coverage roadmap. Same qualified-reviewer standard as the statute dataset (attorney admitted in the state, or a credentialed legal researcher with whistleblower-protection specialization).</li>
+  <li>Additional context fields in the report submission schema (insider-category enum, duration observation, prior-internal-report reference field, documentary-reference free-text field).</li>
+  <li>Longer verification window (up to 180 days) for insider-only observations that lack resident confirmation.</li>
+  <li>EXIF-stripping option in the photo upload flow.</li>
+  <li>Confirmation the public web app is fully usable over Tor (already largely the case, but formal verification needed).</li>
+  <li>Referral copy in the reporting UI: for out-of-scope categories, direct users to the appropriate channel with jurisdiction-specific links.</li>
+</ol>
+<p>Full engineering scope in <code>DEFERRED.md #29</code>.</p>
+
+<h2>9. Grant relevance</h2>
+<p>Insider infrastructure reporting is a genuine gap in the civic-tech landscape. Government transparency and accountability funders (Sunlight Foundation successor orgs, OpenGov Foundation, Knight Foundation democracy programs) have historically funded whistleblower-adjacent infrastructure. Fault Line&rsquo;s carefully-scoped approach &mdash; infrastructure only, honest technical claims, referral to real whistleblower counsel for anything larger &mdash; is a more grant-worthy posture than tools that overclaim what they can protect.</p>
+
+<p class="disclaimer">Not legal advice. This page describes Fault Line&rsquo;s design commitments for a specific report type; it does not create legal rights, does not establish an attorney-client relationship, and does not substitute for consultation with a licensed whistleblower attorney. Legal protection for public-employee reporting varies by state, level of government, and category of report &mdash; consult qualified counsel before acting on anything described here.</p>
+
+</main>
+
+<footer>
+  <a href="index.html">Home</a> &middot;
+  <a href="features-plain.html">Features</a> &middot;
+  <a href="cities.html">For Cities</a> &middot;
+  <a href="about.html">About</a> &middot;
+  <a href="methodology.html">Methodology</a> &middot;
+  <a href="rapid-response.html">Rapid Response Roll</a> &middot;
+  <a href="access-equity.html">Access &amp; Equity</a> &middot;
+  <a href="digital-infrastructure.html">Digital Public Infrastructure</a> &middot;
+  <a href="briefing-packets.html">Briefing Packets</a> &middot;
+  <a href="corridor-reports.html">Corridor &amp; Area Reports</a> &middot;
+  <a href="whistleblower.html">Public-Employee Reporting</a> &middot;
+  <a href="privacy.html">Privacy</a> &middot;
+  <a href="terms.html">Terms</a> &middot;
+  <a href="blog.html">Blog</a> &middot;
+  <a href="faq.html">FAQ</a> &middot;
+  <a href="changelog.html">Changelog</a> &middot;
+  <a href="feedback.html">Feedback</a> &middot;
+  <a href="https://app.fault-line.dev" target="_blank" rel="noopener">Web app</a> &middot;
+  <a href="https://ko-fi.com/moonlitsociallabs" target="_blank" rel="noopener">Ko-fi</a>
+  <br><br>&copy; 2026 Moonlit Social Labs &middot; Fault Line is a product of Moonlit Social Labs
+</footer>
+
+</body>
+</html>

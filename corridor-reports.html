@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://pagead2.googlesyndication.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: https:; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://www.google-analytics.com https://analytics.google.com https://pagead2.googlesyndication.com; frame-src https://googleads.g.doubleclick.net https://tpc.googlesyndication.com https://pagead2.googlesyndication.com; object-src 'none'; base-uri 'self';">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Corridor &amp; Area Reports — Fault Line | Systemic Patterns, Not Just Points</title>
+<meta name="description" content="Fault Line's Corridor &amp; Area report type: how residents document systemic infrastructure failures spanning a segment of road, a neighborhood, or a public-facility footprint — not just a single GPS pin. Methodology, thresholds, guardrails.">
+<meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large">
+<link rel="canonical" href="https://fault-line.dev/corridor-reports.html">
+
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://fault-line.dev/corridor-reports.html">
+<meta property="og:title" content="Corridor &amp; Area Reports — Fault Line">
+<meta property="og:description" content="A single pothole is a point. The entire quarter-mile of Beacon Street between X and Y is what actually needs a paving contract. Corridor reports let residents document what cities actually respond to.">
+<meta property="og:image" content="https://fault-line.dev/og/og-home.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://fault-line.dev/og/og-home.png">
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-XXXXXXXXXX');</script>
+
+<link rel="stylesheet" href="theme.css?v=20260506">
+
+<style>
+main { max-width: 860px; margin: 0 auto; padding: 24px 32px 80px; }
+main h1 { font-size: clamp(38px, 6vw, 60px); letter-spacing: -1.5px; margin-bottom: 6px; line-height: 1.05; }
+main h1 em { font-style: italic; color: var(--tile-hot); }
+main .updated { font-family: var(--ff-mono); font-size: 12px; color: var(--steel-light); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 34px; }
+main .lede { font-family: var(--ff-body); font-size: 19px; line-height: 1.6; color: var(--tile); margin-bottom: 34px; }
+main h2 { font-size: 26px; margin: 46px 0 14px; letter-spacing: -0.5px; }
+main h3 { font-size: 19px; font-weight: 700; margin: 22px 0 8px; color: var(--tile); }
+main p, main li { font-family: var(--ff-body); color: var(--tile-dim); font-size: 16px; line-height: 1.7; margin-bottom: 14px; }
+main ul, main ol { padding-left: 24px; margin-bottom: 18px; }
+main li { margin-bottom: 8px; }
+main strong { color: var(--tile); font-weight: 600; }
+
+.callout {
+  border-left: 3px solid var(--tile-hot);
+  padding: 14px 20px;
+  margin: 24px 0;
+  background: rgba(0, 0, 0, 0.15);
+  font-family: var(--ff-body);
+}
+.callout p:last-child { margin-bottom: 0; }
+
+.pillars {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 14px;
+  margin: 22px 0 32px;
+}
+.pillar {
+  border: 1px solid rgba(255,255,255,0.08);
+  padding: 18px 20px;
+  background: rgba(0,0,0,0.15);
+}
+.pillar h3 { margin-top: 0; font-size: 16px; }
+.pillar p { font-size: 14px; margin-bottom: 0; }
+
+table.type-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 16px 0 24px;
+  font-family: var(--ff-body);
+  font-size: 14px;
+}
+table.type-table th, table.type-table td {
+  text-align: left;
+  padding: 12px 12px;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  vertical-align: top;
+}
+table.type-table th {
+  color: var(--tile);
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  font-size: 11px;
+  font-family: var(--ff-mono);
+}
+table.type-table td.type {
+  color: var(--tile-hot);
+  font-weight: 700;
+  font-family: var(--ff-mono);
+  font-size: 13px;
+  white-space: nowrap;
+}
+
+.example {
+  border: 1px dashed rgba(255,255,255,0.14);
+  padding: 18px 22px;
+  margin: 22px 0;
+  background: rgba(0,0,0,0.12);
+  font-family: var(--ff-mono);
+  font-size: 13px;
+  color: var(--tile-dim);
+  line-height: 1.7;
+}
+.example .lbl {
+  color: var(--tile-hot);
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  font-size: 10px;
+  display: block;
+  margin-bottom: 6px;
+}
+.example .kv {
+  display: grid;
+  grid-template-columns: 170px 1fr;
+  gap: 4px 12px;
+  margin-top: 8px;
+}
+.example .kv .k { color: var(--steel-light); text-transform: uppercase; font-size: 10px; letter-spacing: 1px; }
+.example .kv .v { color: var(--tile); }
+
+.disclaimer {
+  font-family: var(--ff-mono);
+  font-size: 11px;
+  color: var(--steel-light);
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  text-align: center;
+  margin: 44px auto 0;
+  max-width: 700px;
+  line-height: 1.7;
+}
+</style>
+</head>
+<body>
+
+<div class="hazard"></div>
+
+<nav class="nav">
+  <a href="index.html" class="nav-brand"><span class="brand-fault">Fault</span><span class="brand-slash">\</span><span class="brand-line">Line</span><span class="beta-badge">BETA</span></a>
+  <div class="nav-links">
+    <a href="index.html">Home</a>
+    <a href="features-plain.html">Features</a>
+    <a href="cities.html">For Cities</a>
+    <a href="blog.html">Blog</a>
+    <a href="about.html">About</a>
+    <a href="feedback.html">Feedback</a>
+    <a href="faq.html">FAQ</a>
+    <a href="access-equity.html">Access &amp; Equity</a>
+    <a href="digital-infrastructure.html">Digital Infra</a>
+    <a href="rapid-response.html">Rapid Response Roll</a>
+    <a href="briefing-packets.html">Briefings</a>
+    <a href="changelog.html">Changelog</a>
+    <a href="https://ko-fi.com/moonlitsociallabs" target="_blank" rel="noopener" class="nav-kofi">Support on Ko-Fi</a>
+    <span class="active-dev-status"><span class="nav-dot"></span> Active Development</span>
+  </div>
+</nav>
+
+<main>
+<h1>Corridor &amp; area <em>reports</em>.</h1>
+<p class="updated">Design v0.1 · Draft · 2026-08-30 · Report type not yet enabled in the app UI</p>
+
+<p class="lede">A single pothole is a point. The entire quarter-mile of Beacon Street between 3rd and 4th Avenues, where five different residents have filed nine reports over three months for potholes, faded crosswalk paint, a broken streetlight, and a dead street tree &mdash; that&rsquo;s what actually needs a paving contract, a corridor-level accessibility audit, and a line item in the next budget. Cities respond to segments, not GPS pins. Fault Line has been treating every hazard as a point. That gap is the reason a real, obvious, systemic problem often gets treated by the municipality as ten unrelated tickets, each closed in isolation.</p>
+
+<div class="callout">
+  <p><strong>Status:</strong> Design and methodology page. <strong>Corridor and area report types are not yet enabled in the app UI</strong> &mdash; the underlying schema extension, geometry model, and reporting flow are scoped in <code>DEFERRED.md #28</code>. This page commits the design in public so pilot cities and mapping-savvy residents can review the shape before the plumbing exists.</p>
+</div>
+
+<h2>1. Why corridors and areas matter</h2>
+<p>Municipal work orders operate on segments. A DPW crew doesn&rsquo;t patch one pothole; they mill and repave a block. A traffic engineer doesn&rsquo;t retime one signal; they retime the corridor. A neighborhood accessibility audit doesn&rsquo;t evaluate one curb cut; it evaluates the walk network. Reports that arrive as isolated points force the recipient to reconstruct the segment-level pattern themselves &mdash; work that most departments don&rsquo;t have staffing to do consistently.</p>
+<p>Three concrete problems point-only reporting creates:</p>
+<ul>
+  <li><strong>Response fragmentation.</strong> Ten reports on the same block get treated as ten tickets. Each gets closed when its individual defect is patched, without addressing the fact that the underlying road surface is failing everywhere along the segment.</li>
+  <li><strong>Accountability arbitrage.</strong> A department can &ldquo;close&rdquo; ten point reports at 100% closure rate while the underlying corridor is still visibly failing. The Shame Index calculation, correctly configured, should notice this &mdash; but only if the corridor is represented as a first-class object, not as a computed inference over points.</li>
+  <li><strong>Grant-application weakness.</strong> Federal infrastructure funding (BRIC, Safe Streets and Roads for All, USDOT Reconnecting Communities) is awarded to <em>segments and networks</em>, not points. Cities applying with a bag of GPS pins are less competitive than cities applying with well-documented corridor-level need analyses. Fault Line data should be usable in the application.</li>
+</ul>
+
+<h2>2. Three report types</h2>
+
+<table class="type-table">
+  <thead>
+    <tr><th>Type</th><th>Geometry</th><th>Use case</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td class="type">Point</td>
+      <td>Single GPS coordinate (existing behavior).</td>
+      <td>A discrete hazard. Pothole, broken streetlight, downed sign.</td>
+    </tr>
+    <tr>
+      <td class="type">Corridor</td>
+      <td>Linear geometry &mdash; a start point, end point, and street identifier.</td>
+      <td>A road segment, sidewalk stretch, bike lane, or transit corridor with persistent or spatially-distributed issues.</td>
+    </tr>
+    <tr>
+      <td class="type">Area</td>
+      <td>Polygon geometry &mdash; either a user-drawn boundary or a census-tract / neighborhood boundary.</td>
+      <td>A public-facility footprint (park, school campus, transit hub), a neighborhood with concentrated access issues, or a facility-adjacent zone.</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>The default report flow stays point-first &mdash; the 10-second submission model does not change. Corridor and area reports are separate flows in the reporting UI, opt-in from a longer-form path or from an aggregation suggestion (see &sect;3).</p>
+
+<h2>3. Two paths a corridor / area report gets created</h2>
+
+<h3>Path A: Auto-suggested from clustered points</h3>
+<p>When point reports concentrate along a linear or polygonal feature (5+ reports within a 500 ft corridor over 60 days, or 8+ reports within a defined neighborhood boundary over 60 days), Fault Line surfaces a suggestion to the community: <em>&ldquo;These 7 reports look like they&rsquo;re part of the same problem. Convert them into a corridor report?&rdquo;</em></p>
+<p>Any nearby community member can accept the suggestion. Accepting creates a new corridor report, links the underlying point reports to it, and starts a fresh community-verification cycle at the corridor level. Original point reports stay open independently until resolved &mdash; the corridor report is an <em>aggregation</em>, not a replacement.</p>
+
+<h3>Path B: Resident-initiated</h3>
+<p>A resident who wants to file a corridor or area report directly can do so through a longer-form flow: draw the segment on a map, describe the pattern of failures, attach photos taken at multiple points along the corridor, categorize the primary and secondary hazard types. This path is for residents who see the systemic problem from the start &mdash; a neighborhood association, a block captain, a resident who commutes the segment every day.</p>
+<p>Resident-initiated corridor reports enter the same community-verification pipeline: 3 additional reporters must confirm at least 2 points along the corridor before it&rsquo;s community-verified.</p>
+
+<h2>4. Community verification thresholds</h2>
+<p>Point reports verify at 3 independent reports. Corridor and area reports need a slightly higher standard because they claim more:</p>
+<ul>
+  <li><strong>Corridor report:</strong> 5+ independent reporters confirming issues at &ge; 3 distinct points along the corridor.</li>
+  <li><strong>Area report:</strong> 8+ independent reporters confirming issues at &ge; 5 distinct points within the boundary.</li>
+  <li><strong>Geographic distinctness:</strong> confirmations must be at least 100 ft apart within the corridor / 200 ft apart within the area. One reporter cannot verify a corridor by submitting five reports at the same intersection.</li>
+</ul>
+<p>Higher thresholds are not gatekeeping &mdash; they&rsquo;re calibrated to the higher factual claim. A corridor report says &ldquo;this whole segment is bad,&rdquo; and needs geographic evidence to that effect.</p>
+
+<h2>5. Escalation and demand-letter differences</h2>
+<p>Corridor reports change the letter template. A point-report demand letter cites a specific GPS coordinate and one hazard; a corridor demand letter cites:</p>
+<ul>
+  <li>The segment identifier (street name, from-to intersections)</li>
+  <li>The pattern of failures (categories, count, distribution)</li>
+  <li>The specific applicable statute at the corridor scale (still MA c. 84 &sect; 15 or equivalents, but framed around the segment)</li>
+  <li>A suggested municipal work-order response scope (mill-and-repave, corridor-wide sidewalk audit, signal retiming, etc.)</li>
+</ul>
+<p>The letter still says <strong>&ldquo;you send this yourself&rdquo;</strong> &mdash; corridor reports don&rsquo;t change the user-sends posture, only the scope of the notice.</p>
+
+<h2>6. Sample corridor report</h2>
+<div class="example">
+  <span class="lbl">Sample &mdash; illustrative only</span>
+  <div class="kv">
+    <div class="k">Corridor</div><div class="v">Beacon Street, between 3rd Avenue and 4th Avenue</div>
+    <div class="k">Length</div><div class="v">~0.24 miles</div>
+    <div class="k">Municipality</div><div class="v">City of &lt;Example&gt;</div>
+    <div class="k">Underlying reports</div><div class="v">9 (7 potholes at 6 GPS points; 1 faded crosswalk; 1 broken streetlight)</div>
+    <div class="k">Distinct reporters</div><div class="v">5 (verified via 3-point-minimum threshold at points A, C, F)</div>
+    <div class="k">First reported</div><div class="v">2026-06-14</div>
+    <div class="k">Days since first notice</div><div class="v">77</div>
+    <div class="k">Statute</div><div class="v">M.G.L. c. 84 &sect; 15 (30-day window &mdash; expired)</div>
+    <div class="k">Suggested response scope</div><div class="v">Mill and repave; crosswalk restripe; streetlight service call</div>
+    <div class="k">Fault Line ID</div><div class="v">FL-CORR-a1b2c3d4</div>
+  </div>
+</div>
+
+<h2>7. How this integrates with existing methodology</h2>
+<ul>
+  <li><strong>Shame Index:</strong> corridor and area reports are weighted heavier in the underlying calculation because they represent higher-confidence, geographically-distributed evidence. A single corridor report equivalent to ~3 severity-weighted point reports on the Shame Index inputs. Prevents the accountability-arbitrage failure where 10 point closures paper over an ongoing corridor failure.</li>
+  <li><strong>Rapid Response Roll:</strong> corridor-level resolutions (e.g., a full mill-and-repave documented by community re-photo at multiple points) count as high-value qualifying resolutions. Rank calculation gives them more weight.</li>
+  <li><strong>Access &amp; Equity aggregation:</strong> area reports that identify a neighborhood-level accessibility failure integrate with Group G environmental-justice aggregation. Both operate at the census-tract or user-drawn polygon scale.</li>
+  <li><strong>Briefing packets:</strong> corridor reports get their own section in council-member briefings. A three-block corridor with 47 days past deadline is a story worth surfacing separately from the &ldquo;9 sidewalk defects&rdquo; count.</li>
+</ul>
+
+<h2>8. Guardrails</h2>
+<ol>
+  <li><strong>Boundaries must be verifiable.</strong> A corridor is defined by a real, mappable segment (street name + intersection endpoints). An area is defined by a census tract or a user-drawn polygon with a maximum size limit (roughly a 0.5-mile radius, or a defined-neighborhood boundary). Nobody can file a corridor report for &ldquo;my entire town.&rdquo;</li>
+  <li><strong>Aggregation is community-approved.</strong> The auto-suggestion in Path A is a suggestion. Community members convert clustered points into a corridor; the algorithm does not auto-promote clusters into corridor reports without a human accepting the aggregation.</li>
+  <li><strong>Corridors shrink and grow with data.</strong> If part of a corridor is resolved (e.g., three of six potholes filled), the corridor report&rsquo;s active segment is updated. If a corridor grows to include additional points reported after the corridor was created, the boundary can extend. Fault Line tracks both the current state and the corridor&rsquo;s edit history.</li>
+  <li><strong>Not a substitute for point reports.</strong> Residents who see a specific pothole should still be able to file a point report in 10 seconds. Corridor is an aggregation layer, not a replacement.</li>
+  <li><strong>Corridor severity does not dilute point severity.</strong> A corridor report cannot be used to claim an individual point is less severe than it actually is (&ldquo;this pothole is fine because the whole street is bad&rdquo;). Each underlying point retains its own severity classification.</li>
+  <li><strong>Cross-jurisdiction corridors are split.</strong> A corridor that crosses a municipal boundary is automatically split into per-jurisdiction sub-corridors. Fault Line does not attribute one jurisdiction&rsquo;s failure to another.</li>
+</ol>
+
+<h2>9. What still needs to happen before this ships</h2>
+<ol>
+  <li>Report schema extension: add <code>report_type</code> enum (point / corridor / area), plus PostGIS linestring and polygon columns to <code>reports</code> table.</li>
+  <li>Auto-suggestion algorithm: nightly job that scans point-report clusters and produces suggested corridor / area aggregations. Suggestion surfaces in the app UI, not in escalation directly.</li>
+  <li>Reporting UI: longer-form flow with map-drawing for resident-initiated corridor / area reports. Uses the existing Leaflet infrastructure in <code>fault-line-web/</code>.</li>
+  <li>Demand-letter template extensions: corridor-scale letter templates that describe segment-level failure and cite the aggregated evidence base.</li>
+  <li>Shame Index weight adjustment: corridor reports weighted at ~3x point reports (calibration determined empirically once the first pilot city has enough data).</li>
+</ol>
+<p>Full engineering scope in <code>DEFERRED.md #28</code>.</p>
+
+<h2>10. Grant relevance</h2>
+<p>Corridor and area reports directly enable federal infrastructure grant applications. USDOT Safe Streets and Roads for All (SS4A) awards to segments; FEMA BRIC awards to defined hazard areas; USDOT Reconnecting Communities awards to corridors and neighborhoods. Cities that use Fault Line-generated corridor data in their applications have quantified need analyses that most other applicants can&rsquo;t produce. See <code>GRANTS.md &sect;4 Tier C</code>.</p>
+
+<p class="disclaimer">Not legal advice. Corridor and area demand letters cite the same underlying statutes as point letters, but at segment scale. For a live claim against a municipality, consult a licensed attorney in your state.</p>
+
+</main>
+
+<footer>
+  <a href="index.html">Home</a> &middot;
+  <a href="features-plain.html">Features</a> &middot;
+  <a href="cities.html">For Cities</a> &middot;
+  <a href="about.html">About</a> &middot;
+  <a href="methodology.html">Methodology</a> &middot;
+  <a href="rapid-response.html">Rapid Response Roll</a> &middot;
+  <a href="access-equity.html">Access &amp; Equity</a> &middot;
+  <a href="digital-infrastructure.html">Digital Public Infrastructure</a> &middot;
+  <a href="briefing-packets.html">Briefing Packets</a> &middot;
+  <a href="corridor-reports.html">Corridor &amp; Area Reports</a> &middot;
+  <a href="privacy.html">Privacy</a> &middot;
+  <a href="terms.html">Terms</a> &middot;
+  <a href="blog.html">Blog</a> &middot;
+  <a href="faq.html">FAQ</a> &middot;
+  <a href="changelog.html">Changelog</a> &middot;
+  <a href="feedback.html">Feedback</a> &middot;
+  <a href="https://app.fault-line.dev" target="_blank" rel="noopener">Web app</a> &middot;
+  <a href="https://ko-fi.com/moonlitsociallabs" target="_blank" rel="noopener">Ko-fi</a>
+  <br><br>&copy; 2026 Moonlit Social Labs &middot; Fault Line is a product of Moonlit Social Labs
+</footer>
+
+</body>
+</html>
