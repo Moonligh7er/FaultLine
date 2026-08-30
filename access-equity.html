@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://pagead2.googlesyndication.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: https:; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://www.google-analytics.com https://analytics.google.com https://pagead2.googlesyndication.com; frame-src https://googleads.g.doubleclick.net https://tpc.googlesyndication.com https://pagead2.googlesyndication.com; object-src 'none'; base-uri 'self';">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Access &amp; Equity Reporting — Fault Line | ADA, Transit, Housing, Digital</title>
+<meta name="description" content="Fault Line's access &amp; equity taxonomy: 32 categories of accessibility, mobility, transit, housing, sensory, environmental-justice, and digital-public-infrastructure failures — with published routing methodology from resident report to responsible authority.">
+<meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large">
+<link rel="canonical" href="https://fault-line.dev/access-equity.html">
+
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://fault-line.dev/access-equity.html">
+<meta property="og:title" content="Access &amp; Equity Reporting — Fault Line">
+<meta property="og:description" content="A broken elevator in public housing, a missing curb cut, an English-only city form, a school-zone crossing with no guard. Different problems, one accountability platform, published routing methodology.">
+<meta property="og:image" content="https://fault-line.dev/og/og-home.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://fault-line.dev/og/og-home.png">
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-XXXXXXXXXX');</script>
+
+<link rel="stylesheet" href="theme.css?v=20260506">
+
+<style>
+main { max-width: 960px; margin: 0 auto; padding: 24px 32px 80px; }
+main h1 { font-size: clamp(38px, 6vw, 60px); letter-spacing: -1.5px; margin-bottom: 6px; line-height: 1.05; }
+main h1 em { font-style: italic; color: var(--tile-hot); }
+main .updated { font-family: var(--ff-mono); font-size: 12px; color: var(--steel-light); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 34px; }
+main .lede { font-family: var(--ff-body); font-size: 19px; line-height: 1.6; color: var(--tile); margin-bottom: 34px; }
+main h2 { font-size: 26px; margin: 46px 0 14px; letter-spacing: -0.5px; }
+main h3 { font-size: 19px; font-weight: 700; margin: 22px 0 8px; color: var(--tile); }
+main p, main li { font-family: var(--ff-body); color: var(--tile-dim); font-size: 16px; line-height: 1.7; margin-bottom: 14px; }
+main ul, main ol { padding-left: 24px; margin-bottom: 18px; }
+main li { margin-bottom: 8px; }
+main strong { color: var(--tile); font-weight: 600; }
+
+.callout {
+  border-left: 3px solid var(--tile-hot);
+  padding: 14px 20px;
+  margin: 24px 0;
+  background: rgba(0, 0, 0, 0.15);
+  font-family: var(--ff-body);
+}
+.callout p:last-child { margin-bottom: 0; }
+
+.group-block {
+  margin: 36px 0 8px;
+  border-top: 1px solid rgba(255,255,255,0.1);
+  padding-top: 26px;
+}
+.group-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+.group-header h2 {
+  margin: 0;
+  font-size: 24px;
+  letter-spacing: -0.4px;
+}
+.group-header h2 .letter {
+  color: var(--tile-hot);
+  font-family: var(--ff-mono);
+  font-size: 18px;
+  margin-right: 10px;
+}
+.group-header .count {
+  font-family: var(--ff-mono);
+  font-size: 11px;
+  color: var(--steel-light);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+.group-note {
+  font-family: var(--ff-body);
+  font-size: 14px;
+  color: var(--tile-dim);
+  font-style: italic;
+  margin: 0 0 16px;
+  line-height: 1.55;
+}
+
+table.taxonomy {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 6px 0 12px;
+  font-family: var(--ff-body);
+  font-size: 14px;
+}
+table.taxonomy th, table.taxonomy td {
+  text-align: left;
+  padding: 10px 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+  vertical-align: top;
+}
+table.taxonomy th {
+  color: var(--tile);
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  font-size: 11px;
+  background: rgba(0,0,0,0.15);
+  font-family: var(--ff-mono);
+}
+table.taxonomy td.cat {
+  color: var(--tile);
+  font-weight: 600;
+  width: 24%;
+}
+table.taxonomy td.route {
+  color: var(--tile-dim);
+  font-size: 13px;
+  width: 36%;
+}
+table.taxonomy td.statute {
+  font-family: var(--ff-mono);
+  font-size: 12px;
+  color: var(--steel-light);
+  width: 40%;
+}
+table.taxonomy td.statute a { color: var(--tile-hot); }
+
+.disclaimer {
+  font-family: var(--ff-mono);
+  font-size: 11px;
+  color: var(--steel-light);
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  text-align: center;
+  margin: 44px auto 0;
+  max-width: 700px;
+  line-height: 1.7;
+}
+</style>
+</head>
+<body>
+
+<div class="hazard"></div>
+
+<nav class="nav">
+  <a href="index.html" class="nav-brand"><span class="brand-fault">Fault</span><span class="brand-slash">\</span><span class="brand-line">Line</span><span class="beta-badge">BETA</span></a>
+  <div class="nav-links">
+    <a href="index.html">Home</a>
+    <a href="features-plain.html">Features</a>
+    <a href="cities.html">For Cities</a>
+    <a href="blog.html">Blog</a>
+    <a href="about.html">About</a>
+    <a href="feedback.html">Feedback</a>
+    <a href="faq.html">FAQ</a>
+    <a href="rapid-response.html">Rapid Response Roll</a>
+    <a href="changelog.html">Changelog</a>
+    <a href="https://ko-fi.com/moonlitsociallabs" target="_blank" rel="noopener" class="nav-kofi">Support on Ko-Fi</a>
+    <span class="active-dev-status"><span class="nav-dot"></span> Active Development</span>
+  </div>
+</nav>
+
+<main>
+<h1>Access &amp; <em>equity</em> reporting.</h1>
+<p class="updated">Taxonomy v0.1 · Draft · 2026-08-30 · Categories not yet enabled in the app UI</p>
+
+<p class="lede">A pothole is a pothole. A missing curb cut, a broken elevator in public housing, an English-only city form, a school-zone crossing with no guard &mdash; these look like different problems, but they&rsquo;re the same underlying failure: infrastructure that excludes the residents it was supposed to serve. Fault Line&rsquo;s Access &amp; Equity taxonomy is our public commitment to treating these with the same evidence discipline as physical road defects &mdash; category by category, with named responsible authorities and cited statutes.</p>
+
+<div class="callout">
+  <p><strong>Status:</strong> Taxonomy design and routing methodology. <strong>Categories in this document are not yet enabled in the app reporting UI</strong> &mdash; the underlying category constants (<code>src/constants/categories.ts</code>) and per-category routing table are scoped in <code>DEFERRED.md #25</code>. This page commits the design in public before the plumbing exists so the taxonomy is auditable and consultable by pilot cities, ADA coordinators, transit advocates, and grant reviewers today.</p>
+</div>
+
+<h2>Why this taxonomy exists</h2>
+<p>Existing 311 systems handle access and equity issues badly because they route to different departments with different response protocols &mdash; and because most residents don&rsquo;t know which department owns the problem. A resident who tries to report an ADA-noncompliant crosswalk to a general 311 line typically gets bounced between transportation, ADA compliance, and public works, and gives up. That&rsquo;s not a bug in the 311 process &mdash; it&rsquo;s a structural feature of a fragmented accountability landscape.</p>
+<p>The Access &amp; Equity taxonomy solves the routing problem in three ways:</p>
+<ul>
+  <li><strong>Per-category responsible authority.</strong> Every category maps to one or more named authorities (municipal ADA coordinator, transit authority, public housing authority, school district, etc.) with escalation paths pre-configured.</li>
+  <li><strong>Per-category legal framework.</strong> Where a category maps to a specific statute or regulatory body (ADA Title II, Fair Housing Act, Section 504, state ADA law), the letter generator cites it.</li>
+  <li><strong>Environmental-justice aggregation.</strong> When multiple category-A/B/C reports concentrate in the same census tract at a disproportionate rate compared to the peer group, that pattern itself becomes a reportable fact &mdash; equity data with statistical grounding, not anecdote.</li>
+</ul>
+
+<h2>Guardrails: what this is NOT</h2>
+<ol>
+  <li><strong>Not a substitute for legal complaints.</strong> ADA and Fair Housing violations have formal complaint mechanisms with statutory teeth (DOJ, HUD, state ADA offices). Fault Line reports document the underlying facts and can be attached to formal complaints &mdash; but the complaint itself is filed through the legal channel. Reports are the evidence; the complaint is the vehicle.</li>
+  <li><strong>Not a substitute for community organizing.</strong> Access issues in a neighborhood are often best addressed by residents organizing together. Fault Line is documentation infrastructure for that organizing, not a replacement for it.</li>
+  <li><strong>Not a way to name-and-shame residents.</strong> Everything on this page targets institutions and authorities. Reports about individual residents (loud neighbor, unshoveled sidewalk aimed at a specific homeowner) are explicitly out of scope for Fault Line; different domain, different due-process design.</li>
+  <li><strong>Not a demographic surveillance tool.</strong> Aggregation across census tracts is done at the tract level using public census data, never using individual reporter attributes. Fault Line does not track or infer reporter demographics.</li>
+  <li><strong>Not universal.</strong> Not every category applies in every jurisdiction (some states have stronger ADA laws than the federal floor; some cities have their own equity ordinances that supersede the framework below). Where a category doesn&rsquo;t apply, the routing falls back to the federal floor (DOJ for ADA, HUD for Fair Housing).</li>
+</ol>
+
+<!-- ═══════════════════════════════════  GROUP A  ═══════════════════════════════════ -->
+<div class="group-block">
+  <div class="group-header">
+    <h2><span class="letter">A.</span>Physical mobility &amp; ADA</h2>
+    <span class="count">7 categories</span>
+  </div>
+  <p class="group-note">The most legally grounded group &mdash; Title II of the ADA requires public entities to make sidewalks, curbs, crosswalks, and pedestrian signals accessible. Failure creates a private right of action + DOJ enforcement authority. Reports here have the strongest possible legal framing.</p>
+
+  <table class="taxonomy">
+    <thead>
+      <tr><th>Category</th><th>Routing</th><th>Legal framework</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="cat">Missing curb cut</td>
+        <td class="route">Municipal ADA coordinator + public works. Escalate to state ADA compliance office if unremediated at 90 days.</td>
+        <td class="statute"><a href="https://www.ada.gov/topics/title-ii/" target="_blank" rel="noopener">28 CFR Part 35</a> (ADA Title II) + <a href="https://www.access-board.gov/prowag/" target="_blank" rel="noopener">PROWAG</a></td>
+      </tr>
+      <tr>
+        <td class="cat">Broken curb cut / non-compliant slope</td>
+        <td class="route">Same as above.</td>
+        <td class="statute">28 CFR Part 35 + PROWAG § R304 (running &amp; cross slope)</td>
+      </tr>
+      <tr>
+        <td class="cat">Broken accessibility ramp</td>
+        <td class="route">Building owner (private) or municipal facilities dept (public). If public housing, route to housing authority.</td>
+        <td class="statute">ADA Title II (public) or Title III (private commercial)</td>
+      </tr>
+      <tr>
+        <td class="cat">ADA-blocked path (permanent obstruction)</td>
+        <td class="route">Municipal ADA coordinator + code enforcement (for private-property encroachments).</td>
+        <td class="statute">28 CFR Part 35.150 (program access)</td>
+      </tr>
+      <tr>
+        <td class="cat">Sidewalk dead-end / mobility trap</td>
+        <td class="route">Public works + transportation planning.</td>
+        <td class="statute">PROWAG § R204 (pedestrian access routes)</td>
+      </tr>
+      <tr>
+        <td class="cat">Broken accessible pedestrian signal (APS)</td>
+        <td class="route">Transportation / traffic signals division.</td>
+        <td class="statute">MUTCD § 4E.09 (audible + vibrotactile pedestrian signals)</td>
+      </tr>
+      <tr>
+        <td class="cat">Missing APS at high-risk intersection</td>
+        <td class="route">Transportation planning + municipal ADA coordinator. Longer horizon &mdash; capital project, not a same-week fix.</td>
+        <td class="statute">28 CFR Part 35.150 (program access reviews)</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ═══════════════════════════════════  GROUP B  ═══════════════════════════════════ -->
+<div class="group-block">
+  <div class="group-header">
+    <h2><span class="letter">B.</span>Sensory &amp; cognitive access</h2>
+    <span class="count">5 categories</span>
+  </div>
+  <p class="group-note">Reports here focus on the built environment&rsquo;s treatment of blind, low-vision, deaf, hard-of-hearing, and cognitively-different residents. Most map to ADA Title II or federal language-access requirements under Title VI of the Civil Rights Act (federal-funding recipients must provide meaningful access to LEP residents).</p>
+
+  <table class="taxonomy">
+    <thead>
+      <tr><th>Category</th><th>Routing</th><th>Legal framework</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="cat">Missing braille signage where required</td>
+        <td class="route">Building owner + municipal ADA coordinator.</td>
+        <td class="statute">2010 ADA Standards § 703.3 &amp; § 703.4 (tactile signs)</td>
+      </tr>
+      <tr>
+        <td class="cat">English-only signage at public services</td>
+        <td class="route">Agency responsible for the service + municipal language-access officer if one exists.</td>
+        <td class="statute"><a href="https://www.justice.gov/crt/fcs/TitleVI" target="_blank" rel="noopener">Title VI Civil Rights Act</a> + <a href="https://www.federalregister.gov/documents/2000/08/16/00-20938/executive-order-13166-of-august-11-2000-improving-access-to-services-for-persons-with-limited" target="_blank" rel="noopener">EO 13166</a></td>
+      </tr>
+      <tr>
+        <td class="cat">Missing / broken large-print signage</td>
+        <td class="route">Facility operator (public) or code enforcement (public accommodations).</td>
+        <td class="statute">2010 ADA Standards + state accessibility codes</td>
+      </tr>
+      <tr>
+        <td class="cat">Illegible / high-contrast-failing signs</td>
+        <td class="route">Facility operator + municipal ADA coordinator.</td>
+        <td class="statute">2010 ADA Standards § 703.5 (visual characters)</td>
+      </tr>
+      <tr>
+        <td class="cat">Missing audible signage at transit hub</td>
+        <td class="route">Transit authority + ADA coordinator.</td>
+        <td class="statute">49 CFR Part 37 (DOT ADA transit rules)</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ═══════════════════════════════════  GROUP C  ═══════════════════════════════════ -->
+<div class="group-block">
+  <div class="group-header">
+    <h2><span class="letter">C.</span>Age &amp; vulnerability</h2>
+    <span class="count">6 categories</span>
+  </div>
+  <p class="group-note">Not every issue is ADA-covered. Older residents, children walking to school, and heat-vulnerable populations have safety and access needs that fall between traditional infrastructure categories. Legal framework is less consolidated but political salience is high &mdash; school-zone and senior-safety issues move budgets.</p>
+
+  <table class="taxonomy">
+    <thead>
+      <tr><th>Category</th><th>Routing</th><th>Legal framework</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="cat">Missing bench on route between senior housing &amp; community services</td>
+        <td class="route">Parks &amp; recreation + public works. Longer horizon &mdash; capital project.</td>
+        <td class="statute">Municipal Age-Friendly Community commitments (voluntary but publicly asserted)</td>
+      </tr>
+      <tr>
+        <td class="cat">Missing shade in heat-vulnerable neighborhood</td>
+        <td class="route">Urban forestry + public works. Climate-adaptation grant funding often available.</td>
+        <td class="statute">Municipal climate action plan commitments</td>
+      </tr>
+      <tr>
+        <td class="cat">Broken public drinking fountain (heat safety)</td>
+        <td class="route">Parks &amp; recreation or facilities division depending on location.</td>
+        <td class="statute">Public health code (state-specific)</td>
+      </tr>
+      <tr>
+        <td class="cat">Missing / closed public restroom access</td>
+        <td class="route">Municipal facilities + parks. Sensitive category &mdash; often intersects with unhoused-resident policy.</td>
+        <td class="statute">Public health code + municipal ADA plan</td>
+      </tr>
+      <tr>
+        <td class="cat">Missing crossing guard at school zone</td>
+        <td class="route">School district + municipal traffic engineer. Political-salience high; response is usually fast.</td>
+        <td class="statute">State education code + local school-zone ordinances</td>
+      </tr>
+      <tr>
+        <td class="cat">Dangerous school walk-route condition</td>
+        <td class="route">Public works + school district safe-routes-to-school coordinator (federally funded position in many districts).</td>
+        <td class="statute"><a href="https://www.transportation.gov/mission/health/safe-routes-school" target="_blank" rel="noopener">USDOT Safe Routes to School program</a></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ═══════════════════════════════════  GROUP D  ═══════════════════════════════════ -->
+<div class="group-block">
+  <div class="group-header">
+    <h2><span class="letter">D.</span>Housing &amp; shelter equity</h2>
+    <span class="count">4 categories</span>
+  </div>
+  <p class="group-note">Public housing conditions are federally regulated. Complaints route through HUD in addition to the local housing authority. This is the most legally consequential group after Group A &mdash; failures can trigger federal action, not just municipal response.</p>
+
+  <table class="taxonomy">
+    <thead>
+      <tr><th>Category</th><th>Routing</th><th>Legal framework</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="cat">Broken elevator in public housing</td>
+        <td class="route">Local Public Housing Authority (PHA) + HUD Field Office for the region.</td>
+        <td class="statute"><a href="https://www.hud.gov/program_offices/fair_housing_equal_opp" target="_blank" rel="noopener">Fair Housing Act</a> + Section 504 Rehabilitation Act</td>
+      </tr>
+      <tr>
+        <td class="cat">Broken heat/AC in public housing (safety threshold)</td>
+        <td class="route">PHA + HUD REAC (Real Estate Assessment Center) + local health inspector.</td>
+        <td class="statute">HUD Housing Quality Standards (HQS) + state warranty of habitability</td>
+      </tr>
+      <tr>
+        <td class="cat">Mold / habitability in public housing</td>
+        <td class="route">PHA + local health inspector + HUD Field Office if unremediated.</td>
+        <td class="statute">HUD HQS + state / municipal habitability code</td>
+      </tr>
+      <tr>
+        <td class="cat">Missing accessibility feature in public housing (grab bar, ramp, roll-in shower)</td>
+        <td class="route">PHA + HUD Section 504 coordinator.</td>
+        <td class="statute">Section 504 + <a href="https://www.hud.gov/topics/fair_housing" target="_blank" rel="noopener">Fair Housing Act design &amp; construction requirements</a></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ═══════════════════════════════════  GROUP E  ═══════════════════════════════════ -->
+<div class="group-block">
+  <div class="group-header">
+    <h2><span class="letter">E.</span>Transit equity</h2>
+    <span class="count">5 categories</span>
+  </div>
+  <p class="group-note">Transit authorities are quasi-public and route separately from municipal government. In New England: MBTA (MA), RIPTA (RI), Concord Area Transit (NH). ADA transit requirements are federal (49 CFR Part 37) &mdash; strong legal framing.</p>
+
+  <table class="taxonomy">
+    <thead>
+      <tr><th>Category</th><th>Routing</th><th>Legal framework</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="cat">Missing bus shelter at high-ridership stop</td>
+        <td class="route">Transit authority planning division. Capital project &mdash; longer horizon.</td>
+        <td class="statute">FTA Title VI equity analysis obligations</td>
+      </tr>
+      <tr>
+        <td class="cat">Broken bus shelter (heat/cold exposure)</td>
+        <td class="route">Transit authority maintenance + municipality if the shelter is city-owned.</td>
+        <td class="statute">FTA maintenance requirements + state accessibility code</td>
+      </tr>
+      <tr>
+        <td class="cat">Missing bench at transit stop</td>
+        <td class="route">Transit authority + municipality.</td>
+        <td class="statute">FTA Title VI (age &amp; disability access analyses)</td>
+      </tr>
+      <tr>
+        <td class="cat">ADA-inaccessible transit platform</td>
+        <td class="route">Transit authority + FTA compliance office.</td>
+        <td class="statute">49 CFR Part 37 + 49 CFR Part 38 (vehicle accessibility)</td>
+      </tr>
+      <tr>
+        <td class="cat">Broken wayfinding at transit hub</td>
+        <td class="route">Transit authority customer experience division.</td>
+        <td class="statute">FTA Title VI + ADA Standards § 703</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ═══════════════════════════════════  GROUP F  ═══════════════════════════════════ -->
+<div class="group-block">
+  <div class="group-header">
+    <h2><span class="letter">F.</span>Digital public infrastructure</h2>
+    <span class="count">5 categories</span>
+  </div>
+  <p class="group-note">The invisible failure class. Broken city forms, screen-reader-hostile PDFs, and English-only public websites lock residents out of services they&rsquo;re legally entitled to. Almost no civic-tech tool is systematically tracking these &mdash; owning this category is a moat. Legal framework: ADA Title II applies to state and local government websites (DOJ 2024 final rule); Section 508 applies to federal websites.</p>
+
+  <table class="taxonomy">
+    <thead>
+      <tr><th>Category</th><th>Routing</th><th>Legal framework</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="cat">Broken city website form (can&rsquo;t submit)</td>
+        <td class="route">Municipal IT + department that owns the form + ADA coordinator (if the break disproportionately affects assistive-tech users).</td>
+        <td class="statute"><a href="https://www.federalregister.gov/documents/2024/04/24/2024-07758/nondiscrimination-on-the-basis-of-disability-accessibility-of-web-information-and-services-of-state" target="_blank" rel="noopener">28 CFR Part 35 (2024 web-accessibility rule)</a></td>
+      </tr>
+      <tr>
+        <td class="cat">Screen-reader-inaccessible city PDF</td>
+        <td class="route">Municipal IT + department that authored the PDF + ADA coordinator.</td>
+        <td class="statute">28 CFR Part 35 (2024) + <a href="https://www.w3.org/TR/WCAG21/" target="_blank" rel="noopener">WCAG 2.1 AA</a></td>
+      </tr>
+      <tr>
+        <td class="cat">Missing translation on official signage / city website</td>
+        <td class="route">Municipal language-access officer + agency responsible for the service.</td>
+        <td class="statute">Title VI + EO 13166 (LEP access)</td>
+      </tr>
+      <tr>
+        <td class="cat">ADA violation on city website (missing alt text, low contrast, keyboard traps)</td>
+        <td class="route">Municipal ADA coordinator + web team.</td>
+        <td class="statute">28 CFR Part 35 (2024) + WCAG 2.1 AA</td>
+      </tr>
+      <tr>
+        <td class="cat">Missing plain-language version of important form</td>
+        <td class="route">Agency that owns the form + municipal ADA coordinator.</td>
+        <td class="statute">Plain Writing Act (federal); no explicit federal municipal analog but many state statutes require accessible-language versions for public benefits</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ═══════════════════════════════════  GROUP G  ═══════════════════════════════════ -->
+<div class="group-block">
+  <div class="group-header">
+    <h2><span class="letter">G.</span>Environmental justice aggregation</h2>
+    <span class="count">not a report type &mdash; a computed pattern</span>
+  </div>
+  <p class="group-note">Group G is not a category residents file. It&rsquo;s a computed aggregation: when multiple reports from Groups A&ndash;F concentrate in a single census tract at a disproportionate rate compared to the peer group, the pattern itself is a citable fact. Same evidence discipline as the Shame Index &mdash; the underlying reports are already verified; the pattern is arithmetic on top of them.</p>
+
+  <p><strong>Methodology (draft):</strong></p>
+  <ul>
+    <li>Aggregation unit: US Census tract (public boundary data; TIGER dataset).</li>
+    <li>Comparison basis: peer-tract group defined by population, median income, and racial composition (public census attributes; not reporter-provided).</li>
+    <li>Threshold for pattern flag: reports from Groups A&ndash;F per 1,000 residents exceed the 90th percentile of the peer-tract group over a rolling 180-day window.</li>
+    <li>Publication cadence: quarterly. Environmental-justice patterns are slow-moving; monthly noise would flag transient conditions.</li>
+    <li>Guardrails: no inference about individual reporters. Aggregation uses only report location, category, and public census attributes of the tract. Individual reporter attributes are never inputs.</li>
+  </ul>
+
+  <p>Grant relevance: environmental-justice funding streams (EPA EJ Small Grants, Justice40 flagged programs) require the kind of geographic + categorical evidence pattern that Group G is designed to produce. This is a direct application-support artifact for municipal or community-organization grant applications.</p>
+</div>
+
+<!-- ═══════════════════════════════════  ROLLUP  ═══════════════════════════════════ -->
+<h2 style="margin-top:52px;">Summary</h2>
+<p>32 categories across six report groups, plus one computed aggregation. Each report category has: a named responsible authority, a documented escalation path, and a cited legal framework. Every citation on this page links to the primary source (regulatory text, federal register entry, or authoritative agency page).</p>
+
+<div class="callout">
+  <p><strong>How this integrates with the rest of Fault Line:</strong> reports in these categories flow into the same community-verification, escalation, and demand-letter engine as physical infrastructure reports. The Shame Index reflects municipal performance on Groups A&ndash;F reports the same way it reflects performance on potholes. The <a href="rapid-response.html">Rapid Response Roll</a> celebrates authorities that resolve access &amp; equity reports fastest. The <a href="claim-by-state.html">per-state statutory table</a> gains additional columns for ADA, Fair Housing, and Section 504 as the taxonomy ships in code.</p>
+</div>
+
+<h2>What still needs to happen before this ships in the app</h2>
+<ol>
+  <li><strong>Category constants + reporting UI.</strong> Add the 27 new report categories to <code>src/constants/categories.ts</code> with appropriate severity axes and icons. Quick-report grid picks the highest-frequency subset (probably missing curb cut, ADA-blocked path, broken elevator, missing crossing guard).</li>
+  <li><strong>Routing dataset.</strong> A new versioned table (<code>src/services/routing/authorities-by-category.ts</code>) mapping each category to (a) primary responsible authority, (b) escalation authority, (c) federal-level fallback, all keyed by state/jurisdiction where the mapping varies.</li>
+  <li><strong>Letter-template extensions.</strong> Additional templates in the letter generator for ADA Title II, Fair Housing, Section 504, and Title VI framings. Statute dataset extends beyond the current defective-highway focus.</li>
+  <li><strong>Photo-optional reporting.</strong> Some access failures don&rsquo;t photograph well (a broken screen-reader flow, an English-only phone tree). The reporting UI needs a text-first or audio-first path for these categories.</li>
+</ol>
+
+<p>Full engineering scope is in <code>DEFERRED.md #25</code>.</p>
+
+<p class="disclaimer">Not legal advice. This taxonomy is a reference framework. Formal ADA, Fair Housing, and Title VI complaints must be filed through the applicable legal channel (DOJ, HUD, EPA, or state civil-rights office). Fault Line reports are documentation of the underlying facts and can be attached to formal complaints &mdash; the complaint is what triggers legal remedy.</p>
+
+</main>
+
+<footer>
+  <a href="index.html">Home</a> &middot;
+  <a href="features-plain.html">Features</a> &middot;
+  <a href="cities.html">For Cities</a> &middot;
+  <a href="about.html">About</a> &middot;
+  <a href="methodology.html">Methodology</a> &middot;
+  <a href="rapid-response.html">Rapid Response Roll</a> &middot;
+  <a href="access-equity.html">Access &amp; Equity</a> &middot;
+  <a href="privacy.html">Privacy</a> &middot;
+  <a href="terms.html">Terms</a> &middot;
+  <a href="blog.html">Blog</a> &middot;
+  <a href="faq.html">FAQ</a> &middot;
+  <a href="changelog.html">Changelog</a> &middot;
+  <a href="feedback.html">Feedback</a> &middot;
+  <a href="https://app.fault-line.dev" target="_blank" rel="noopener">Web app</a> &middot;
+  <a href="https://ko-fi.com/moonlitsociallabs" target="_blank" rel="noopener">Ko-fi</a>
+  <br><br>&copy; 2026 Moonlit Social Labs &middot; Fault Line is a product of Moonlit Social Labs
+</footer>
+
+</body>
+</html>

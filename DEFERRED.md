@@ -678,5 +678,77 @@ Rough estimate: ~1 week of engineering for #1 + #2; #3 is a pilot-city conversat
 
 The methodology page is out and immutable. When a public works director asks Fault Line "what does this mean for us?", the answer is now documented and grant-worthy on its own. The engineering can wait until a pilot conversation makes it urgent. Same posture as DEFERRED #23 — build the data plane when there's a real customer to consume it, not before.
 
+---
+
+## 25. Access & Equity Taxonomy — Category Constants, Routing Dataset, Letter Templates
+
+**Status:** Taxonomy design + public methodology page shipped at `access-equity.html` (2026-08-30). The page publicly commits 32 categories across 6 groups (Physical mobility / ADA · Sensory & cognitive · Age & vulnerability · Housing · Transit · Digital public infrastructure) plus 1 computed aggregation (Environmental justice). Each category is documented with named responsible authority, escalation path, and cited legal framework. **The categories are not yet enabled in the app UI.**
+
+**What's needed:** Four engineering deliverables, in dependency order.
+
+### 1. Extend `src/constants/categories.ts` with the 27 new categories
+
+The current file has 23 physical-infrastructure categories plus `other`. Access & Equity adds ~27 new keys — one per taxonomy row plus the aggregation flag. Each new entry needs:
+- `key` (typed enum value, add to `ReportCategory` in `src/types/`)
+- `label`, `icon` (MaterialCommunityIcons name)
+- `description`
+- `severityDimensions` — some access categories don't use `size` (a missing curb cut has no dimensions); most use `hazard` + `urgency`
+- `quickReportEnabled` — for the 10-second quick-report grid. Recommend enabling: `missing_curb_cut`, `ada_blocked_path`, `broken_elevator_public_housing`, `missing_crossing_guard`. Everything else lives in the full form.
+
+Also add a new group taxonomy so the reporting UI can visually group them.
+
+### 2. Versioned routing dataset
+
+New file: `src/services/routing/authorities-by-category.ts` (mirrors the pattern already established in `src/services/statutes/`). Structure per entry:
+```
+{
+  categoryKey: 'missing_curb_cut',
+  primaryAuthorityType: 'municipal_ada_coordinator',
+  escalationAuthorityType: 'state_ada_compliance',
+  federalFallback: { agency: 'DOJ Civil Rights', url: 'https://civilrights.justice.gov/report/' },
+  legalFramework: { statute: '28 CFR Part 35', url: '...' },
+  jurisdictionOverrides: { /* per-state adjustments */ },
+  verificationStatus: 'pending-review',
+  verifiedBy: null, verifiedAt: null, nextReviewAt: null
+}
+```
+
+Same chain-of-custody as the statute dataset — every entry starts as `pending-review`, requires a named qualified reviewer (attorney or credentialed civil-rights researcher) to flip to `verified`. Companion `README.md` documenting the review protocol.
+
+Practical seeding: MA / RI / NH pilot states get concrete municipal_ada_coordinator + state_ada_compliance authorities looked up during pilot-city onboarding. Fallback for unmapped jurisdictions is the federal agency (DOJ for ADA Title II, HUD for Fair Housing, EPA for environmental justice).
+
+### 3. Extend letter templates
+
+The current letter generator (`src/services/legalGenerator.ts`) targets state defective-highway statutes. Access & Equity reports need distinct letter templates:
+- **ADA Title II notice-of-violation letter** — cites 28 CFR Part 35, program-access requirements, requests remediation within specified timeframe, notes DOJ complaint pathway.
+- **Fair Housing / Section 504 letter** — cites FHA + Section 504, applies to public housing categories, notes HUD complaint pathway.
+- **Title VI language-access letter** — cites Title VI + EO 13166, applies to federally-funded services, notes agency Civil Rights office.
+- **State ADA law letter** — where a state has stronger ADA law than the federal floor (some do), cite the state statute.
+
+Each template gets the same `pending-review` chain of custody as the state defective-highway templates. Unreviewed templates prepend the same banner the current letter engine already does.
+
+### 4. Photo-optional reporting flow
+
+Some Access & Equity categories don't photograph well:
+- English-only phone tree (audio evidence, not photo)
+- Screen-reader-inaccessible PDF (screenshot of the failure, or a screen-reader output paste)
+- Broken city form (browser recording, or a text description of the failure)
+- Missing translation on official signage (photo works — this one's fine)
+
+The reporting UI needs an alternate flow: text-first or audio-first submission. Photo remains preferred where possible but is not blocking.
+
+### Effort
+
+Rough estimate: ~2 weeks of engineering for #1 + #2 + #3; #4 is a UI refactor that touches the report submission flow and takes another week. Realistically nothing ships live until at least one pilot city commits to using the taxonomy (same gating dependency as DEFERRED #24) — pilot conversations should surface which categories they most want first, and those get prioritized.
+
+### Why deferred
+
+The taxonomy is out. It's what a public works director, ADA coordinator, transit advocate, or grant reviewer can consult *today*. Engineering the plumbing before there's a pilot city committed to using any of the categories would be building for an imaginary customer. The taxonomy itself is the deliverable that unlocks the pilot conversations. When a pilot city says "we'd use the ADA categories first," we build those first.
+
+### Grant relevance
+
+Access & Equity is directly fundable by equity-focused civic-tech funders (Ford Foundation Civic Engagement, MacArthur Foundation, Rita Allen, Robert Wood Johnson for public-health-adjacent categories). The taxonomy page + one pilot city partnership on ADA categories is a strong Tier A application skeleton on its own. See `GRANTS.md §2` (asset table) and `§4` (funder tiers).
+
+
 
 
