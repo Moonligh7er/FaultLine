@@ -632,4 +632,51 @@ SELECT cron.alter_job(
 
 **Why deferred:** No pilot city has requested a demo yet. This becomes urgent the day a public works director asks "does it actually work against our 311?" — at which point being able to answer "yes, we tested it last week, here's the log" is the difference between a signed pilot and a lost lead.
 
+---
+
+## 24. Rapid Response Roll — Underlying Data Model & Computation
+
+**Status:** Design + public methodology page shipped at `rapid-response.html` (2026-08-30). The page publicly commits the eligibility criteria, minimum-data thresholds, ranking weights, and non-gaming guardrails. **No live listings yet** — the data model to detect and rank rapid responses does not exist in the current schema.
+
+**What's needed:** Three engineering prereqs, in dependency order.
+
+### 1. Extend `escalation_log` (or add a `resolutions` table) with resolution-event fields
+
+Every "this got fixed" event needs a structured row with:
+- `resolved_at` (timestamp)
+- `resolution_source` — enum: `community_repeat_photo` | `authority_ticket_status` | `both`. Authority self-attestation alone is not sufficient for Roll eligibility per methodology §2.
+- `verified_by_reporter_ids` (array of resident user IDs who submitted repeat-photo verification)
+- `responsible_department_slug` — normalized department identifier, joins to a new `departments` table (per-city crew mappings, populated during pilot-city onboarding)
+- `reopen_check_scheduled_at` — 180-day timer. If the same cluster/GPS reopens within that window, `resolution_durable = false`.
+- `severity_at_escalation` — snapshot of the highest-severity report in the cluster at escalation time (source of truth for eligibility — not authority reclassification, per methodology §8).
+
+Migration sketch: `supabase/migration_018_resolution_events.sql`.
+
+### 2. Ship community re-photo verification in the app
+
+The current app has a "before/after photo" concept in the feature grid but no first-class verification flow. What's needed:
+- When a report enters "authority claims resolved" state, nearby users get a proximity-aware notification: "A hazard you're near was just marked fixed. Confirm?"
+- Photo submission at the same GPS (within 20 m) with categorization: `confirmed_fixed` | `still_present` | `worse` | `different_hazard`.
+- Two `confirmed_fixed` re-photos from distinct reporters is the durability threshold.
+- One `still_present` or `worse` re-photo reopens the report and drops any Roll eligibility for that resolution event.
+
+### 3. One pilot city's department/crew jurisdictional mapping
+
+The Roll needs to attribute resolutions to specific departments (Cambridge DPW → East Cambridge crew, etc.), not just to a city. Cities have this data internally (work-order systems assign tickets to crews) but do not publish it in a standardized way. Getting one pilot city to share this mapping during onboarding — even as a static JSON we manually maintain — is the unlock.
+
+### Computation and publication schedule
+
+- **Nightly:** recompute `resolution_events` for the trailing 90-day window; check reopen timers; update department-level medians.
+- **Weekly:** publish the Roll (dampens single-week noise; matches Shame Index cadence per `methodology.html`).
+- **On threshold crossing:** first time a department qualifies, fire the notification email to the authority contact of record (per methodology §7) — this is the pilot-city relationship win.
+
+### Effort
+
+Rough estimate: ~1 week of engineering for #1 + #2; #3 is a pilot-city conversation, not engineering. Realistically nothing ships live until a pilot city agrees to the crew mapping — that gates everything else.
+
+### Why deferred
+
+The methodology page is out and immutable. When a public works director asks Fault Line "what does this mean for us?", the answer is now documented and grant-worthy on its own. The engineering can wait until a pilot conversation makes it urgent. Same posture as DEFERRED #23 — build the data plane when there's a real customer to consume it, not before.
+
+
 
