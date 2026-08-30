@@ -126,6 +126,7 @@ main .lede { font-family: var(--ff-body); font-size: 18px; line-height: 1.6; col
     <a href="blog.html">Blog</a>
     <a href="about.html">About</a>
     <a href="faq.html">FAQ</a>
+    <a href="rapid-response.html">Rapid Response Roll</a>
     <a href="changelog.html" aria-current="page">Changelog</a>
     <a href="feedback.html">Feedback</a>
     <a href="https://ko-fi.com/moonlitsociallabs" target="_blank" rel="noopener" class="nav-kofi">Support on Ko-Fi</a>
@@ -135,11 +136,23 @@ main .lede { font-family: var(--ff-body); font-size: 18px; line-height: 1.6; col
 
 <main>
 <h1>What we've <em>shipped</em>.</h1>
-<p class="updated">Last updated · 2026-08-29 · Newest first</p>
+<p class="updated">Last updated · 2026-08-30 · Newest first</p>
 
 <p class="lede">Fault Line is built in the open by one person. This is the running log of what's shipped, versioned honestly. If something isn't listed here, it hasn't happened yet &mdash; a running theme in civic tech is to promise more than gets shipped, and this page is our defense against that pattern.</p>
 
 <!-- ─────────────────────────────  AUGUST 2026  ───────────────────────────── -->
+<div class="entry">
+  <p class="entry-date">2026-08-30</p>
+  <p class="entry-title">Rapid Response Roll — positive-feedback layer, design committed in public</p>
+  <ul>
+    <li><strong>New <a href="rapid-response.html">/rapid-response</a> page.</strong> Fault Line was leaning too adversarial. Every civic-tech tool that loses the internal champions inside city government eventually flatlines. The Roll is a public, measured record of the departments and crews that resolve reported hazards <em>fastest</em> — same evidence discipline as the Shame Index, opposite polarity.</li>
+    <li><strong>Methodology committed before the data exists.</strong> Same pattern as the Shame Index: eligibility criteria (community-verified reports, independently confirmed fix, peer-normalized speed, non-trivial severity), minimum-data threshold (10+ resolutions in 90 days across 3+ categories from 15+ reporters), ranking weights (50% median resolution + 25% peer delta + 15% severity-weighted rate + 10% follow-up durability), and five explicit non-gaming guardrails.</li>
+    <li><strong>Sample display labeled SAMPLE.</strong> No department currently carries a live listing; the sample table illustrates the format.</li>
+    <li><strong>Underlying data model scoped in DEFERRED #24</strong> — three engineering prereqs before live listings can appear: escalation-log resolution schema, community re-photo verification feature, one pilot city&rsquo;s department/crew jurisdictional mapping.</li>
+    <li>Nav link added across all public pages so residents and pilot cities can find it.</li>
+  </ul>
+</div>
+
 <div class="entry">
   <p class="entry-date">2026-08-29</p>
   <p class="entry-title">Launch-readiness pass: honesty layer, city page, statute-review architecture</p>
