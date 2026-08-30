@@ -132,6 +132,7 @@ main .lede { font-family: var(--ff-body); font-size: 18px; line-height: 1.6; col
     <a href="briefing-packets.html">Briefings</a>
     <a href="corridor-reports.html">Corridors</a>
     <a href="whistleblower.html">Insider</a>
+    <a href="business-property.html">Commercial</a>
     <a href="changelog.html" aria-current="page">Changelog</a>
     <a href="feedback.html">Feedback</a>
     <a href="https://ko-fi.com/moonlitsociallabs" target="_blank" rel="noopener" class="nav-kofi">Support on Ko-Fi</a>
@@ -146,6 +147,18 @@ main .lede { font-family: var(--ff-body); font-size: 18px; line-height: 1.6; col
 <p class="lede">Fault Line is built in the open by one person. This is the running log of what's shipped, versioned honestly. If something isn't listed here, it hasn't happened yet &mdash; a running theme in civic tech is to promise more than gets shipped, and this page is our defense against that pattern.</p>
 
 <!-- ─────────────────────────────  AUGUST 2026  ───────────────────────────── -->
+<div class="entry">
+  <p class="entry-date">2026-08-30</p>
+  <p class="entry-title">Access &amp; Equity categories wired into the app + Commercial Property Reporting design</p>
+  <ul>
+    <li><strong>39 Access &amp; Equity categories added to <code>src/constants/categories.ts</code></strong> (and the <code>ReportCategory</code> type in <code>src/types/index.ts</code>). Covers Groups A&ndash;F from the <a href="access-equity.html">taxonomy page</a>: physical mobility / ADA, sensory &amp; cognitive access, age &amp; vulnerability, housing equity, transit equity, and digital public infrastructure. Four of the 39 are enabled in the quick-report grid: missing curb cut, ADA-blocked path, broken elevator in public housing, missing crossing guard. Everything else lives in the full-form category picker.</li>
+    <li>Type union expands from 24 to 63 categories. <code>tsc --noEmit</code> clean on the module.</li>
+    <li><strong>New <a href="business-property.html">/business-property</a> page</strong> committing the design for commercial-property reporting. This is the biggest scope-adjacent expansion in the roadmap and the one that would most easily corrupt the platform&rsquo;s evidence discipline if built wrong. Design constraints are the whole feature: physical / infrastructural conditions only (never subjective), photo required (no text-only submissions), aggregate-only publication (individual reports never publish; property named after 5+ reports from 3+ reporters over 90 days; chain named after 15+ reports across 5+ locations over 180 days), 14-day right-of-reply with append-response, delisting on remediation, reporter attestation with anti-SLAPP-adjacent liability language, reporter-reputation tracking (internal only), competitive-reporter enhanced-review flag, ADA Title III legal anchor.</li>
+    <li><strong>DEFERRED #30 (HIGH PRIORITY)</strong> added at the top of the file: wire the routing dataset into <code>legalGenerator.ts</code>. ~15-line change, half-afternoon effort, ready before a pilot city commits so the plumbing is tested end-to-end from day one.</li>
+    <li><strong>DEFERRED #31</strong> scopes the commercial-property engineering deliverables: report subtype in schema, property-ownership lookup service, aggregation + right-of-reply pipeline, chain-identifier database, reporter-reputation tracking, ADA Title III standards dataset (versioned like the statute dataset), attestation legal review.</li>
+  </ul>
+</div>
+
 <div class="entry">
   <p class="entry-date">2026-08-30</p>
   <p class="entry-title">Public-Employee Reporting — honest scope, honest legal-protection landscape, honest technical claims</p>
