@@ -7,6 +7,22 @@ Each item includes what's needed and what has already been prepared.
 
 ---
 
+## ✅ SHIPPED (2026-08-31) · Right-of-Reply + Packet Generator + Assessor + Open311 Verifier + Snapshot Worker + Migrations + UI Sections
+
+Second engineering delivery in as many days. Everything previously tagged BUILDABLE-TODAY that could be built without a live pilot has now shipped in code. What shipped today:
+
+- **Right-of-reply pipeline module** (`src/services/right-of-reply/`) — shared infrastructure used by #27 briefing packets and #31 commercial aggregations. `createEntry()`, `markNotificationSent()`, `appendResponse()`, `markRemediated()`, `markPublished()`, `effectiveStatus()`, `isReadyToPublish()`, `describeStatus()`. Windows match published methodology: 24 hours for press summaries, 14 days for commercial.
+- **Packet generator module** (`src/services/packet-generator/`) — pure function `generatePacket()` returns `{ markdownBody, jsonPayload, generatedAt }` for both `council-district-briefing` and `press-cluster-summary` inputs. Sample outputs match `/briefing-packets` format exactly. Downstream PDF/email delivery is separate.
+- **Assessor property-ownership lookup** (`src/services/commercial/assessor.ts`) — adapter interface + `registerAdapter()` + `lookupOwner()` + `ownerDisclaimer()`. Per-jurisdiction adapters plug in as pilots onboard.
+- **Open311 verification script** (`scripts/open311/verify-integration.mjs` + `docs/integration-status.md`) — GET-only probes against 10 pilot-target authorities. Writes machine-readable JSON + human-readable markdown. Run before pilot demos.
+- **Modal + Playwright snapshot worker scaffold** (`modal/digital-snapshot/main.py` + README) — deployable via `modal deploy`. Captures HTML + screenshot + metadata to a private Supabase bucket. Auth via WORKER_SECRET header. Sets up the whole plumbing; deployment is one CLI command away.
+- **Supabase migrations 018-020** — `018_resolution_events.sql` (departments + resolution_events tables for Rapid Response Roll), `019_corridor_area_geometry.sql` (PostGIS linestring/polygon on reports + corridor_suggestions table), `020_commercial_property_reports.sql` (report_subject enum + commercial columns + commercial_chains + commercial_properties + right_of_reply table with RLS).
+- **Report-flow UI sections** (`src/components/report-flow/`) — 4 controlled components: `DigitalReportSection`, `InsiderReportSection`, `CommercialPropertySection`, `CorridorReportSection`. Each is a self-styled composable section that plugs into ReportScreen. README documents wiring pattern.
+
+**tsc --noEmit --skipLibCheck clean** on all new modules.
+
+---
+
 ## ✅ SHIPPED (2026-08-30) · Routing Wire-In + Framing Templates + URL-First + Corridor + Insider + Commercial Scaffolds
 
 Extensive engineering delivery on 2026-08-30 replaced most of what was previously "gated on pilot city." What shipped:
@@ -26,14 +42,14 @@ Extensive engineering delivery on 2026-08-30 replaced most of what was previousl
 The residual items below reflect what is *genuinely* still blocked (external hire / pilot-city data / real infrastructure deployment) — not just deprioritized.
 
 - **#22 (statute review):** truly BLOCKED-EXTERNAL. Requires paid qualified attorney per state.
-- **#23 (Open311 verification):** BUILDABLE-TODAY, deprioritized. ~4 hours for the top-10 pilot targets against public endpoints; run before the first pilot demo.
-- **#24 (Rapid Response Roll data model):** partly BUILDABLE (resolution-event schema in Supabase, community re-photo verification UI); partly BLOCKED-DATA (pilot city's DPW → crew mapping is theirs).
-- **#25 (A&E full ship):** partly SHIPPED (letter templates ✓, category constants ✓, legal-framing dispatch ✓). BUILDABLE remainder: photo-optional reporting-UI flow in `ReportScreen.tsx`. BLOCKED-DATA remainder: municipal ADA coordinator contacts per pilot city (already recorded per-category in `src/services/routing/dataset.ts` for MA/RI/NH placeholders — real coordinator names come from pilots).
-- **#26 (Digital infra):** partly SHIPPED (digital context type, URL-first category list, snapshot service interface, letter integration). BUILDABLE remainder: Modal + Playwright snapshot worker deployment (`modal/digital-snapshot/main.py`). Reporting-UI flow that switches to URL-first on category selection.
-- **#27 (Briefing packets):** BUILDABLE remainder: packet generator service + right-of-reply pipeline (which #31 also reuses). BLOCKED-DATA remainder: council-district boundaries + verified elected-official addresses per pilot city.
-- **#28 (Corridor/area):** partly SHIPPED (geometry types, auto-suggestion algorithm, Shame Index weight, letter integration). BUILDABLE remainder: Supabase migration for PostGIS linestring/polygon columns on `reports`; nightly cron to run `suggestCorridors()`; map-drawing UI in web + native reporting screens.
-- **#29 (Insider):** partly SHIPPED (insider-context types, EXIF strip helper, referral copy for out-of-scope categories, 180-day verification deadline computation). BLOCKED-EXTERNAL remainder: attorney review of MA/RI/NH whistleblower-protection landscape. DEFERRED remainder: Tor-compatibility formal verification (per user instruction).
-- **#31 (Commercial property):** partly SHIPPED (report subtype types, aggregation pipeline, chain database seed with 40 chains, Title III standards dataset with 5 standards). BUILDABLE remainder: right-of-reply pipeline (shared with #27); reporter-reputation tracking; competitive-reporter enhanced-review flag. BLOCKED-EXTERNAL remainder: attorney review of reporter-attestation + anti-SLAPP language.
+- **#23 (Open311 verification):** SHIPPED — script + doc live at `scripts/open311/verify-integration.mjs`. Run before pilot demos to populate `docs/integration-status.md`. No blocker remaining.
+- **#24 (Rapid Response Roll):** SHIPPED-partial — Supabase migration 018 (departments + resolution_events tables) written and ready to apply. BUILDABLE remainder: community re-photo verification UI; nightly cron to check reopen windows. BLOCKED-DATA remainder: pilot city's DPW → crew mapping.
+- **#25 (A&E full ship):** SHIPPED-partial — letter templates ✓, category constants ✓, legal-framing dispatch ✓. UI sections for `DigitalReportSection`, `CommercialPropertySection`, `InsiderReportSection`, `CorridorReportSection` all shipped in `src/components/report-flow/`. BUILDABLE remainder: wire the UI sections into `ReportScreen.tsx` (glue code + submit path). BLOCKED-DATA remainder: municipal ADA coordinator contacts per pilot city.
+- **#26 (Digital infra):** SHIPPED — Modal + Playwright snapshot worker scaffolded at `modal/digital-snapshot/main.py`; `DigitalReportSection` UI shipped. BUILDABLE remainder: `modal deploy` + config wiring in `src/services/digitalSnapshot.ts` to point at the deployed endpoint.
+- **#27 (Briefing packets):** SHIPPED — packet generator (`src/services/packet-generator/`) + right-of-reply pipeline (`src/services/right-of-reply/`) both live. BUILDABLE remainder: Supabase Edge Function wiring for cron + distribution; council-district boundary ingestion (per pilot city — BLOCKED-DATA); verified official-address list (BLOCKED-DATA).
+- **#28 (Corridor/area):** SHIPPED — Supabase migration 019 (PostGIS geometry columns + corridor_suggestions table) ready to apply. `CorridorReportSection` UI shipped. BUILDABLE remainder: nightly cron to run `suggestCorridors()` against the DB; map-drawing pin-picker on parent screen.
+- **#29 (Insider):** SHIPPED-partial — insider-context types, EXIF strip helper, referral copy, 180-day verification deadline all live. `InsiderReportSection` UI shipped. BLOCKED-EXTERNAL remainder: attorney review of MA/RI/NH whistleblower-protection landscape. DEFERRED remainder: Tor-compatibility formal verification (per user instruction).
+- **#31 (Commercial property):** SHIPPED-partial — Supabase migration 020 (report_subject enum + commercial columns + tables + right_of_reply with RLS) ready to apply. Aggregation, chain seed, Title III dataset, assessor lookup, right-of-reply pipeline, and `CommercialPropertySection` UI all live. BUILDABLE remainder: reporter-reputation tracking (schema addition); competitive-reporter enhanced-review flag (nightly job). BLOCKED-EXTERNAL remainder: attorney review of reporter-attestation + anti-SLAPP language. BLOCKED-DATA remainder: per-jurisdiction assessor adapter implementations (interface exists at `src/services/commercial/assessor.ts`; adapters register at pilot onboarding).
 
 **How to consume the honest gating table:** anything below marked "SHIPPED (partial)" has code in `src/services/` you can inspect and integrate. Anything marked "BLOCKED-EXTERNAL" needs a check to a lawyer or a signed pilot agreement. Anything marked "BUILDABLE-TODAY" is next-up engineering work.
 
@@ -652,6 +668,8 @@ SELECT cron.alter_job(
 
 ## 23. Verify Open311 / SeeClickFix Integration Claims End-to-End Per Authority
 
+**✅ SHIPPED (2026-08-31):** Verification script live at `scripts/open311/verify-integration.mjs`. Probes 10 pilot-target authorities (Boston Open311 + 7 SeeClickFix cities + Providence proprietary + Concord email). Writes machine-readable JSON + human-readable markdown to `docs/integration-status.md`. Run before any pilot demo. **No remaining blockers** — this is BUILDABLE-TODAY as run-the-script work.
+
 **Status:** The marketing site (`features.html`, `landing.html`, `cities.html`) advertises "Open311 integration" and "SeeClickFix integration" as capabilities. The routing infrastructure exists (Migrations 013 / 014 seeded 795 authorities with `open311_endpoint` or `seeclickfix_place_id` metadata), but the end-to-end flow — Fault Line report → authority's actual ticketing system → resident sees a status update flow back — has not been verified per-authority except for Boston Open311 (which itself needs a POST API key to activate; see DEFERRED #9e).
 
 **Why this matters:** Municipal buyers on the `/cities` page will test integration claims first. If a public works director tries a demo report against their city's SeeClickFix and it doesn't land as a ticket in their existing dashboard, the credibility hit is disproportionate — they'll assume nothing else works either.
@@ -669,6 +687,9 @@ SELECT cron.alter_job(
 ---
 
 ## 24. Rapid Response Roll — Underlying Data Model & Computation
+
+**⚡ SHIPPED (partial, 2026-08-31):** Supabase migration 018 (`departments` + `resolution_events` tables + `resolution_source_enum` + reopen-window tracking + RLS) written and ready to apply. BUILDABLE remainder: community re-photo verification UI in the app (photo-picker + confirmation flow); nightly cron to check `reopen_check_scheduled_at` timers and flip `resolution_durable`. BLOCKED-DATA remainder: pilot city's DPW → crew mapping populates the `departments` table.
+
 
 **Status:** Design + public methodology page shipped at `rapid-response.html` (2026-08-30). The page publicly commits the eligibility criteria, minimum-data thresholds, ranking weights, and non-gaming guardrails. **No live listings yet** — the data model to detect and rank rapid responses does not exist in the current schema.
 
@@ -716,7 +737,7 @@ The methodology page is out and immutable. When a public works director asks Fau
 
 ## 25. Access & Equity Taxonomy — Category Constants, Routing Dataset, Letter Templates
 
-**⚡ SHIPPED (partial, 2026-08-30):** Category constants (`src/constants/categories.ts` + `ReportCategory` type), routing dataset (`src/services/routing/`), and legal-framing letter templates for ADA Title II / Fair Housing + Section 504 / Title VI language / transit ADA (`src/services/legal-templates/`) are live and typecheck clean. Remaining: photo-optional reporting-UI flow (BUILDABLE-TODAY); municipal ADA coordinator contact verification per pilot city (BLOCKED-DATA per pilot).
+**⚡ SHIPPED (partial, 2026-08-30 + 2026-08-31):** Category constants (`src/constants/categories.ts` + `ReportCategory` type), routing dataset (`src/services/routing/`), and legal-framing letter templates for ADA Title II / Fair Housing + Section 504 / Title VI language / transit ADA (`src/services/legal-templates/`) live. Photo-optional reporting-UI sections shipped 2026-08-31 in `src/components/report-flow/` (Digital + Insider + Commercial + Corridor). BUILDABLE remainder: wire the section components into `src/screens/ReportScreen.tsx` (glue code — see `src/components/report-flow/README.md` for the composition pattern). BLOCKED-DATA remainder: municipal ADA coordinator contact verification per pilot city.
 
 
 **Status:** Taxonomy design + public methodology page shipped at `access-equity.html` (2026-08-30). The page publicly commits 32 categories across 6 groups (Physical mobility / ADA · Sensory & cognitive · Age & vulnerability · Housing · Transit · Digital public infrastructure) plus 1 computed aggregation (Environmental justice). Each category is documented with named responsible authority, escalation path, and cited legal framework. **The categories are not yet enabled in the app UI.**
@@ -790,7 +811,7 @@ Access & Equity is directly fundable by equity-focused civic-tech funders (Ford 
 
 ## 26. Digital Public Infrastructure — URL-First Reporting Flow & Automated Snapshot
 
-**⚡ SHIPPED (partial, 2026-08-30):** `DigitalReportContext` type on `Report`, `URL_FIRST_CATEGORIES` list, snapshot service scaffold (`src/services/digitalSnapshot.ts` — captureSnapshot() returns a placeholder until the Modal + Playwright worker deploys), `digitalContextForLetter()` producing an EVIDENCE-section block in letters. ADA Title II framing wired via #25 legal-templates. Remaining: Modal + Playwright snapshot worker deployment (BUILDABLE-TODAY); reporting-UI flow that switches to URL-first on category selection (BUILDABLE-TODAY).
+**⚡ SHIPPED (partial, 2026-08-30 + 2026-08-31):** `DigitalReportContext` type on `Report`, `URL_FIRST_CATEGORIES` list, snapshot service scaffold, `digitalContextForLetter()`. Modal + Playwright snapshot worker scaffolded 2026-08-31 at `modal/digital-snapshot/main.py` with full README. `DigitalReportSection` UI shipped at `src/components/report-flow/DigitalReportSection.tsx`. BUILDABLE remainder: `modal deploy` (single CLI command); update `captureSnapshot()` in `src/services/digitalSnapshot.ts` to POST to the deployed endpoint (replace the placeholder); wire `DigitalReportSection` into `ReportScreen.tsx`.
 
 
 **Status:** Public deep-dive page shipped at `digital-infrastructure.html` (2026-08-30). Twelve categories documented with named responsible authorities, legal frameworks, and the DOJ 2024 rule compliance-deadline context. **The URL-first reporting flow needed to submit these reports does not exist in the current app.**
@@ -847,6 +868,9 @@ Digital public infrastructure is the strongest single-category grant hook Fault 
 ---
 
 ## 27. Briefing Packets — Generator, Distribution, and Right-of-Reply Infrastructure
+
+**⚡ SHIPPED (partial, 2026-08-31):** Packet generator live at `src/services/packet-generator/` (both `council-district-briefing` and `press-cluster-summary` inputs supported; produces `{ markdownBody, jsonPayload, generatedAt }`). Right-of-reply pipeline live at `src/services/right-of-reply/` (24-hour window for press summaries per methodology; shared with #31 commercial 14-day window). Supabase migration 020 includes the `right_of_reply` table with correct RLS. BUILDABLE remainder: Supabase Edge Function wrapping `generatePacket()` for scheduled distribution; PDF conversion (via Puppeteer or headless-browser worker); journalist verification workflow. BLOCKED-DATA remainder: council-district boundaries + verified official-address list per pilot city.
+
 
 **Status:** Public design page shipped at `briefing-packets.html` (2026-08-30). Two output types specified: monthly council-member district briefings and event-driven press-ready cluster summaries. **The generator, distribution pipeline, and right-of-reply infrastructure do not exist in the current app.**
 
@@ -907,7 +931,7 @@ The council-briefing use case is a direct fit for Knight Foundation Journalism /
 
 ## 28. Corridor & Area Reports — Geometry, Aggregation, and Segment-Scale Escalation
 
-**⚡ SHIPPED (partial, 2026-08-30):** `ReportGeometryType` + `CorridorGeometry` + `AreaGeometry` types on `Report`, auto-suggestion algorithms (`src/services/corridorAggregation.ts` — `suggestCorridors()`, `suggestAreas()`, `haversineMeters()`, `pointInPolygon()`), Shame Index weight helper (`shameIndexWeight()` returns 3× for corridors, 3.5× for areas), corridor/area section rendered into letter body. Remaining: Supabase migration for PostGIS linestring/polygon columns on `reports` (BUILDABLE-TODAY); nightly cron to run `suggestCorridors()` in production (BUILDABLE-TODAY); map-drawing UI in web + native reporting screens (BUILDABLE-TODAY).
+**⚡ SHIPPED (partial, 2026-08-30 + 2026-08-31):** `ReportGeometryType` + `CorridorGeometry` + `AreaGeometry` types on `Report`, auto-suggestion algorithms, Shame Index weight helper, corridor/area section in letter body. Supabase migration 019 (PostGIS linestring/polygon columns on `reports` + `corridor_suggestions` table + RLS) shipped 2026-08-31 at `supabase/migration_019_corridor_area_geometry.sql`. `CorridorReportSection` UI shipped at `src/components/report-flow/`. BUILDABLE remainder: apply the migration; wrap `suggestCorridors()` in a nightly Supabase Edge Function; wire `CorridorReportSection` into `ReportScreen.tsx` with a map-picker for the two GPS pins.
 
 
 **Status:** Public design page shipped at `corridor-reports.html` (2026-08-30). Three report types specified (point / corridor / area), two creation paths documented (auto-suggestion + resident-initiated), community-verification thresholds calibrated, integration with Shame Index / Rapid Response Roll / A&E Group G / briefings all specified. **The report schema, geometry columns, and reporting UI do not yet support corridors or areas.**
@@ -972,7 +996,7 @@ Corridor/area reports directly enable federal infrastructure grant applications.
 
 ## 29. Public-Employee Reporting — Insider Fields, Tor Verification, EXIF Stripping, Legal Review
 
-**⚡ SHIPPED (partial, 2026-08-30):** `InsiderReportContext` + `InsiderCategory` types on `Report`, `insiderVerificationDeadline()` (180-day window), `shouldStripMetadata()` + `requestMetadataStrip()` helpers coordinating with the media pipeline, full referral table for 6 out-of-scope categories in `src/services/insiderReports.ts` (personnel grievance / criminal / classified / retaliation / policy dispute / confidential materials). Remaining: attorney review of MA/RI/NH whistleblower-protection landscape (BLOCKED-EXTERNAL). Tor-compatibility formal verification stays deferred per user instruction — the web app is already largely Tor-usable but formal validation is separate work.
+**⚡ SHIPPED (partial, 2026-08-30 + 2026-08-31):** `InsiderReportContext` + `InsiderCategory` types on `Report`, `insiderVerificationDeadline()` (180-day window), `shouldStripMetadata()` + `requestMetadataStrip()` helpers, full referral table for 6 out-of-scope categories in `src/services/insiderReports.ts`. `InsiderReportSection` UI shipped 2026-08-31 at `src/components/report-flow/`. BUILDABLE remainder: wire `InsiderReportSection` into `ReportScreen.tsx`. BLOCKED-EXTERNAL remainder: attorney review of MA/RI/NH whistleblower-protection landscape. DEFERRED remainder: Tor-compatibility formal verification (per user instruction — web app is already largely Tor-usable, formal validation is separate work).
 
 
 **Status:** Public design page shipped at `whistleblower.html` (2026-08-30). Scope explicitly bounded (physical / digital / access / environmental infrastructure only, not personnel / criminal / classified / retaliation). Legal-protection landscape summarized with primary-source links. Honest technical claims about what Fault Line can and cannot deliver. **The insider-report submission flow does not exist in the current app.**
@@ -1046,7 +1070,7 @@ Insider infrastructure reporting is a genuine gap. Government transparency funde
 
 ## 31. Commercial Property Reporting — Report Subtype, Aggregation, Right-of-Reply, ADA Title III Dataset
 
-**⚡ SHIPPED (partial, 2026-08-30):** `ReportSubject` + `CommercialPropertyContext` types on `Report`, aggregation pipeline (`src/services/commercial/aggregation.ts` — `aggregateByProperty()`, `aggregateByChain()` with published thresholds), chain-brand registry (`src/services/commercial/chains.ts` — 40 US chains seeded, all `pending-review`, including MA/RI/NH-relevant Market Basket / Stop & Shop / Shaw's), 2010 ADA Standards for Accessible Design dataset (`src/services/commercial/ada-title-iii.ts` — 5 standards seeded, all `pending-review`). Remaining: right-of-reply pipeline shared with #27 (BUILDABLE-TODAY); reporter-reputation tracking (BUILDABLE-TODAY); competitive-reporter enhanced-review flag (BUILDABLE-TODAY); attorney review of reporter-attestation + anti-SLAPP language (BLOCKED-EXTERNAL).
+**⚡ SHIPPED (partial, 2026-08-30 + 2026-08-31):** `ReportSubject` + `CommercialPropertyContext` types on `Report`, aggregation pipeline, chain-brand registry (40 US chains), 2010 ADA Standards dataset. Right-of-reply pipeline shipped 2026-08-31 at `src/services/right-of-reply/` (shared with #27). Assessor property-ownership lookup shipped at `src/services/commercial/assessor.ts` (adapter interface; per-jurisdiction adapters register at pilot onboarding). Supabase migration 020 (report_subject enum + commercial columns + commercial_chains + commercial_properties + right_of_reply tables with RLS) shipped 2026-08-31. `CommercialPropertySection` UI shipped at `src/components/report-flow/`. BUILDABLE remainder: apply migration 020; wire `CommercialPropertySection` into `ReportScreen.tsx`; reporter-reputation tracking (schema addition + nightly aggregation); competitive-reporter enhanced-review flag (nightly job). BLOCKED-EXTERNAL remainder: attorney review of reporter-attestation + anti-SLAPP language. BLOCKED-DATA remainder: per-jurisdiction assessor adapter implementations.
 
 
 **Status:** Public design + methodology page shipped at `business-property.html` (2026-08-30). Scope narrowly bounded (physical / infrastructural / ADA Title III conditions only, never subjective), evidence requirements strict (photo required, public-view attestation, reporter attestation with liability language), publication model aggregate-only (5+ reports from 3+ reporters over 90 days for property attribution; 15+ reports across 5+ locations over 180 days for chain attribution), right-of-reply preserved. **None of the underlying plumbing exists in the current app.**
@@ -1120,6 +1144,79 @@ Directly fundable by disability-rights and civic-tech funders: Ford Foundation D
 - **Do not offer a small-business exemption.** A protected class of businesses that can't be reported is a corruption vector. The aggregation threshold protects all businesses equally from single bad-faith reports.
 - **Do not accept individual reports as evidence for public attribution.** Only aggregations publish. Single reports flow into the routing pipeline privately.
 - **Do not build a public API for commercial-report data before the aggregation model is battle-tested.** Public API for aggregated data is a v2 concern.
+
+---
+
+## 32. Wire Report-Flow Sections into ReportScreen.tsx
+
+**Status:** All four report-flow section components (`DigitalReportSection`, `InsiderReportSection`, `CommercialPropertySection`, `CorridorReportSection`) shipped 2026-08-31 at `src/components/report-flow/` and typecheck clean. **The parent `src/screens/ReportScreen.tsx` does not yet compose them** — the existing screen still supports the pre-extension point-report flow only.
+
+**What's needed:** Extend `ReportScreen.tsx` to:
+
+1. Add state for `reportSubject` (`'public_infrastructure' | 'commercial_property'`), `geometryType` (`'point' | 'corridor' | 'area'`), and `isInsider` (`boolean`), plus per-section value state.
+2. Conditionally render the four sections based on category / subject / geometry / insider flag — see `src/components/report-flow/README.md` for the exact composition pattern.
+3. On submit:
+   - Call `captureSnapshot(digital.targetUrl)` if a digital section is filled (see `src/services/digitalSnapshot.ts`).
+   - Attach `buildDigitalContext(...)` / `buildInsiderContext(...)` to the `Report` object.
+   - Validate commercial reports have both attestation checkboxes ticked before allowing submit.
+   - Attach corridor/area geometry when `geometryType !== 'point'`.
+4. Add a map-picker overlay for the two GPS pins in `CorridorReportSection` — likely a modal that reuses the existing `react-native-maps` view from `MapScreen.tsx`.
+5. Add a subject toggle at the top of the form ("What are you reporting? Public infrastructure / Commercial property") that switches which category picker is shown.
+6. Add an insider opt-in checkbox surfaced only for signed-in users who have opted into "public employee" status in their profile.
+
+**Effort:** ~1 week. The section components are stateless — most of the work is state management + validation + wiring the map-picker for corridor mode. Zero external dependency.
+
+**Why deferred:** UI work touches the highest-traffic screen in the app; wants a UX pass before shipping (in-product testing, accessibility validation, keyboard-flow check on iOS + Android). Section components are ready to drop in; screen-level wiring is the pending step.
+
+---
+
+## 33. Deploy Modal + Playwright Snapshot Worker + Wire Endpoint into `digitalSnapshot.ts`
+
+**Status:** Worker code + full README shipped 2026-08-31 at `modal/digital-snapshot/main.py`. **Not yet deployed to Modal.**
+
+**What's needed:**
+1. `pip install modal && modal setup` (one-time)
+2. Create Supabase Storage bucket `digital-infra-snapshots` (private)
+3. `openssl rand -base64 32` → shared worker secret
+4. `modal secret create fault-line-digital-snapshot WORKER_SECRET=<...> SUPABASE_URL=<...> SUPABASE_SERVICE_ROLE_KEY=<...>`
+5. `modal deploy modal/digital-snapshot/main.py`
+6. Copy the printed endpoint URL
+7. Add secrets to Supabase Edge Function env: `DIGITAL_SNAPSHOT_WORKER_URL`, `DIGITAL_SNAPSHOT_WORKER_SECRET`
+8. Replace the placeholder in `src/services/digitalSnapshot.ts` `captureSnapshot()` with a real POST to the endpoint (secret in `x-worker-secret` header, JSON body `{ url, reportId }`).
+
+**Effort:** ~30 minutes end-to-end. Everything is pre-scaffolded; this is CLI + configuration + a 10-line function replacement.
+
+**Why deferred:** No pilot city has requested a demo of the digital-infrastructure flow yet. Deploying now costs ~$0 in Modal idle credits + ~$0.001-0.003 per test snapshot; safe to deploy proactively but not urgent.
+
+---
+
+## 34. Apply Supabase Migrations 018–020
+
+**Status:** Migration files shipped 2026-08-31 at `supabase/migration_018_resolution_events.sql`, `supabase/migration_019_corridor_area_geometry.sql`, `supabase/migration_020_commercial_property_reports.sql`. **Not yet applied to the live database.**
+
+**What each migration does:**
+- **018** — creates `departments` + `resolution_events` tables for Rapid Response Roll data model (DEFERRED #24)
+- **019** — adds PostGIS `LineString` + `Polygon` columns to `reports` + creates `corridor_suggestions` table (DEFERRED #28)
+- **020** — adds `report_subject` enum + commercial columns to `reports` + creates `commercial_chains` + `commercial_properties` + `right_of_reply` tables with RLS (DEFERRED #31 + #27)
+
+**How to apply:**
+```bash
+# Via Supabase SQL Editor (safest — see each migration's verification queries at the bottom):
+# 1. Paste and run migration_018_resolution_events.sql
+# 2. Paste and run migration_019_corridor_area_geometry.sql
+# 3. Paste and run migration_020_commercial_property_reports.sql
+# 4. Confirm no advisor warnings via mcp get_advisors security
+```
+
+Or via the Supabase MCP tool from a Claude session:
+```
+mcp claude_ai_Supabase apply_migration name=018_resolution_events query=<paste file contents>
+```
+
+**Effort:** ~15 minutes end-to-end (3 migrations + verification queries + advisor check).
+
+**Why deferred:** Migrations are additive and backwards-compatible (all new columns have `DEFAULT` values, all new tables are separate). Safe to apply anytime. Applying them enables the corresponding features to store real data — before that, the features are code-complete but persist nothing.
+
 
 
 

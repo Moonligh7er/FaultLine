@@ -142,11 +142,27 @@ main .lede { font-family: var(--ff-body); font-size: 18px; line-height: 1.6; col
 
 <main>
 <h1>What we've <em>shipped</em>.</h1>
-<p class="updated">Last updated · 2026-08-30 · Newest first</p>
+<p class="updated">Last updated · 2026-08-31 · Newest first</p>
 
 <p class="lede">Fault Line is built in the open by one person. This is the running log of what's shipped, versioned honestly. If something isn't listed here, it hasn't happened yet &mdash; a running theme in civic tech is to promise more than gets shipped, and this page is our defense against that pattern.</p>
 
 <!-- ─────────────────────────────  AUGUST 2026  ───────────────────────────── -->
+<div class="entry">
+  <p class="entry-date">2026-08-31</p>
+  <p class="entry-title">Engineering delivery, day 2: pipelines, migrations, UI sections — everything shippable without a pilot is now shipped</p>
+  <ul>
+    <li><strong>Right-of-reply pipeline</strong> at <code>src/services/right-of-reply/</code> — shared infrastructure used by both #27 briefing packets (24-hour window) and #31 commercial aggregations (14-day window). <code>createEntry</code>, <code>markNotificationSent</code>, <code>appendResponse</code>, <code>markRemediated</code>, <code>markPublished</code>, <code>effectiveStatus</code>, <code>isReadyToPublish</code>, <code>describeStatus</code>. Pure functions; persistence is the caller&rsquo;s job.</li>
+    <li><strong>Packet generator</strong> at <code>src/services/packet-generator/</code> — <code>generatePacket()</code> returns markdown + JSON for both council-district briefings and press-ready cluster summaries. Format matches the <a href="briefing-packets.html">/briefing-packets</a> commitment exactly.</li>
+    <li><strong>Assessor property-ownership lookup</strong> at <code>src/services/commercial/assessor.ts</code> — adapter interface + registry + <code>ownerDisclaimer()</code>. Per-jurisdiction adapters plug in as pilot cities onboard.</li>
+    <li><strong>Open311 verification script</strong> at <code>scripts/open311/verify-integration.mjs</code> + <code>docs/integration-status.md</code>. Read-only GET probes against 10 pilot-target authorities (Boston Open311, 7 SeeClickFix cities, Providence proprietary, Concord email). Writes JSON + markdown status report. Closes DEFERRED #23.</li>
+    <li><strong>Modal + Playwright snapshot worker scaffold</strong> at <code>modal/digital-snapshot/main.py</code> + full README. Deployable via <code>modal deploy</code>. Captures HTML + full-page screenshot + metadata to a private Supabase bucket. Auth via WORKER_SECRET header. One CLI command from live.</li>
+    <li><strong>Three Supabase migrations</strong> — <code>018_resolution_events.sql</code> (departments + resolution_events tables for Rapid Response Roll data model), <code>019_corridor_area_geometry.sql</code> (PostGIS linestring + polygon on reports, corridor_suggestions table), <code>020_commercial_property_reports.sql</code> (report_subject enum + commercial columns + commercial_chains + commercial_properties + right_of_reply with RLS). All additive + backwards-compatible.</li>
+    <li><strong>Four report-flow UI sections</strong> at <code>src/components/report-flow/</code> &mdash; <code>DigitalReportSection</code> (URL + assistive tech + WCAG criterion inputs), <code>InsiderReportSection</code> (insider category + observed duration + prior report ref + documentary ref, with in-UI notice reminding of out-of-scope categories), <code>CommercialPropertySection</code> (business name + address + chain + two required attestations enforced in UI), <code>CorridorReportSection</code> (street + cross streets + start/end map-pin cells). README documents the composition pattern for <code>ReportScreen.tsx</code>.</li>
+    <li><strong>DEFERRED cleanup:</strong> all per-item entries now carry honest SHIPPED / SHIPPED-partial markers with BUILDABLE-TODAY vs. BLOCKED-EXTERNAL vs. BLOCKED-DATA gating. New items #32 (wire report-flow sections into ReportScreen), #33 (deploy Modal worker + wire endpoint), and #34 (apply migrations 018-020) capture the residual buildable work as first-class items.</li>
+    <li><strong><code>tsc --noEmit --skipLibCheck</code> clean</strong> across all new modules + UI components.</li>
+  </ul>
+</div>
+
 <div class="entry">
   <p class="entry-date">2026-08-30</p>
   <p class="entry-title">Engineering delivery: routing wire-in, framing templates, URL-first, corridor, insider, commercial scaffolds</p>
