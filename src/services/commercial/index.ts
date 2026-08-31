@@ -19,3 +19,12 @@ export {
   type TitleIIIStandard,
   type TitleIIIVerificationStatus,
 } from './ada-title-iii';
+export {
+  lookupOwner,
+  registerAdapter,
+  listAdapters,
+  ownerDisclaimer,
+  type OwnerOfRecord,
+  type AssessorAdapter,
+  type AssessorVerificationStatus,
+} from './assessor';
