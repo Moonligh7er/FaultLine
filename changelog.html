@@ -142,9 +142,21 @@ main .lede { font-family: var(--ff-body); font-size: 18px; line-height: 1.6; col
 
 <main>
 <h1>What we've <em>shipped</em>.</h1>
-<p class="updated">Last updated · 2026-08-31 · Newest first</p>
+<p class="updated">Last updated · 2026-09-01 · Newest first</p>
 
 <p class="lede">Fault Line is built in the open by one person. This is the running log of what's shipped, versioned honestly. If something isn't listed here, it hasn't happened yet &mdash; a running theme in civic tech is to promise more than gets shipped, and this page is our defense against that pattern.</p>
+
+<!-- ─────────────────────────────  SEPTEMBER 2026  ───────────────────────────── -->
+<div class="entry">
+  <p class="entry-date">2026-09-01</p>
+  <p class="entry-title">Service status page + copyright range fix</p>
+  <ul>
+    <li><strong>New public <a href="status.html">/status</a> page.</strong> Point-in-time probe of 11 critical service dependencies (marketing site, web app, Supabase REST + Auth, Kokoro TTS Modal, Resend, Anthropic, OpenStreetMap, SeeClickFix, plus DOJ &amp; MA statute source pages that outbound letter links depend on). Summary badge auto-derives severity (operational / degraded / partial-outage / major-outage). Script at <code>scripts/status/check-services.mjs</code> writes JSON + HTML on each run; drop-in GitHub Actions workflow documented in the script README for hourly automation.</li>
+    <li><strong>Discovered live outage during first run:</strong> Supabase project <code>dzewklljiksyivsfpunt.supabase.co</code> returns NXDOMAIN from both Cloudflare and Google DNS. Status page correctly shows major-outage. Root cause requires a check in the Supabase dashboard (project may be paused, deleted, or renamed).</li>
+    <li><strong>Copyright range fixed.</strong> All 50 marketing HTML files + status-page generator template + Next.js webapp footer updated from <em>&copy; 2026</em> to <em>&copy; 2025&ndash;2026</em>. Reflects that the Fault Line name has been in use since 2025. Webapp uses dynamic <code>2025&ndash;{new Date().getFullYear()}</code> so the range auto-extends each year.</li>
+    <li><strong>DEFERRED #35 added:</strong> external uptime monitoring (Better Stack / UptimeRobot) as the true-independence complement to the self-hosted status page. Free tier sufficient for beta; paid tier ($18&ndash;$29/mo) becomes worth it once a pilot city depends on 24/7 uptime.</li>
+  </ul>
+</div>
 
 <!-- ─────────────────────────────  AUGUST 2026  ───────────────────────────── -->
 <div class="entry">
