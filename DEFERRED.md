@@ -1190,6 +1190,42 @@ Directly fundable by disability-rights and civic-tech funders: Ford Foundation D
 
 ---
 
+## 35. External Uptime Monitoring (Better Stack / UptimeRobot)
+
+**Status:** In-repo status checker shipped 2026-09-01 at `scripts/status/check-services.mjs` + `status.html`. It's a point-in-time probe run via GitHub Actions or manual invocation. **The self-hosted status page is unreachable if the marketing site itself is down** — a well-known limitation of self-hosted status pages.
+
+**What's needed:** Sign up for a third-party uptime service with independent infrastructure. Two viable free-tier options:
+
+**Better Stack** (recommended for its Slack / SMS / phone-call escalation on paid tiers):
+1. Sign up at [betterstack.com/better-uptime](https://betterstack.com/better-uptime)
+2. Add HTTP monitors for the 4 critical endpoints (see list in `scripts/status/check-services.mjs` for the exact URL + expected-status pairs)
+3. Configure alert routing (email is free tier; SMS / phone / Slack are paid but starting at $18/mo)
+4. Point their public status page at `status.fault-line.dev` via CNAME
+5. Optionally remove the self-hosted `status.html` in favor of the Better Stack page — or keep both (they serve slightly different purposes: Better Stack is truly independent; self-hosted status page is version-controlled and inspects a broader set of endpoints)
+
+**UptimeRobot** (simpler free tier, less rich alerting):
+1. Sign up at [uptimerobot.com](https://uptimerobot.com)
+2. Add HTTP(s) monitors for the same 4 critical endpoints
+3. Free tier: email alerts at 5-minute polling
+4. Their public status page is available on paid tier only
+
+**Which endpoints to monitor externally (as a minimum):**
+
+| Endpoint | Expected status |
+|---|---|
+| `https://fault-line.dev/` | 200 |
+| `https://app.fault-line.dev/` | 200 |
+| `https://<supabase-project>.supabase.co/rest/v1/` | 200 or 401 (401 = auth-required, service alive) |
+| `https://<supabase-project>.supabase.co/auth/v1/health` | 200 |
+
+**Cost:** Free tier is sufficient for the beta period. Paid tiers ($18-$29/mo) become worth it once a pilot city is depending on the escalation pipeline and you need SMS / phone alerts.
+
+**Effort:** ~15 minutes end-to-end for either service — no code required.
+
+**Why deferred:** The in-repo status checker covers the honest "here's what we can tell you today" case. External monitoring adds independence and alerting — both real value — but neither is blocking for the current phase (no pilot city depending on 24/7 uptime yet). Revisit when a pilot signs.
+
+---
+
 ## 34. Apply Supabase Migrations 018–020
 
 **Status:** Migration files shipped 2026-08-31 at `supabase/migration_018_resolution_events.sql`, `supabase/migration_019_corridor_area_geometry.sql`, `supabase/migration_020_commercial_property_reports.sql`. **Not yet applied to the live database.**
