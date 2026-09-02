@@ -175,6 +175,10 @@
     <li><a href="#rewards">🎮 Engagement &amp; rewards</a></li>
     <li><a href="#smart">🧠 Smart features</a></li>
     <li><a href="#access">♿ Accessibility &amp; languages</a></li>
+    <li><a href="#access-equity">🧭 Access &amp; Equity reporting</a></li>
+    <li><a href="#advanced">📐 Advanced report types</a></li>
+    <li><a href="#outputs">📊 Accountability outputs</a></li>
+    <li><a href="#framing">⚖️ Legal framing under the hood</a></li>
   </ul>
 </div>
 
@@ -192,7 +196,7 @@
     <div class="feature"><h4><span class="fi">📳</span> Bump detection (while driving)</h4><p>If you turn it on, the app notices when your car hits something hard. It asks &ldquo;Was that a pothole?&rdquo; so you can confirm and report it without taking your hands off the wheel.</p></div>
     <div class="feature"><h4><span class="fi">👤</span> Anonymous reporting</h4><p>You don&apos;t need an account. You can report without ever telling us who you are. Your name and email are never attached unless you choose.</p></div>
     <div class="feature"><h4><span class="fi">📶</span> Works offline</h4><p>No signal? No problem. Reports save on your phone and send themselves the moment you reconnect. Subway commuters, rural areas, parking garages — all fine.</p></div>
-    <div class="feature"><h4><span class="fi">🏷️</span> 24 categories</h4><p>Not just potholes. Streetlights, sidewalks, signage, crosswalks, water mains, sewers, fallen trees, snow and ice, bike lanes, abandoned vehicles, illegal dumping, parks, and more.</p></div>
+    <div class="feature"><h4><span class="fi">🏷️</span> 63 categories</h4><p>Not just potholes. The original 24 physical-infrastructure categories (streetlights, sidewalks, signage, crosswalks, water mains, sewers, fallen trees, snow and ice, bike lanes, abandoned vehicles, illegal dumping, parks, and more) plus 39 Access &amp; Equity categories added in the 2026 expansion — covering missing curb cuts, broken elevators in public housing, missing bus shelters, English-only signage where translation is required, broken city website forms, and more. Full taxonomy at <a href="access-equity.html">/access-equity</a>.</p></div>
     <div class="feature"><h4><span class="fi">📊</span> Smart severity questions</h4><p>The questions adapt to what you&apos;re reporting. Potholes get asked about size and danger. Streetlights get asked about urgency. You never see questions that don&apos;t apply.</p></div>
   </div>
 </div>
@@ -213,8 +217,8 @@
   <div class="cat-header"><div class="cat-icon">📨</div><div class="cat-title">Authority escalation</div></div>
   <p class="cat-desc">Once enough people care, the app does the boring paperwork and contacts the right person at the right department for you.</p>
   <div class="feature-grid">
-    <div class="feature"><h4><span class="fi">🏛️</span> Knows who to email</h4><p>The app knows your local government boundaries. It figures out whether your issue belongs to the city, the county, or the state — and who at that level to contact. 42 authorities in MA, RI, and NH are pre-loaded.</p></div>
-    <div class="feature"><h4><span class="fi">📧</span> Auto-escalation</h4><p>When ten reports about the same problem pile up over 30 days, the app sends a professional email to the responsible authority with photos, GPS data, fiscal projections, and community testimonials. You don&apos;t have to do anything.</p></div>
+    <div class="feature"><h4><span class="fi">🏛️</span> Knows who to email</h4><p>The app knows your local government boundaries. It figures out whether your issue belongs to the city, the county, or the state — and who at that level to contact. <strong>795 US authorities pre-loaded across 46 states</strong>, with MA / RI / NH primary coverage.</p></div>
+    <div class="feature"><h4><span class="fi">📧</span> Cluster escalation</h4><p>When ten reports about the same problem pile up over 30 days, the app drafts a professional demand letter for you to review and send yourself — with photos, GPS data, fiscal projections, statutory citation, and community verification count. The reporter is always the sender; Fault Line does not transmit letters on your behalf.</p></div>
     <div class="feature"><h4><span class="fi">🔌</span> Direct submission for some cities</h4><p>Boston, Cambridge, and hundreds of other cities have systems Fault Line can talk to directly. Reports go straight into their ticket queues with real tracking numbers — no email needed.</p></div>
     <div class="feature"><h4><span class="fi">🔄</span> Status updates come back</h4><p>For those connected cities, when they mark something &ldquo;fixed&rdquo; in their system, your app updates automatically. You&apos;ll know when it&apos;s done.</p></div>
     <div class="feature"><h4><span class="fi">🚨</span> Emergency fast-track</h4><p>Reports rated &ldquo;extremely dangerous&rdquo; skip the normal threshold. They&apos;re flagged immediately and prioritized for the fastest possible escalation.</p></div>
@@ -288,10 +292,56 @@
   </div>
 </div>
 
+<div class="category" id="access-equity">
+  <div class="cat-header"><div class="cat-icon">🧭</div><div class="cat-title">Access &amp; Equity reporting</div></div>
+  <p class="cat-desc">The 39 categories added in 2026 covering the failures 311 handles worst — because routing is fragmented across ADA coordinators, transit authorities, public housing authorities, and school districts.</p>
+  <div class="feature-grid">
+    <div class="feature"><h4><span class="fi">🛴</span> Missing curb cuts &amp; ADA barriers</h4><p>Missing curb cuts, broken ramps, ADA-blocked paths, sidewalk dead-ends, broken accessible pedestrian signals. Routes to your municipal ADA coordinator with 28 CFR Part 35 framing.</p></div>
+    <div class="feature"><h4><span class="fi">🏢</span> Public housing conditions</h4><p>Broken elevators, broken heat or AC crossing safety thresholds, mold violations, missing accessibility features. Routes to your local Public Housing Authority plus HUD FHEO for federal complaint.</p></div>
+    <div class="feature"><h4><span class="fi">🚌</span> Transit failures</h4><p>Missing bus shelters, broken shelters, missing benches, ADA-inaccessible platforms. Routes to your transit authority (MBTA / RIPTA / etc.) with FTA 49 CFR Part 37 framing.</p></div>
+    <div class="feature"><h4><span class="fi">💻</span> Digital infrastructure failures</h4><p>Broken city website forms, screen-reader-inaccessible PDFs, missing translations, WCAG accessibility violations, broken mobile apps. Anchored in the 2024 DOJ web-accessibility rule.</p></div>
+    <div class="feature"><h4><span class="fi">👴</span> Age &amp; vulnerability</h4><p>Missing crossing guards, dangerous school walk routes, missing shade in heat-vulnerable neighborhoods, missing public restrooms, broken drinking fountains, missing benches on senior-housing routes.</p></div>
+    <div class="feature"><h4><span class="fi">👁️</span> Sensory &amp; language access</h4><p>Missing braille signage, English-only signage where translation is legally required, missing large-print, illegible signs, missing audible signage at transit hubs.</p></div>
+  </div>
+</div>
+
+<div class="category" id="advanced">
+  <div class="cat-header"><div class="cat-icon">📐</div><div class="cat-title">Advanced report types</div></div>
+  <p class="cat-desc">Beyond the 10-second point report.</p>
+  <div class="feature-grid">
+    <div class="feature"><h4><span class="fi">🛣️</span> Corridor &amp; area reports</h4><p>Report a systemic pattern along a street segment, not just a single point — because cities respond to segments, not GPS pins. Auto-suggested when reports concentrate along a road; community-approved before publishing.</p></div>
+    <div class="feature"><h4><span class="fi">🕵️</span> Insider (public-employee) reporting</h4><p>DPW inspectors, city IT managers, transit workers can file infrastructure observations residents can&apos;t see. Scope is narrowly bounded to infrastructure only — not personnel, criminal, classified, or retaliation, with referrals to the right channel for those.</p></div>
+    <div class="feature"><h4><span class="fi">🏬</span> Commercial property reports</h4><p>Physical infrastructure conditions on privately-owned commercial property (broken sidewalks, inaccessible entrances, dangerous parking-lot lighting). Individual reports never publish; only aggregations after 5+ verified reports from 3+ reporters, with a 14-day right-of-reply window.</p></div>
+    <div class="feature"><h4><span class="fi">🔗</span> URL-first digital reporting</h4><p>For digital infrastructure failures (broken forms, inaccessible PDFs), the flow switches to URL-first with an automated page snapshot. Cities can&apos;t remediate the URL and later claim the report was inaccurate — the snapshot is the evidence.</p></div>
+  </div>
+</div>
+
+<div class="category" id="outputs">
+  <div class="cat-header"><div class="cat-icon">📊</div><div class="cat-title">Accountability outputs</div></div>
+  <p class="cat-desc">What Fault Line produces beyond individual reports.</p>
+  <div class="feature-grid">
+    <div class="feature"><h4><span class="fi">🅰️</span> Public A-F grades (Shame Index)</h4><p>Cities that clear a minimum-data threshold get a public grade weighted from fix rate, response time, backlog severity, and recurrence. Methodology fully published; cities cannot pay to hide their grade.</p></div>
+    <div class="feature"><h4><span class="fi">🏆</span> Rapid Response Roll</h4><p>The counterweight to shame — a public record of the DPW crews that fix reported hazards fastest. Verified via community re-photo, peer-normalized against similar-size cities.</p></div>
+    <div class="feature"><h4><span class="fi">📋</span> Monthly council briefings</h4><p>Every council member of record gets a monthly briefing packet for their district: metrics, top items likely to reach constituent-services, fastest resolutions to credit, equity flags. Non-partisan by design.</p></div>
+    <div class="feature"><h4><span class="fi">📰</span> Press-ready cluster summaries</h4><p>When a cluster crosses a threshold (20+ reports, 90+ days past statutory deadline), subscribed local journalists get a ready-to-publish summary with suggested headline, key numbers, GPS-tagged evidence, and right-of-reply from the responsible authority.</p></div>
+    <div class="feature"><h4><span class="fi">📈</span> Per-state statutory table</h4><p>A public reference at /claim-by-state covering MA, RI, NH, ME, VT, CT, NY, CO, OR, NM. Notice periods, damage caps, primary-source citations. Answers "how long do I have to file?" for anyone with a defective-highway claim.</p></div>
+  </div>
+</div>
+
+<div class="category" id="framing">
+  <div class="cat-header"><div class="cat-icon">⚖️</div><div class="cat-title">Legal framing under the hood</div></div>
+  <p class="cat-desc">Every generated letter is composed from three versioned datasets with chain-of-custody disclosure in the footer.</p>
+  <div class="feature-grid">
+    <div class="feature"><h4><span class="fi">📚</span> Five legal framings</h4><p>Categories map to one of five framings: state defective-highway statutes (physical infra), ADA Title II (public-entity access), Fair Housing + Section 504 (public housing), Title VI + EO 13166 (language access), or DOT ADA (transit). Each framing determines the letter&apos;s headline, citation, notice-period, and federal-fallback complaint pathway.</p></div>
+    <div class="feature"><h4><span class="fi">📄</span> Pending-review chain of custody</h4><p>Every dataset entry — statute, routing, letter template, ADA standard — is versioned and marked "verified" only after a qualified reviewer signs off. Until then, every generated letter carries an unreviewed-content banner so the reporter sees the warning before sending.</p></div>
+    <div class="feature"><h4><span class="fi">🔍</span> Auditable footer on every letter</h4><p>Every generated letter footer identifies the specific dataset entry, version, and review status backing every claim. If a recipient challenges the letter, they can trace every element to its source.</p></div>
+  </div>
+</div>
+
 <div class="cta-band">
   <h2>Stop complaining. <em>Start</em> fixing.</h2>
   <p>Every report you submit is a vote for better infrastructure. Together, we make it impossible to ignore.</p>
-  <a href="index.html#download" class="btn btn-primary">Get Fault Line — Free</a>
+  <a href="https://app.fault-line.dev" class="btn btn-primary">Open the web app — free</a>
 </div>
 
 </div>
