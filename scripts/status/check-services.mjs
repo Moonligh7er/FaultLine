@@ -452,7 +452,7 @@ table.status td.detail .impact { color: var(--tile-dim); font-size: 13px; margin
   <a href="feedback.html">Feedback</a> &middot;
   <a href="https://app.fault-line.dev" target="_blank" rel="noopener">Web app</a> &middot;
   <a href="https://ko-fi.com/moonlitsociallabs" target="_blank" rel="noopener">Ko-fi</a>
-  <br><br>&copy; 2026 Moonlit Social Labs &middot; Fault Line is a product of Moonlit Social Labs
+  <br><br>&copy; 2025-2026 Moonlit Social Labs &middot; Fault Line is a product of Moonlit Social Labs
 </footer>
 
 </body>
