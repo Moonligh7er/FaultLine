@@ -1,0 +1,109 @@
+{
+  "runAt": "2026-09-02T01:47:26.091Z",
+  "summary": {
+    "badge": "major-outage",
+    "badgeLabel": "Major outage",
+    "description": "2 critical services down: Supabase PostgREST API, Supabase Auth."
+  },
+  "results": [
+    {
+      "id": "marketing-site",
+      "label": "Marketing site",
+      "tier": "critical",
+      "status": "up",
+      "httpStatus": 200,
+      "elapsedMs": 143,
+      "detail": "HTTP 200 in 143ms"
+    },
+    {
+      "id": "webapp",
+      "label": "Web app",
+      "tier": "critical",
+      "status": "up",
+      "httpStatus": 200,
+      "elapsedMs": 2067,
+      "detail": "HTTP 200 in 2067ms"
+    },
+    {
+      "id": "supabase-rest",
+      "label": "Supabase PostgREST API",
+      "tier": "critical",
+      "status": "down",
+      "httpStatus": 0,
+      "elapsedMs": 14,
+      "detail": "Fetch failed: fetch failed"
+    },
+    {
+      "id": "supabase-auth",
+      "label": "Supabase Auth",
+      "tier": "critical",
+      "status": "down",
+      "httpStatus": 0,
+      "elapsedMs": 13,
+      "detail": "Fetch failed: fetch failed"
+    },
+    {
+      "id": "kokoro-tts",
+      "label": "Kokoro TTS worker (Modal)",
+      "tier": "degrades-gracefully",
+      "status": "degraded",
+      "httpStatus": 0,
+      "elapsedMs": 10012,
+      "detail": "Timeout after 10000ms (Modal cold-start is possible; retry to confirm)"
+    },
+    {
+      "id": "resend-api",
+      "label": "Resend email API",
+      "tier": "critical-backend",
+      "status": "up",
+      "httpStatus": 200,
+      "elapsedMs": 172,
+      "detail": "HTTP 200 in 172ms"
+    },
+    {
+      "id": "anthropic-api",
+      "label": "Anthropic API",
+      "tier": "degrades-gracefully",
+      "status": "up",
+      "httpStatus": 404,
+      "elapsedMs": 84,
+      "detail": "HTTP 404 in 84ms"
+    },
+    {
+      "id": "openstreetmap",
+      "label": "OpenStreetMap API",
+      "tier": "degrades-gracefully",
+      "status": "up",
+      "httpStatus": 200,
+      "elapsedMs": 352,
+      "detail": "HTTP 200 in 352ms"
+    },
+    {
+      "id": "seeclickfix-api",
+      "label": "SeeClickFix API",
+      "tier": "degrades-gracefully",
+      "status": "up",
+      "httpStatus": 403,
+      "elapsedMs": 96,
+      "detail": "HTTP 403 in 96ms"
+    },
+    {
+      "id": "doj-crd",
+      "label": "DOJ Civil Rights portal",
+      "tier": "reference",
+      "status": "up",
+      "httpStatus": 200,
+      "elapsedMs": 434,
+      "detail": "HTTP 200 in 434ms"
+    },
+    {
+      "id": "ma-legislature",
+      "label": "MA statute source (malegislature.gov)",
+      "tier": "reference",
+      "status": "up",
+      "httpStatus": 200,
+      "elapsedMs": 177,
+      "detail": "HTTP 200 in 177ms"
+    }
+  ]
+}
