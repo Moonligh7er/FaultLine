@@ -1,7 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Network from 'expo-network';
 import { Report } from '../types';
-import { createReport } from './reports';
+import { submitReport } from './reports';
 
 const QUEUE_KEY = 'offline_report_queue';
 
@@ -39,7 +39,7 @@ export async function processQueue(): Promise<{ success: number; failed: number 
 
   for (const item of queue) {
     const { _queuedAt, ...reportData } = item;
-    const result = await createReport(reportData);
+    const result = await submitReport(reportData);
     if (result) {
       success++;
     } else {

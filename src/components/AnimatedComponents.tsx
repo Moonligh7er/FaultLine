@@ -40,11 +40,13 @@ export function StaggeredItem({ children, index, style }: {
 }
 
 // Scale-on-press button with haptics
-export function HapticButton({ children, onPress, style, hapticType = 'light' }: {
+export function HapticButton({ children, onPress, style, hapticType = 'light', disabled = false, accessibilityLabel }: {
   children: React.ReactNode;
   onPress: () => void;
   style?: any;
   hapticType?: 'light' | 'medium' | 'heavy' | 'selection';
+  disabled?: boolean;
+  accessibilityLabel?: string;
 }) {
   const scale = useRef(new Animated.Value(1)).current;
   const haptics = useHaptics();
@@ -63,7 +65,15 @@ export function HapticButton({ children, onPress, style, hapticType = 'light' }:
   };
 
   return (
-    <Pressable onPressIn={handlePressIn} onPressOut={handlePressOut} onPress={handlePress}>
+    <Pressable
+      onPressIn={handlePressIn}
+      onPressOut={handlePressOut}
+      onPress={handlePress}
+      disabled={disabled}
+      accessibilityRole="button"
+      accessibilityLabel={accessibilityLabel}
+      accessibilityState={{ disabled }}
+    >
       <Animated.View style={[{ transform: [{ scale }] }, style]}>
         {children}
       </Animated.View>
@@ -72,7 +82,7 @@ export function HapticButton({ children, onPress, style, hapticType = 'light' }:
 }
 
 // Pulse animation for alerts
-export function Pulse({ children, style }: { children: React.ReactNode; style?: ViewStyle }) {
+export function Pulse({ children, style }: { children?: React.ReactNode; style?: ViewStyle }) {
   const scale = useRef(new Animated.Value(1)).current;
 
   useEffect(() => {

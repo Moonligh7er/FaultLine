@@ -24,11 +24,10 @@ import {
   ConditionLevel, MediaAttachment, ReportLocation, ReportSeverity,
 } from '../types';
 import { getCurrentLocation } from '../services/location';
-import { createReport, checkRateLimit, updateReportMedia } from '../services/reports';
+import { submitReport, checkRateLimit } from '../services/reports';
 import { findAuthorityByLocation } from '../services/authorities';
 import { submitToAuthority } from '../services/authorityApi';
 import { addToQueue, isOnline } from '../services/offlineQueue';
-import { uploadAllMedia } from '../services/media';
 import { analyzePhoto, getConfidenceLabel, getConfidenceColor } from '../services/aiAnalysis';
 import { generateDescription, cacheAIResult } from '../services/ai';
 import { recordReportForStreak, awardPoints, POINT_VALUES } from '../services/socialFeatures';
@@ -208,18 +207,10 @@ export default function ReportScreen() {
 
     const online = await isOnline();
     if (online) {
-      setUploadProgress(t('submitting'));
-      const result = await createReport(reportData);
-
-      if (result && media.length > 0) {
-        setUploadProgress(`Uploading media (0/${media.length})...`);
-        try {
-          const uploaded = await uploadAllMedia(media, result.id, (done, total) => {
-            setUploadProgress(`Uploading media (${done}/${total})...`);
-          });
-          await updateReportMedia(result.id, uploaded);
-        } catch (err) { console.error('Media upload failed:', err); }
-      }
+      setUploadProgress(media.length > 0 ? `Uploading media (0/${media.length})...` : t('submitting'));
+      const result = await submitReport(reportData, (done, total) => {
+        setUploadProgress(done < total ? `Uploading media (${done}/${total})...` : t('submitting'));
+      });
 
       if (result) {
         // Cache AI analysis if available

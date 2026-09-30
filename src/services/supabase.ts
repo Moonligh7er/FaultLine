@@ -18,5 +18,7 @@ export const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
     autoRefreshToken: true,
     persistSession: true,
     detectSessionInUrl: false,
+    // Magic links return ?code=, exchanged in services/authLinking.ts
+    flowType: 'pkce',
   },
 });
