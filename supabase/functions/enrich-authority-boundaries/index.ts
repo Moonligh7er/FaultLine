@@ -7,7 +7,7 @@
 // Manually invoked:
 //   curl -X POST https://dzewklljiksyivsfpunt.supabase.co/functions/v1/enrich-authority-boundaries \
 //     -H "Content-Type: application/json" \
-//     -H "x-cron-secret: <CRON_SECRET>" \
+//     -H "x-cron-secret: <vault secret 'cron_secret'>" \
 //     -d '{"limit": 100}'
 //
 // Uses the Census TIGERweb REST service (public, no API key):
@@ -18,6 +18,16 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL') || '';
 const SUPABASE_SERVICE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') || '';
+
+// x-cron-secret is checked against Vault via verify_cron_secret()
+// (migration 024), so rotating the secret never needs a redeploy.
+async function isCronCaller(req: Request): Promise<boolean> {
+  const secret = req.headers.get('x-cron-secret');
+  if (!secret) return false;
+  const admin = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY);
+  const { data, error } = await admin.rpc('verify_cron_secret', { p_secret: secret });
+  return !error && data === true;
+}
 
 // US state → FIPS code mapping (needed for the Census query)
 const STATE_FIPS: Record<string, string> = {
@@ -36,8 +46,7 @@ const TIGER_PLACES_URL =
 Deno.serve(async (req) => {
   if (req.method !== 'POST') return new Response('Method not allowed', { status: 405 });
 
-  const cronSecret = req.headers.get('x-cron-secret');
-  if (!cronSecret || cronSecret !== (Deno.env.get('CRON_SECRET') || '')) {
+  if (!(await isCronCaller(req))) {
     return new Response(JSON.stringify({ error: 'Unauthorized' }), {
       status: 401,
       headers: { 'Content-Type': 'application/json' },
