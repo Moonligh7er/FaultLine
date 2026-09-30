@@ -9,8 +9,6 @@ import { AUTH_CALLBACK_URL } from '../services/authLinking';
 import { UserProfile } from '../types';
 import { getQueueSize, processQueue } from '../services/offlineQueue';
 import { getStreak, StreakInfo } from '../services/socialFeatures';
-import { downloadRegion, getCachedRegions, clearCache, CachedRegion } from '../services/offlineMaps';
-import { getCurrentLocation } from '../services/location';
 import { SUPPORTED_LANGUAGES, setLanguage, i18n, t } from '../services/i18n';
 import Icon from '../components/Icon';
 import { HapticButton, FadeIn, StaggeredItem, Pulse } from '../components/AnimatedComponents';
@@ -23,8 +21,6 @@ export default function ProfileScreen() {
   const [isGuest, setIsGuest] = useState(true);
   const [offlineCount, setOfflineCount] = useState(0);
   const [streakInfo, setStreakInfo] = useState<StreakInfo>({ currentStreak: 0, longestStreak: 0, lastReportDate: null, isActiveToday: false });
-  const [cachedRegions, setCachedRegions] = useState<CachedRegion[]>([]);
-  const [downloading, setDownloading] = useState(false);
   const [currentLang, setCurrentLang] = useState(i18n.locale);
   const [authEmail, setAuthEmail] = useState('');
   const [authLoading, setAuthLoading] = useState(false);
@@ -34,7 +30,6 @@ export default function ProfileScreen() {
     checkAuth();
     getQueueSize().then(setOfflineCount);
     getStreak().then(setStreakInfo);
-    getCachedRegions().then(setCachedRegions);
 
     // The magic link completes in services/authLinking.ts while this screen
     // is mounted — refresh when the session lands.
@@ -69,25 +64,6 @@ export default function ProfileScreen() {
     const result = await processQueue();
     Alert.alert('Sync Complete', `${result.success} synced, ${result.failed} failed.`);
     setOfflineCount(await getQueueSize());
-  };
-
-  const handleDownloadArea = async () => {
-    setDownloading(true);
-    const loc = await getCurrentLocation();
-    if (loc) {
-      await downloadRegion(loc.city || 'My Area', loc.latitude, loc.longitude, 5, 12, 16, (done, total) => {
-        // Progress updates
-      });
-      setCachedRegions(await getCachedRegions());
-    }
-    setDownloading(false);
-    Alert.alert('Download Complete', 'Map tiles cached for offline use.');
-  };
-
-  const handleClearCache = async () => {
-    await clearCache();
-    setCachedRegions([]);
-    Alert.alert('Cache Cleared', 'Offline map tiles removed.');
   };
 
   const handleMagicLink = async () => {
@@ -183,28 +159,6 @@ export default function ProfileScreen() {
           </HapticButton>
         </View>
       )}
-
-      {/* Offline Maps */}
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle} accessibilityRole="header">Offline Maps</Text>
-        {cachedRegions.map((region) => (
-          <View key={region.id} style={styles.cacheRow}>
-            <Icon name="map-check" size={18} color={COLORS.success} />
-            <Text style={styles.cacheText}>{region.name} ({region.sizeMb}MB, {region.tileCount} tiles)</Text>
-          </View>
-        ))}
-        <View style={styles.cacheButtons}>
-          <HapticButton style={styles.downloadButton} onPress={handleDownloadArea} hapticType="medium">
-            <Icon name="download" size={18} color={COLORS.textOnPrimary} />
-            <Text style={styles.downloadText}>{downloading ? 'Downloading...' : 'Cache My Area'}</Text>
-          </HapticButton>
-          {cachedRegions.length > 0 && (
-            <HapticButton style={styles.clearButton} onPress={handleClearCache} hapticType="light">
-              <Text style={styles.clearText}>Clear</Text>
-            </HapticButton>
-          )}
-        </View>
-      </View>
 
       {/* Language */}
       <View style={styles.section}>
@@ -386,13 +340,6 @@ const styles = StyleSheet.create({
   syncButton: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: SPACING.sm, backgroundColor: COLORS.warning, borderRadius: BORDER_RADIUS.md, padding: SPACING.md },
   syncButtonText: { fontSize: FONT_SIZES.lg, fontWeight: '700', color: COLORS.text },
 
-  cacheRow: { flexDirection: 'row', alignItems: 'center', gap: SPACING.sm, paddingVertical: SPACING.xs },
-  cacheText: { fontSize: FONT_SIZES.sm, color: COLORS.textSecondary },
-  cacheButtons: { flexDirection: 'row', gap: SPACING.sm, marginTop: SPACING.sm },
-  downloadButton: { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: SPACING.xs, backgroundColor: COLORS.primary, borderRadius: BORDER_RADIUS.md, padding: SPACING.md },
-  downloadText: { color: COLORS.textOnPrimary, fontWeight: '600', fontSize: FONT_SIZES.md },
-  clearButton: { paddingHorizontal: SPACING.lg, justifyContent: 'center', backgroundColor: COLORS.surface, borderRadius: BORDER_RADIUS.md, borderWidth: 1, borderColor: COLORS.border },
-  clearText: { color: COLORS.error, fontWeight: '600' },
 
   langGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: SPACING.sm },
   langChip: { paddingHorizontal: SPACING.md, paddingVertical: SPACING.sm, borderRadius: BORDER_RADIUS.round, backgroundColor: COLORS.surface, borderWidth: 1, borderColor: COLORS.border },
