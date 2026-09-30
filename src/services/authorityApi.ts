@@ -184,20 +184,10 @@ async function submitViaEmail(
   email: string
 ): Promise<SubmissionResult> {
   try {
+    // The function looks up the report and the authority's email itself —
+    // clients can't choose the recipient or the body.
     const { data, error } = await supabase.functions.invoke('send-report-email', {
-      body: {
-        to: email,
-        report: {
-          category: report.category,
-          location: report.location,
-          severity: report.severity,
-          description: report.description,
-          upvoteCount: report.upvoteCount,
-          confirmCount: report.confirmCount,
-          mediaUrls: report.media.map((m) => m.uploadedUrl).filter(Boolean),
-        },
-        authorityName: authority.name,
-      },
+      body: { reportId: report.id, authorityId: authority.id },
     });
 
     if (error) {

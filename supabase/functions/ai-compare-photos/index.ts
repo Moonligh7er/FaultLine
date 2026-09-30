@@ -7,6 +7,28 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 const ANTHROPIC_API_KEY = Deno.env.get('ANTHROPIC_API_KEY') || '';
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL') || '';
 const SUPABASE_ANON = Deno.env.get('SUPABASE_ANON_KEY') || '';
+const SUPABASE_SERVICE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') || '';
+
+// Per-user sliding-window limit backed by public.edge_rate_limit_log
+// (migration 023). Fails closed: a DB error counts as over the limit.
+async function withinRateLimit(
+  userId: string,
+  bucket: string,
+  limits: { max: number; windowMs: number }[],
+): Promise<boolean> {
+  const admin = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY);
+  for (const { max, windowMs } of limits) {
+    const { count, error } = await admin
+      .from('edge_rate_limit_log')
+      .select('id', { count: 'exact', head: true })
+      .eq('user_id', userId)
+      .eq('bucket', bucket)
+      .gte('created_at', new Date(Date.now() - windowMs).toISOString());
+    if (error || (count ?? 0) >= max) return false;
+  }
+  const { error } = await admin.from('edge_rate_limit_log').insert({ user_id: userId, bucket });
+  return !error;
+}
 const MAX_IMAGE_BYTES = 5 * 1024 * 1024;
 
 Deno.serve(async (req) => {
@@ -20,6 +42,10 @@ Deno.serve(async (req) => {
   const { data: { user }, error: authError } = await supabase.auth.getUser(authHeader.substring(7));
   if (authError || !user) {
     return new Response(JSON.stringify({ error: 'Invalid token' }), { status: 401, headers: { 'Content-Type': 'application/json' } });
+  }
+
+  if (!(await withinRateLimit(user.id, 'ai-compare-photos', [{ max: 60, windowMs: 3600000 }, { max: 300, windowMs: 86400000 }]))) {
+    return new Response(JSON.stringify({ error: 'Rate limit exceeded' }), { status: 429, headers: { 'Content-Type': 'application/json' } });
   }
 
   if (!ANTHROPIC_API_KEY) {

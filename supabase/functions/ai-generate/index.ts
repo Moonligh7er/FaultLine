@@ -8,6 +8,28 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 const ANTHROPIC_API_KEY = Deno.env.get('ANTHROPIC_API_KEY') || '';
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL') || '';
 const SUPABASE_ANON = Deno.env.get('SUPABASE_ANON_KEY') || '';
+const SUPABASE_SERVICE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') || '';
+
+// Per-user sliding-window limit backed by public.edge_rate_limit_log
+// (migration 023). Fails closed: a DB error counts as over the limit.
+async function withinRateLimit(
+  userId: string,
+  bucket: string,
+  limits: { max: number; windowMs: number }[],
+): Promise<boolean> {
+  const admin = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY);
+  for (const { max, windowMs } of limits) {
+    const { count, error } = await admin
+      .from('edge_rate_limit_log')
+      .select('id', { count: 'exact', head: true })
+      .eq('user_id', userId)
+      .eq('bucket', bucket)
+      .gte('created_at', new Date(Date.now() - windowMs).toISOString());
+    if (error || (count ?? 0) >= max) return false;
+  }
+  const { error } = await admin.from('edge_rate_limit_log').insert({ user_id: userId, bucket });
+  return !error;
+}
 
 const SYSTEM_CONTEXT = `You are the AI engine for Fault Line, a community infrastructure accountability platform.
 
@@ -42,6 +64,9 @@ const TASK_MODELS: Record<string, string> = {
   transcribe: 'claude-haiku-4-5-20251001',
 };
 
+// Largest real prompt is the legal-letter rewrite (full base letter).
+const MAX_PROMPT_CHARS = 16000;
+
 const TASK_MAX_TOKENS: Record<string, number> = {
   description: 200,
   notification: 200,
@@ -65,16 +90,27 @@ Deno.serve(async (req) => {
     return new Response(JSON.stringify({ error: 'Invalid token' }), { status: 401, headers: { 'Content-Type': 'application/json' } });
   }
 
+  if (!(await withinRateLimit(user.id, 'ai-generate', [{ max: 20, windowMs: 3600000 }, { max: 100, windowMs: 86400000 }]))) {
+    return new Response(JSON.stringify({ error: 'Rate limit exceeded' }), { status: 429, headers: { 'Content-Type': 'application/json' } });
+  }
+
   if (!ANTHROPIC_API_KEY) {
     return new Response(JSON.stringify({ error: 'AI not configured', text: '' }), { status: 503, headers: { 'Content-Type': 'application/json' } });
   }
 
   const { task, prompt } = await req.json();
-  if (!prompt) {
+  if (typeof prompt !== 'string' || !prompt) {
     return new Response(JSON.stringify({ error: 'No prompt' }), { status: 400, headers: { 'Content-Type': 'application/json' } });
   }
+  // Only the app's own tasks; unknown tasks were silently routed to Haiku.
+  if (typeof task !== 'string' || !(task in TASK_MODELS)) {
+    return new Response(JSON.stringify({ error: 'Unknown task' }), { status: 400, headers: { 'Content-Type': 'application/json' } });
+  }
+  if (prompt.length > MAX_PROMPT_CHARS) {
+    return new Response(JSON.stringify({ error: 'Prompt too long' }), { status: 413, headers: { 'Content-Type': 'application/json' } });
+  }
 
-  const model = TASK_MODELS[task] || 'claude-haiku-4-5-20251001';
+  const model = TASK_MODELS[task];
   const maxTokens = TASK_MAX_TOKENS[task] || 500;
 
   try {

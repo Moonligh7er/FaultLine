@@ -58,27 +58,13 @@ Deno.serve(async (req) => {
     return new Response('Method not allowed', { status: 405 });
   }
 
-  // Auth: require either a valid user token or the service role secret as a cron key
-  const authHeader = req.headers.get('authorization');
+  // Auth: cron only. Any signed-in user used to be able to trigger a run,
+  // which sends real emails to authorities.
   const cronSecret = req.headers.get('x-cron-secret');
   const expectedCronSecret = Deno.env.get('CRON_SECRET') || '';
 
-  if (!cronSecret && !authHeader) {
+  if (!expectedCronSecret || cronSecret !== expectedCronSecret) {
     return new Response(JSON.stringify({ error: 'Unauthorized' }), { status: 401, headers: { 'Content-Type': 'application/json' } });
-  }
-
-  if (cronSecret && cronSecret !== expectedCronSecret) {
-    return new Response(JSON.stringify({ error: 'Invalid cron secret' }), { status: 403, headers: { 'Content-Type': 'application/json' } });
-  }
-
-  if (authHeader && !cronSecret) {
-    // Validate user token
-    const userClient = createClient(SUPABASE_URL, Deno.env.get('SUPABASE_ANON_KEY') || '');
-    const token = authHeader.replace('Bearer ', '');
-    const { data: { user }, error } = await userClient.auth.getUser(token);
-    if (error || !user) {
-      return new Response(JSON.stringify({ error: 'Invalid token' }), { status: 401, headers: { 'Content-Type': 'application/json' } });
-    }
   }
 
   const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY);
