@@ -577,6 +577,8 @@ Migration 016 pinned `search_path = public, extensions` on all 17 PostGIS-using 
 
 ## 21. Move `CRON_SECRET` from inline pg_cron literal → Supabase Vault
 
+**✅ SHIPPED (2026-09-30) — migration 024.** The old value had also been quoted in this file (public repo), so it was **rotated**, not just moved: a new secret was generated inside Postgres straight into Vault (`cron_secret`), both cron jobs read it from `vault.decrypted_secrets`, and `escalate-clusters` / `sync-open311-statuses` / `enrich-authority-boundaries` verify the header via `verify_cron_secret()` (service_role only) instead of the `CRON_SECRET` env var. The old value is rejected (401). Rotation is now one statement — see `supabase/migration_024_cron_secret_vault.sql`. The `CRON_SECRET` edge-function env var is unused and can be deleted. The history below is kept for context.
+
 **Status:** Currently the cron secret is duplicated in two places that must stay in sync:
 1. Supabase Edge Function secrets (where `Deno.env.get('CRON_SECRET')` resolves) — used by the function to validate the `x-cron-secret` header.
 2. **As a literal string inside the `pg_cron` job's `command` SQL** — anyone with `SELECT` on `cron.job` can read it.
@@ -584,7 +586,7 @@ Migration 016 pinned `search_path = public, extensions` on all 17 PostGIS-using 
 **Verify the leak:**
 ```sql
 SELECT command FROM cron.job WHERE jobname = 'escalate-clusters-daily';
--- → command contains x-cron-secret literal value 'ww52+zdtNkTY50LZaddmGG4JDso5uuFZUECUJxrdHNY=' in clear text
+-- → command contains x-cron-secret literal value '<old-secret-redacted>' in clear text
 ```
 
 **The cleaner pattern:** Store the secret in Supabase Vault (encrypted at rest, only readable via `vault.decrypted_secrets` view that decrypts on demand and respects RLS). pg_cron reads it at execution time instead of having it embedded.
@@ -593,7 +595,7 @@ SELECT command FROM cron.job WHERE jobname = 'escalate-clusters-daily';
 ```sql
 -- Step 1: stash the secret in Vault. Returns a UUID id; name is human-readable lookup key.
 SELECT vault.create_secret(
-  'ww52+zdtNkTY50LZaddmGG4JDso5uuFZUECUJxrdHNY=',
+  '<old-secret-redacted>',
   'cron_secret',
   'Shared secret for authenticating pg_cron → Edge Function calls'
 );

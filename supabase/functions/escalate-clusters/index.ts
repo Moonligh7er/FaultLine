@@ -15,6 +15,16 @@ const REPLY_TO = Deno.env.get('REPLY_TO') || '';
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL') || '';
 const SUPABASE_SERVICE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') || '';
 
+// x-cron-secret is checked against Vault via verify_cron_secret()
+// (migration 024), so rotating the secret never needs a redeploy.
+async function isCronCaller(req: Request): Promise<boolean> {
+  const secret = req.headers.get('x-cron-secret');
+  if (!secret) return false;
+  const admin = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY);
+  const { data, error } = await admin.rpc('verify_cron_secret', { p_secret: secret });
+  return !error && data === true;
+}
+
 // Optional API keys for direct city-system integration.
 // When unset, API-method authorities fall back to email automatically.
 const OPEN311_JURISDICTION_ID = Deno.env.get('OPEN311_JURISDICTION_ID') || '';
@@ -60,10 +70,7 @@ Deno.serve(async (req) => {
 
   // Auth: cron only. Any signed-in user used to be able to trigger a run,
   // which sends real emails to authorities.
-  const cronSecret = req.headers.get('x-cron-secret');
-  const expectedCronSecret = Deno.env.get('CRON_SECRET') || '';
-
-  if (!expectedCronSecret || cronSecret !== expectedCronSecret) {
+  if (!(await isCronCaller(req))) {
     return new Response(JSON.stringify({ error: 'Unauthorized' }), { status: 401, headers: { 'Content-Type': 'application/json' } });
   }
 
