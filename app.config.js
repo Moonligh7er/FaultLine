@@ -4,6 +4,7 @@ module.exports = {
   expo: {
     name: 'Fault Line',
     slug: 'fault-line',
+    scheme: 'faultline',
     version: '1.0.0',
     orientation: 'portrait',
     icon: './assets/icon.png',
