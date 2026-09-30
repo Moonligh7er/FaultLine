@@ -3,13 +3,23 @@
 // API-escalated cluster whose external ticket is still open, and updates
 // the cluster + escalation_log with the city's reported status.
 //
-// Authenticates via the same CRON_SECRET header as escalate-clusters so the
+// Authenticates via the same x-cron-secret (Vault) as escalate-clusters so the
 // pg_cron job can call it without a user session.
 
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL') || '';
 const SUPABASE_SERVICE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') || '';
+
+// x-cron-secret is checked against Vault via verify_cron_secret()
+// (migration 024), so rotating the secret never needs a redeploy.
+async function isCronCaller(req: Request): Promise<boolean> {
+  const secret = req.headers.get('x-cron-secret');
+  if (!secret) return false;
+  const admin = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY);
+  const { data, error } = await admin.rpc('verify_cron_secret', { p_secret: secret });
+  return !error && data === true;
+}
 
 // Map Open311/SeeClickFix status strings back to our internal report status.
 // Keep the set small — anything we don't recognize stays as-is and is logged.
@@ -30,9 +40,7 @@ Deno.serve(async (req) => {
     return new Response('Method not allowed', { status: 405 });
   }
 
-  const cronSecret = req.headers.get('x-cron-secret');
-  const expectedCronSecret = Deno.env.get('CRON_SECRET') || '';
-  if (!cronSecret || cronSecret !== expectedCronSecret) {
+  if (!(await isCronCaller(req))) {
     return new Response(JSON.stringify({ error: 'Unauthorized' }), {
       status: 401,
       headers: { 'Content-Type': 'application/json' },
