@@ -86,7 +86,7 @@ export default function FeedbackScreen() {
       <FadeIn style={styles.header}>
         <View style={styles.activeDevPill}>
           <Pulse style={styles.activeDevDot} />
-          <Text style={styles.activeDevText}>Active Development</Text>
+          <Text style={styles.activeDevText}>Beta</Text>
         </View>
         <Text style={styles.title}>Help Shape Fault Line</Text>
         <Text style={styles.subtitle}>
@@ -190,13 +190,13 @@ const styles = StyleSheet.create({
   header: { padding: SPACING.lg, alignItems: 'center' },
   activeDevPill: {
     flexDirection: 'row', alignItems: 'center', gap: SPACING.xs,
-    backgroundColor: 'rgba(0,200,83,0.08)',
-    borderWidth: 1, borderColor: 'rgba(0,200,83,0.25)',
+    backgroundColor: 'rgba(139,92,246,0.08)',
+    borderWidth: 1, borderColor: 'rgba(139,92,246,0.3)',
     paddingHorizontal: SPACING.md, paddingVertical: SPACING.xs,
     borderRadius: BORDER_RADIUS.round, marginBottom: SPACING.md,
   },
-  activeDevDot: { width: 8, height: 8, borderRadius: 4, backgroundColor: '#00C853' },
-  activeDevText: { fontSize: FONT_SIZES.xs, fontWeight: '700', color: '#00C853', textTransform: 'uppercase', letterSpacing: 1 },
+  activeDevDot: { width: 8, height: 8, borderRadius: 4, backgroundColor: '#8B5CF6' },
+  activeDevText: { fontSize: FONT_SIZES.xs, fontWeight: '700', color: '#8B5CF6', textTransform: 'uppercase', letterSpacing: 1 },
   title: { fontSize: FONT_SIZES.xxl, fontWeight: '800', color: COLORS.text, textAlign: 'center', marginBottom: SPACING.xs },
   subtitle: { fontSize: FONT_SIZES.md, color: COLORS.textSecondary, textAlign: 'center', maxWidth: 360 },
   tabRow: { flexDirection: 'row', gap: SPACING.xs, paddingHorizontal: SPACING.md, marginBottom: SPACING.md },
