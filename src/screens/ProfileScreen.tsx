@@ -303,11 +303,11 @@ export default function ProfileScreen() {
         </View>
       </View>
 
-      {/* Active Development — Feedback section */}
+      {/* Beta — Feedback section */}
       <View style={styles.section}>
         <View style={styles.activeDevHeader} accessibilityRole="header">
           <Pulse style={styles.activeDevDot} />
-          <Text style={styles.activeDevHeaderText}>Active Development</Text>
+          <Text style={styles.activeDevHeaderText}>Beta</Text>
         </View>
         <HapticButton
           style={styles.feedbackCard}
@@ -315,7 +315,7 @@ export default function ProfileScreen() {
           hapticType="medium"
           accessibilityLabel="Send feedback or request a feature"
         >
-          <Icon name="message-text-outline" size={22} color={'#00C853'} />
+          <Icon name="message-text-outline" size={22} color={'#8B5CF6'} />
           <View style={{ flex: 1 }}>
             <Text style={styles.feedbackCardTitle}>Send Feedback / Request a Feature</Text>
             <Text style={styles.feedbackCardSubtitle}>
@@ -413,8 +413,8 @@ const styles = StyleSheet.create({
   settingsText: { fontSize: FONT_SIZES.md, color: COLORS.text },
 
   activeDevHeader: { flexDirection: 'row', alignItems: 'center', gap: SPACING.sm, marginBottom: SPACING.sm },
-  activeDevDot: { width: 10, height: 10, borderRadius: 5, backgroundColor: '#00C853' },
-  activeDevHeaderText: { fontSize: FONT_SIZES.sm, fontWeight: '700', color: '#00C853', textTransform: 'uppercase', letterSpacing: 1 },
+  activeDevDot: { width: 10, height: 10, borderRadius: 5, backgroundColor: '#8B5CF6' },
+  activeDevHeaderText: { fontSize: FONT_SIZES.sm, fontWeight: '700', color: '#8B5CF6', textTransform: 'uppercase', letterSpacing: 1 },
   feedbackCard: {
     flexDirection: 'row', alignItems: 'center', gap: SPACING.md,
     backgroundColor: 'rgba(0,200,83,0.06)',
