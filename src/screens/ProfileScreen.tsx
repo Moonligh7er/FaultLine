@@ -5,6 +5,7 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { COLORS, SPACING, FONT_SIZES, BORDER_RADIUS, SHADOWS } from '../constants/theme';
 import { RootStackParamList } from '../types';
 import { supabase } from '../services/supabase';
+import { AUTH_CALLBACK_URL } from '../services/authLinking';
 import { UserProfile } from '../types';
 import { getQueueSize, processQueue } from '../services/offlineQueue';
 import { getStreak, StreakInfo } from '../services/socialFeatures';
@@ -34,6 +35,16 @@ export default function ProfileScreen() {
     getQueueSize().then(setOfflineCount);
     getStreak().then(setStreakInfo);
     getCachedRegions().then(setCachedRegions);
+
+    // The magic link completes in services/authLinking.ts while this screen
+    // is mounted — refresh when the session lands.
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
+      if (event === 'SIGNED_IN') {
+        setAuthSent(false);
+        checkAuth();
+      }
+    });
+    return () => subscription.unsubscribe();
   }, []);
 
   const checkAuth = async () => {
@@ -86,7 +97,10 @@ export default function ProfileScreen() {
       return;
     }
     setAuthLoading(true);
-    const { error } = await supabase.auth.signInWithOtp({ email: trimmed });
+    const { error } = await supabase.auth.signInWithOtp({
+      email: trimmed,
+      options: { emailRedirectTo: AUTH_CALLBACK_URL },
+    });
     setAuthLoading(false);
     if (error) {
       Alert.alert(t('error'), error.message);

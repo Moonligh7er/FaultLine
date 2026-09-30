@@ -13,6 +13,8 @@ export const LINKING_CONFIG = {
     'https://fault-line.dev',
     'faultline://',
   ],
+  // Magic-link redirects are consumed by services/authLinking.ts, not routed.
+  filter: (url: string) => !url.includes('auth/callback'),
   config: {
     screens: {
       MainTabs: {

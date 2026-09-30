@@ -1,12 +1,46 @@
 import { supabase } from './supabase';
 import { Report, ReportCategory, ReportStatus, ReportSeverity } from '../types';
+import { uploadAllMedia } from './media';
 
 type CreateReportInput = Omit<Report, 'id' | 'createdAt' | 'updatedAt' | 'upvoteCount' | 'confirmCount'>;
 
-export async function createReport(report: CreateReportInput): Promise<Report | null> {
+// Lowercase v4 UUID — must match the reports/<uuid>/ pattern in the
+// report-media storage policy (migration 022).
+function generateReportId(): string {
+  const c = (globalThis as any).crypto;
+  if (c?.randomUUID) return c.randomUUID();
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (ch) => {
+    const r = (Math.random() * 16) | 0;
+    return (ch === 'x' ? r : (r & 0x3) | 0x8).toString(16);
+  });
+}
+
+// Upload media under a client-generated report id, then insert the report
+// with the uploaded URLs in one step. Guests can't UPDATE reports, so media
+// has to be attached at INSERT time. Returns null on any failure so callers
+// can fall back to the offline queue (which retries through this function).
+export async function submitReport(
+  report: CreateReportInput,
+  onProgress?: (completed: number, total: number) => void
+): Promise<Report | null> {
+  const id = generateReportId();
+  let media = report.media;
+  if (media.length > 0) {
+    try {
+      media = await uploadAllMedia(media, id, onProgress);
+    } catch (err) {
+      console.error('Media upload failed:', err);
+      return null;
+    }
+  }
+  return createReport({ ...report, media }, id);
+}
+
+export async function createReport(report: CreateReportInput, id?: string): Promise<Report | null> {
   const { data, error } = await supabase
     .from('reports')
     .insert({
+      ...(id && { id }),
       user_id: report.userId,
       category: report.category,
       latitude: report.location.latitude,
@@ -26,7 +60,9 @@ export async function createReport(report: CreateReportInput): Promise<Report | 
       authority_id: report.authorityId,
       cluster_id: report.clusterId,
       submission_method: report.submissionMethod,
-      is_anonymous: report.isAnonymous,
+      // RLS (migration 008) only accepts a user-less insert when it's
+      // flagged anonymous, so guests are always anonymous.
+      is_anonymous: report.isAnonymous || !report.userId,
       sensor_detected: report.sensorDetected,
       offline_queued: report.offlineQueued,
       is_quick_report: report.isQuickReport,

@@ -34,6 +34,7 @@ import {
   unsubscribeFromReportUpdates,
 } from './src/services/notifications';
 import { supabase } from './src/services/supabase';
+import { listenForAuthLinks } from './src/services/authLinking';
 import { initCrashReporting, setUser } from './src/services/crashReporting';
 import { checkCommuteReports, checkWeeklyDigest, recordLocationPoint } from './src/services/smartPush';
 import { batchSyncStatuses } from './src/services/authorityApi';
@@ -112,6 +113,8 @@ export default function App() {
       }
     });
 
+    const stopAuthLinks = listenForAuthLinks();
+
     const { data: { subscription: authSub } } = supabase.auth.onAuthStateChange(
       (event, session) => {
         if (event === 'SIGNED_IN' && session?.user) {
@@ -143,6 +146,7 @@ export default function App() {
     });
 
     return () => {
+      stopAuthLinks();
       authSub.unsubscribe();
       unsubscribeFromReportUpdates();
       stopProximityMonitoring();
