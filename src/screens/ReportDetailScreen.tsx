@@ -14,7 +14,7 @@ import { COLORS, SPACING, FONT_SIZES, BORDER_RADIUS, SHADOWS } from '../constant
 import { CATEGORIES, HAZARD_LEVELS, SIZE_RATINGS, URGENCY_LEVELS, CONDITION_LEVELS } from '../constants/categories';
 import { Share } from 'react-native';
 import { Report, MediaAttachment } from '../types';
-import { generateDemandLetter, generateAIEnhancedLetter } from '../services/legalGenerator';
+import { generateAIEnhancedLetter, isLetterSupported } from '../services/legalGenerator';
 import { generateClaimEvidence, shareClaimEvidence } from '../services/insuranceClaim';
 import { getDeterioriationTimelapse, shareTimelapse } from '../services/deteriorationTimelapse';
 import { captureVerificationPhoto, submitRepairVerification, RepairGrade } from '../services/repairVerification';
@@ -314,10 +314,22 @@ export default function ReportDetailScreen() {
           style={styles.toolButton}
           hapticType="medium"
           onPress={async () => {
+            if (!isLetterSupported(report.location.state)) {
+              Alert.alert(
+                'Letter not available here',
+                report.location.state
+                  ? `Letter templates currently cover Massachusetts, Rhode Island, and New Hampshire. This report is in ${report.location.state}, so no letter can be generated yet — we won't cite another state's law.`
+                  : "We couldn't determine which state this report is in, so no letter can be generated.",
+              );
+              return;
+            }
             const letter = await generateAIEnhancedLetter(report, authorityName || 'Public Works', report.confirmCount + 1);
+            const reviewNote = letter.verificationStatus === 'verified'
+              ? ''
+              : '\n\n⚠ Not yet reviewed by an attorney — verify before sending.';
             Alert.alert(
               letter.isOverdue ? 'OVERDUE — Statutory Period Expired' : 'Demand Letter Generated',
-              `${letter.daysSinceReport} days since report. ${letter.isOverdue ? `${letter.daysSinceReport - letter.noticePeriodDays} days past the ${letter.noticePeriodDays}-day statutory deadline.` : `${letter.noticePeriodDays - letter.daysSinceReport} days remain.`}\n\nStatute: ${letter.statute}`,
+              `${letter.daysSinceReport} days since report. ${letter.isOverdue ? `${letter.daysSinceReport - letter.noticePeriodDays} days past the ${letter.noticePeriodDays}-day statutory deadline.` : `${letter.noticePeriodDays - letter.daysSinceReport} days remain.`}\n\nStatute: ${letter.statute}${reviewNote}`,
               [
                 { text: 'Share Letter', onPress: () => Share.share({ message: letter.letterText, title: 'Demand Letter' }) },
                 { text: 'Close' },

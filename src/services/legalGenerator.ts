@@ -47,6 +47,8 @@ export interface DemandLetterData {
   // user sees exactly what claim they are about to send.
   verificationStatus: VerificationStatus;
   statuteVersion: string;
+  // The ⚠ UNREVIEWED block at the top of letterText ('' once verified).
+  banner: string;
   disclaimer: string;
   // Routing chain of custody — same pattern, but for the addressee lookup.
   routingVersion?: string;
@@ -58,7 +60,11 @@ export interface DemandLetterData {
   templateDisclaimer: string;
 }
 
-const DEFAULT_STATE = 'MA';
+/** Letters exist only for states in the statute dataset. Callers check
+ *  this first — we never cite another state's law as a fallback. */
+export function isLetterSupported(state?: string): boolean {
+  return !!state && !!getStatuteRecord(state);
+}
 
 function unreviewedBanner(
   statute: StateStatuteRecord,
@@ -115,10 +121,11 @@ export function generateDemandLetter(
   claimantName?: string,
   damageDescription?: string,
 ): DemandLetterData {
-  const state = report.location.state || DEFAULT_STATE;
-  // Fall back to MA if the state is not in the dataset, but keep the
-  // verification chain of custody honest by tagging the fallback.
-  const record = getStatuteRecord(state) || getStatuteRecord(DEFAULT_STATE)!;
+  const state = report.location.state;
+  const record = state ? getStatuteRecord(state) : undefined;
+  if (!state || !record) {
+    throw new Error(`No statute template for state "${state ?? 'unknown'}" — check isLetterSupported() first`);
+  }
   const routing = getRouting(report.category, state);
   const framing = getFraming(report.category);
   const template = getTemplate(framing);
@@ -253,6 +260,7 @@ ${templateFooter}
     hazardLevel: hazard?.label || record.title,
     verificationStatus: record.verificationStatus,
     statuteVersion: record.version,
+    banner,
     disclaimer,
     routingVersion: routing?.version,
     routingVerificationStatus: routing?.verificationStatus,
@@ -288,8 +296,8 @@ export function getSupportedStates(): string[] {
 }
 
 // AI-enhanced version — falls back to base letter if AI unavailable.
-// The banner and disclaimer are set on the *base* letter body before AI
-// touches it, so the unreviewed-content warning survives any rewrite.
+// The model is told to keep the warning and disclaimer, but that isn't
+// trusted: keepSafeguards() re-attaches them if the rewrite dropped them.
 export async function generateAIEnhancedLetter(
   report: Report,
   authorityName: string,
@@ -303,17 +311,29 @@ export async function generateAIEnhancedLetter(
     const enhanced = await aiEnhance(
       base.letterText,
       base.category,
-      report.location.state || DEFAULT_STATE,
+      report.location.state!,
       base.daysSinceReport,
       base.reportCount,
       base.hazardLevel,
     );
     if (enhanced && enhanced !== base.letterText) {
-      return { ...base, letterText: enhanced };
+      return { ...base, letterText: keepSafeguards(enhanced, base) };
     }
   } catch {
     // AI unavailable — base letter is already complete and functional.
   }
 
   return base;
+}
+
+function keepSafeguards(text: string, base: DemandLetterData): string {
+  let out = text.trim();
+  if (base.banner && !out.includes('UNREVIEWED LEGAL CONTENT')) {
+    out = `${base.banner.trim()}\n\n${out}`;
+  }
+  const disclaimer = base.disclaimer.trim();
+  if (disclaimer && !out.includes(disclaimer.slice(0, 80))) {
+    out = `${out}\n\n${disclaimer}`;
+  }
+  return out;
 }
