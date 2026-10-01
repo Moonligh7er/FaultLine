@@ -120,7 +120,7 @@ export async function enhanceDemandLetter(
   const { data, error } = await supabase.functions.invoke('ai-generate', {
     body: {
       task: 'legal_letter',
-      prompt: `Enhance this infrastructure defect demand letter for ${state}. The base is legally valid — improve persuasive impact.
+      prompt: `Improve the clarity and persuasive impact of this infrastructure defect notice letter for ${state}. Its statute citation has NOT been reviewed by an attorney, so do not add legal claims of your own.
 
 STATE: ${state} | CATEGORY: ${category} | DAYS OPEN: ${daysSinceReport} | REPORTS: ${reportCount} | HAZARD: ${hazardLevel}
 
@@ -129,11 +129,12 @@ ${baseLetter}
 
 Instructions:
 1. Strengthen language proportional to hazard level and days overdue
-2. Add typical liability dollar amounts for ${category} claims if known
-3. Reference ONLY the statute already cited — do NOT add uncertain citations
-4. Make DEMAND section more specific and time-bound (inspect within 7 days, remediate within 30)
+2. Do NOT add dollar amounts, damages figures, case citations, statutes, or any facts not in the base letter
+3. Reference ONLY the statute already cited
+4. Make the DEMAND section more specific and time-bound (inspect within 7 days, remediate within 30)
 5. Preserve all factual data exactly
-6. Return ONLY the enhanced letter text`,
+6. Keep the "⚠ UNREVIEWED LEGAL CONTENT" block and every disclaimer/footer section verbatim
+7. Return ONLY the letter text`,
     },
   });
 
