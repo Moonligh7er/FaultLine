@@ -23,184 +23,24 @@ export interface StatusUpdate {
 
 // ============================================================
 // SUBMIT TO AUTHORITY
+// Queues the report server-side (send-report-email edge function). Nothing
+// is sent from the device: the message waits in the outbound review queue
+// (or is auto-approved when auto_send is on) and dispatch-outbound delivers
+// it via the authority's city API or email.
 // ============================================================
 
 export async function submitToAuthority(
   report: Report,
   authority: Authority
 ): Promise<SubmissionResult> {
-  // Try submission methods in priority order
-  const methods = [...authority.submissionMethods].sort((a, b) => a.priority - b.priority);
-
-  for (const method of methods) {
-    let result: SubmissionResult | null = null;
-
-    switch (method.method) {
-      case 'api':
-        if (method.endpoint.includes('open311')) {
-          result = await submitOpen311(report, method.endpoint);
-        } else if (method.endpoint.includes('seeclickfix')) {
-          result = await submitSeeClickFix(report, method.endpoint);
-        }
-        break;
-      case 'email':
-        result = await submitViaEmail(report, authority, method.endpoint);
-        break;
-    }
-
-    if (result?.success) {
-      // Log the submission
-      await supabase.from('escalation_log').insert({
-        cluster_id: report.clusterId,
-        authority_id: authority.id,
-        method: method.method,
-        recipient: method.endpoint,
-        subject: `Infrastructure report: ${report.category}`,
-        status: 'sent',
-        sent_at: new Date().toISOString(),
-      });
-
-      return result;
-    }
-  }
-
-  return { success: false, method: 'none', error: 'All submission methods failed' };
-}
-
-// ============================================================
-// OPEN311 API (Boston, many other cities)
-// ============================================================
-
-async function submitOpen311(report: Report, endpoint: string): Promise<SubmissionResult> {
   try {
-    const categoryMap: Record<string, string> = {
-      pothole: 'Pothole Repair',
-      streetlight: 'Street Light Outages',
-      sidewalk: 'Sidewalk Repair',
-      graffiti: 'Graffiti Removal',
-      signage: 'Sign Repair',
-      drainage: 'Catch Basin',
-      road_debris: 'Road Debris',
-    };
-
-    const serviceName = categoryMap[report.category] || 'General Request';
-
-    const body = new URLSearchParams({
-      service_code: report.category,
-      lat: String(report.location.latitude),
-      long: String(report.location.longitude),
-      description: [
-        report.description || `${serviceName} reported via Fault Line`,
-        `Hazard: ${report.severity.hazardLevel}`,
-        report.severity.sizeRating ? `Size: ${report.severity.sizeRating}` : '',
-        `${report.upvoteCount} community upvotes, ${report.confirmCount} confirmations`,
-      ].filter(Boolean).join('\n'),
-      address_string: report.location.address || '',
-    });
-
-    // Add photo URL if available
-    const photoUrl = report.media.find((m) => m.uploadedUrl)?.uploadedUrl;
-    if (photoUrl) {
-      body.append('media_url', photoUrl);
-    }
-
-    const response = await fetch(`${endpoint}`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      body: body.toString(),
-    });
-
-    if (!response.ok) {
-      return { success: false, method: 'open311', error: `HTTP ${response.status}` };
-    }
-
-    const data = await response.json();
-    const ticket = Array.isArray(data) ? data[0] : data;
-
-    return {
-      success: true,
-      externalId: ticket?.service_request_id || ticket?.id,
-      trackingUrl: ticket?.service_request_id
-        ? `${endpoint.replace('/requests.json', '')}/requests/${ticket.service_request_id}`
-        : undefined,
-      method: 'open311',
-    };
-  } catch (err) {
-    return { success: false, method: 'open311', error: String(err) };
-  }
-}
-
-// ============================================================
-// SEECLICKFIX API (Cambridge, many other cities)
-// ============================================================
-
-async function submitSeeClickFix(report: Report, endpoint: string): Promise<SubmissionResult> {
-  try {
-    const response = await fetch(endpoint, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        lat: report.location.latitude,
-        lng: report.location.longitude,
-        address: report.location.address || '',
-        summary: `${report.category.replace('_', ' ')} — reported via Fault Line`,
-        description: [
-          report.description || '',
-          `Hazard level: ${report.severity.hazardLevel}`,
-          report.severity.sizeRating ? `Size: ${report.severity.sizeRating}` : '',
-          `Community verified: ${report.confirmCount} confirmations`,
-        ].filter(Boolean).join('\n'),
-        category_id: report.category,
-        ...(report.media[0]?.uploadedUrl && {
-          image_url: report.media[0].uploadedUrl,
-        }),
-      }),
-    });
-
-    if (!response.ok) {
-      return { success: false, method: 'seeclickfix', error: `HTTP ${response.status}` };
-    }
-
-    const data = await response.json();
-
-    return {
-      success: true,
-      externalId: data?.id || data?.issue_id,
-      trackingUrl: data?.html_url,
-      method: 'seeclickfix',
-    };
-  } catch (err) {
-    return { success: false, method: 'seeclickfix', error: String(err) };
-  }
-}
-
-// ============================================================
-// EMAIL SUBMISSION (via Resend edge function)
-// ============================================================
-
-async function submitViaEmail(
-  report: Report,
-  authority: Authority,
-  email: string
-): Promise<SubmissionResult> {
-  try {
-    // The function looks up the report and the authority's email itself —
-    // clients can't choose the recipient or the body.
     const { data, error } = await supabase.functions.invoke('send-report-email', {
       body: { reportId: report.id, authorityId: authority.id },
     });
-
-    if (error) {
-      return { success: false, method: 'email', error: error.message };
-    }
-
-    return {
-      success: true,
-      externalId: data?.emailId,
-      method: 'email',
-    };
+    if (error) return { success: false, method: 'queue', error: error.message };
+    return { success: true, externalId: data?.ref, method: 'queue' };
   } catch (err) {
-    return { success: false, method: 'email', error: String(err) };
+    return { success: false, method: 'queue', error: String(err) };
   }
 }
 

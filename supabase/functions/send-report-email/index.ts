@@ -1,18 +1,17 @@
 // Supabase Edge Function: send-report-email
-// All email sending goes through this function.
-// The Resend API key ONLY exists here — never in the client.
+// Queues a single report for submission to its authority (city API or email).
+// Name kept for client compatibility — nothing is sent here: the message goes
+// into public.outbound_messages for admin review (or 'approved' when
+// app_settings.auto_send is on) and dispatch-outbound sends it.
 //
-// Abuse guards: the caller only names a report + authority. The report
-// must be the caller's own and recent; the recipient is the authority's
-// email on file (never caller-supplied); the body is built here from the
-// stored report; each report is emailed at most once (report_email_sends);
-// and each user is rate-limited (edge_rate_limit_log, migration 023).
+// Abuse guards: the caller only names a report + authority. The report must
+// be the caller's own and recent; recipients come from the authority's
+// methods on file (never caller-supplied); the body is built here from the
+// stored report; one live message per report (unique index); and each user
+// is rate-limited (edge_rate_limit_log, migration 023).
 
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 
-const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY') || '';
-const FROM_EMAIL = Deno.env.get('FROM_EMAIL') || 'onboarding@resend.dev';
-const REPLY_TO = Deno.env.get('REPLY_TO') || '';
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL') || '';
 const SUPABASE_ANON = Deno.env.get('SUPABASE_ANON_KEY') || '';
 const SUPABASE_SERVICE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') || '';
@@ -46,26 +45,28 @@ async function withinRateLimit(
   return !error;
 }
 
+type Method = { method?: string; endpoint?: string; priority?: number; protocol?: string };
+
+/** Methods that can be automated: API endpoints and valid email addresses. */
+function usableMethods(raw: unknown): Method[] {
+  return ((raw as Method[] | null) ?? []).filter((m) =>
+    typeof m?.endpoint === 'string' &&
+    ((m.method === 'api' && m.endpoint.startsWith('https://')) ||
+     (m.method === 'email' && EMAIL_RE.test(m.endpoint))),
+  );
+}
+
 Deno.serve(async (req) => {
   if (req.method !== 'POST') {
     return new Response('Method not allowed', { status: 405 });
   }
 
-  // Auth: require valid user token
   const authHeader = req.headers.get('authorization');
-  if (!authHeader?.startsWith('Bearer ')) {
-    return json({ error: 'Unauthorized' }, 401);
-  }
+  if (!authHeader?.startsWith('Bearer ')) return json({ error: 'Unauthorized' }, 401);
 
   const supabase = createClient(SUPABASE_URL, SUPABASE_ANON);
   const { data: { user }, error: authError } = await supabase.auth.getUser(authHeader.substring(7));
-  if (authError || !user) {
-    return json({ error: 'Invalid token' }, 401);
-  }
-
-  if (!RESEND_API_KEY) {
-    return json({ error: 'Email service not configured' }, 503);
-  }
+  if (authError || !user) return json({ error: 'Invalid token' }, 401);
 
   const { reportId, authorityId } = await req.json().catch(() => ({}));
   if (typeof reportId !== 'string' || !UUID_RE.test(reportId) ||
@@ -80,11 +81,9 @@ Deno.serve(async (req) => {
     .select('id, user_id, category, latitude, longitude, address, city, state, description, hazard_level, upvote_count, confirm_count, media, created_at')
     .eq('id', reportId)
     .maybeSingle();
-  if (!report || report.user_id !== user.id) {
-    return json({ error: 'Report not found' }, 404);
-  }
+  if (!report || report.user_id !== user.id) return json({ error: 'Report not found' }, 404);
   if (Date.now() - new Date(report.created_at).getTime() > MAX_REPORT_AGE_MS) {
-    return json({ error: 'Report is too old for direct email' }, 409);
+    return json({ error: 'Report is too old for direct submission' }, 409);
   }
 
   const { data: authority } = await admin
@@ -92,38 +91,30 @@ Deno.serve(async (req) => {
     .select('id, name, submission_methods, is_active')
     .eq('id', authorityId)
     .maybeSingle();
-  const to = (authority?.submission_methods as { method?: string; endpoint?: string }[] | null)
-    ?.find((m) => m?.method === 'email' && typeof m.endpoint === 'string' && EMAIL_RE.test(m.endpoint))
-    ?.endpoint;
-  if (!authority || authority.is_active === false || !to) {
-    return json({ error: 'Authority has no email on file' }, 422);
+  const methods = usableMethods(authority?.submission_methods);
+  if (!authority || authority.is_active === false || methods.length === 0) {
+    return json({ error: 'Authority has no API or email on file' }, 422);
   }
 
   if (!(await withinRateLimit(user.id, 'send-report-email', [
     { max: 5, windowMs: 3600000 },
     { max: 20, windowMs: 86400000 },
   ]))) {
-    return json({ error: 'Email rate limit exceeded' }, 429);
+    return json({ error: 'Rate limit exceeded' }, 429);
   }
 
-  // Claim the report before sending so it can only be emailed once.
-  const { error: claimError } = await admin
-    .from('report_email_sends')
-    .insert({ report_id: report.id, user_id: user.id, authority_id: authority.id, recipient: to });
-  if (claimError) {
-    return claimError.code === '23505'
-      ? json({ error: 'Report already emailed' }, 409)
-      : json({ error: 'Could not record send' }, 500);
-  }
+  const { data: link } = await admin
+    .from('cluster_reports')
+    .select('cluster_id')
+    .eq('report_id', report.id)
+    .maybeSingle();
 
   const category = (report.category || 'issue').replace(/_/g, ' ');
   const location = [report.address, report.city, report.state].filter(Boolean).join(', ');
   const description = (report.description || '').slice(0, MAX_DESCRIPTION_CHARS);
-  const mediaUrls = ((report.media || []) as { uploadedUrl?: string }[])
-    .map((m) => m?.uploadedUrl)
+  const mediaUrls = ((report.media || []) as { uploadedUrl?: string; url?: string }[])
+    .map((m) => m?.uploadedUrl ?? m?.url)
     .filter((u): u is string => typeof u === 'string' && u.startsWith(`${SUPABASE_URL}/storage/`));
-
-  const subject = `[Fault Line] Community Report: ${category} at ${location || 'reported location'}`;
 
   const body = `Dear ${authority.name || 'Public Works Department'},
 
@@ -142,39 +133,46 @@ Community Impact: ${report.upvote_count || 0} upvotes, ${report.confirm_count ||
 ${mediaUrls.length ? `Photos: ${mediaUrls.join(', ')}` : ''}
 
 This report was submitted via Fault Line, a community infrastructure reporting platform.
+To update its status, reply to this email and keep the [FL-…] tag in the subject line.
 
 Thank you for your service to the community.
 
 Fault Line Community Reports`;
 
-  const releaseClaim = () => admin.from('report_email_sends').delete().eq('report_id', report.id);
+  const { data: autoSend } = await admin.rpc('get_setting', { p_key: 'auto_send' });
 
-  try {
-    const response = await fetch('https://api.resend.com/emails', {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${RESEND_API_KEY}`,
-        'Content-Type': 'application/json',
+  const { data: row, error } = await admin
+    .from('outbound_messages')
+    .insert({
+      kind: 'report_submission',
+      report_id: report.id,
+      cluster_id: link?.cluster_id ?? null,
+      authority_id: authority.id,
+      methods,
+      recipient: methods[0]?.endpoint ?? null,
+      subject: `Community Report: ${category} at ${location || 'reported location'}`,
+      body,
+      payload: {
+        category: report.category,
+        address: report.address,
+        latitude: report.latitude,
+        longitude: report.longitude,
+        api_description: `${description || `${category} reported by a resident`}. Hazard: ${report.hazard_level}. Submitted via Fault Line (fault-line.dev).`,
+        image_url: mediaUrls[0] ?? null,
+        cluster_id: link?.cluster_id ?? null,
       },
-      body: JSON.stringify({
-        from: `Fault Line <${FROM_EMAIL}>`,
-        to: [to],
-        subject,
-        text: body,
-        ...(REPLY_TO ? { reply_to: REPLY_TO } : {}),
-      }),
-    });
+      status: autoSend === true ? 'approved' : 'pending_review',
+      created_by: user.id,
+    })
+    .select('ref, status')
+    .single();
 
-    if (!response.ok) {
-      await releaseClaim();
-      return json({ error: `Email send failed: ${response.status}` }, 502);
-    }
-
-    const result = await response.json();
-    await admin.from('report_email_sends').update({ resend_id: result.id }).eq('report_id', report.id);
-    return json({ success: true, emailId: result.id, recipient: to });
-  } catch (err) {
-    await releaseClaim();
-    return json({ error: String(err) }, 500);
+  if (error) {
+    return error.code === '23505'
+      ? json({ error: 'Report already queued' }, 409)
+      : json({ error: 'Could not queue report' }, 500);
   }
+  if (row.status === 'approved') await admin.rpc('trigger_outbound_dispatch');
+
+  return json({ queued: true, ref: row.ref, status: row.status });
 });
