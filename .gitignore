@@ -103,3 +103,7 @@ scripts/decisions.txt
 # Kept local only per the doc's own §8 guidance:
 # "Do not commit funder-specific application text to the public repo."
 GRANTS.md
+
+# Expo prebuild output (Continuous Native Generation) — regenerate, never commit
+/android/
+/ios/

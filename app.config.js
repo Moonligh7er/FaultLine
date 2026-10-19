@@ -1,5 +1,13 @@
 require('dotenv').config();
 
+// The native Google Mobile Ads SDK crashes at launch without an app id, and the
+// config plugin only reads it from its own options. Use the real AdMob ids
+// when set; otherwise Google's published sample ids, so non-ad builds still run
+// (AdBanner renders nothing until real ad-unit ids exist).
+const ADMOB_TEST_ANDROID = 'ca-app-pub-3940256099942544~3347511713';
+const ADMOB_TEST_IOS = 'ca-app-pub-3940256099942544~1458002511';
+const realAdmobId = (v) => (v && !v.includes('xxxx') ? v : null);
+
 module.exports = {
   expo: {
     name: 'Fault Line',
@@ -55,12 +63,10 @@ module.exports = {
         'RECORD_AUDIO',
         'com.google.android.gms.permission.AD_ID',
       ],
-      ...(process.env.ADMOB_APP_ID_ANDROID &&
-        !process.env.ADMOB_APP_ID_ANDROID.includes('xxxx') && {
-          config: {
-            googleMobileAdsAppId: process.env.ADMOB_APP_ID_ANDROID,
-          },
-        }),
+      // AdMob app id is set via the react-native-google-mobile-ads plugin below.
+      ...(process.env.GOOGLE_MAPS_ANDROID_KEY && {
+        config: { googleMaps: { apiKey: process.env.GOOGLE_MAPS_ANDROID_KEY } },
+      }),
       predictiveBackGestureEnabled: false,
     },
     plugins: [
@@ -73,7 +79,13 @@ module.exports = {
       'expo-notifications',
       'expo-sharing',
       'expo-tracking-transparency',
-      'react-native-google-mobile-ads',
+      [
+        'react-native-google-mobile-ads',
+        {
+          androidAppId: realAdmobId(process.env.ADMOB_APP_ID_ANDROID) ?? ADMOB_TEST_ANDROID,
+          iosAppId: realAdmobId(process.env.ADMOB_APP_ID_IOS) ?? ADMOB_TEST_IOS,
+        },
+      ],
       [
         '@sentry/react-native/expo',
         {
@@ -88,6 +100,8 @@ module.exports = {
       sentryDsn: process.env.SENTRY_DSN || '',
       admobBannerIdAndroid: process.env.ADMOB_BANNER_ID_ANDROID || '',
       admobBannerIdIos: process.env.ADMOB_BANNER_ID_IOS || '',
+      // Read by src/services/maps.ts — Android maps crash without a key.
+      googleMapsAndroidKey: Boolean(process.env.GOOGLE_MAPS_ANDROID_KEY),
       eas: {
         projectId: process.env.EAS_PROJECT_ID || '',
       },

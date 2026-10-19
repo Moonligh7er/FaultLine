@@ -144,14 +144,14 @@ export default function HomeScreen() {
         <Text style={styles.sectionTitle} accessibilityRole="header">{t('quickReport')}</Text>
         <View style={styles.categoryGrid}>
           {QUICK_CATEGORIES.map((cat, i) => (
-            <StaggeredItem key={cat.key} index={i}>
+            <StaggeredItem key={cat.key} index={i} style={styles.categoryCell}>
               <HapticButton
-                style={[styles.categoryCard, { minHeight: 72, minWidth: 72 }]}
+                style={[styles.categoryCard, { minHeight: 72 }]}
                 onPress={() => startReport(cat.key)}
                 hapticType="light"
               >
                 <Icon name={cat.icon} size={IS_SMALL_SCREEN ? 22 : 26} color={COLORS.primary} />
-                <Text style={styles.categoryLabel} accessibilityLabel={`Report ${cat.label}`}>{cat.label}</Text>
+                <Text style={styles.categoryLabel} accessibilityLabel={`Report ${cat.label}`} numberOfLines={2} adjustsFontSizeToFit minimumFontScale={0.8}>{cat.label}</Text>
               </HapticButton>
             </StaggeredItem>
           ))}
@@ -247,7 +247,10 @@ const styles = StyleSheet.create({
   seeAllText: { color: COLORS.primary, fontSize: FONT_SIZES.md, fontWeight: '600' },
   swipeHint: { fontSize: FONT_SIZES.xs, color: COLORS.textLight, fontStyle: 'italic', marginBottom: SPACING.sm },
   categoryGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: SPACING.sm },
-  categoryCard: { width: '23%', backgroundColor: COLORS.surface, borderRadius: BORDER_RADIUS.lg, padding: SPACING.sm, alignItems: 'center', ...SHADOWS.sm },
+  // Width on the StaggeredItem wrapper, not the card (a % on the card resolves
+  // against the auto-sized wrapper and the cards come out uneven).
+  categoryCell: { width: '23%' },
+  categoryCard: { flex: 1, backgroundColor: COLORS.surface, borderRadius: BORDER_RADIUS.lg, padding: SPACING.sm, alignItems: 'center', ...SHADOWS.sm },
   categoryLabel: { fontSize: FONT_SIZES.xs, color: COLORS.text, textAlign: 'center', fontWeight: '500', marginTop: SPACING.xs },
   emptyState: { alignItems: 'center', padding: SPACING.xxl },
   emptyText: { fontSize: FONT_SIZES.lg, fontWeight: '600', color: COLORS.text, marginTop: SPACING.sm },
