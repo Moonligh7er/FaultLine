@@ -8,6 +8,7 @@
 //   5. outbox marked sent, escalation_log row with [FL-XXXXXX] subject
 //   6. a reply is recorded and applied → cluster + report resolved
 //   7. inbound-email rejects a forged webhook (and Resend key can read inbound)
+//   8. SeeClickFix personal access token present and accepted (read-only)
 //
 // The only recipient is Resend's test sink (delivered@resend.dev) via a
 // throwaway authority, so no real authority is ever contacted. Everything
@@ -165,6 +166,24 @@ Deno.serve(async (req) => {
       return 'warning';
     }
     must(res.status === 400, `expected 400, got ${res.status} ${JSON.stringify(body)}`);
+  });
+
+  // Read-only: SeeClickFix rejects issue creation without a personal access
+  // token, and most authorities route through it. Warn, don't fail.
+  await step('SeeClickFix token', async () => {
+    const token = Deno.env.get('SEECLICKFIX_API_KEY') || '';
+    if (!token) {
+      warnings.push('SeeClickFix submissions disabled: set SEECLICKFIX_API_KEY (personal access token)');
+      return 'warning';
+    }
+    const res = await fetch('https://seeclickfix.com/api/v2/profile', {
+      headers: { Authorization: `Bearer ${token}`, Accept: 'application/json', 'User-Agent': 'Fault-Line/1.0 (+https://fault-line.dev)' },
+    });
+    if (!res.ok) {
+      warnings.push(`SeeClickFix token rejected (HTTP ${res.status}) — renew SEECLICKFIX_API_KEY`);
+      return 'warning';
+    }
+    return 'ok';
   });
 
   const cleaned = await cleanup();
