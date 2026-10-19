@@ -296,7 +296,11 @@ function renderHtml(results, summary, runAt) {
 <meta property="og:title" content="Fault Line — Service Status">
 <meta property="og:description" content="Live status of Fault Line's critical service dependencies. Point-in-time probe, updated periodically.">
 
-<link rel="stylesheet" href="theme.css?v=20260506">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,800;0,900;1,700;1,800;1,900&family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=IBM+Plex+Mono:wght@400;500;600&family=Oswald:wght@500;600;700&display=swap">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="theme.css?v=20261019">
 
 <style>
 main { max-width: 960px; margin: 0 auto; padding: 24px 32px 80px; }
