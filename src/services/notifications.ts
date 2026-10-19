@@ -13,12 +13,17 @@ Notifications.setNotificationHandler({
   }),
 });
 
-export async function registerForPushNotifications(): Promise<string | null> {
+// prompt=false (app start) only registers if the user already granted
+// permission; the system prompt is shown in context instead — right after the
+// user's first report ("get updates when the city responds").
+export async function registerForPushNotifications(
+  { prompt = false }: { prompt?: boolean } = {},
+): Promise<string | null> {
   // Check permissions
   const { status: existing } = await Notifications.getPermissionsAsync();
   let finalStatus = existing;
 
-  if (existing !== 'granted') {
+  if (existing !== 'granted' && prompt) {
     const { status } = await Notifications.requestPermissionsAsync();
     finalStatus = status;
   }

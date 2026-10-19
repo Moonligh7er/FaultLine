@@ -52,7 +52,9 @@ export async function startProximityMonitoring(): Promise<void> {
   const prefs = await getProximityPrefs();
   if (!prefs.enabled) return;
 
-  const { status } = await Location.requestForegroundPermissionsAsync();
+  // Never prompt at app start: monitor only if location was already granted
+  // (the report flow asks for it when the user first needs it).
+  const { status } = await Location.getForegroundPermissionsAsync();
   if (status !== 'granted') return;
 
   // Stop existing subscription

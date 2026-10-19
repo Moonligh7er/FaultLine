@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { COLORS } from '../constants/theme';
 import { RootStackParamList, RootTabParamList } from '../types';
 import { LINKING_CONFIG } from '../services/deepLinking';
@@ -28,11 +29,15 @@ const TAB_ICONS: Record<string, string> = {
   Home: 'home',
   Report: 'plus-circle',
   Map: 'map',
-  Dashboard: 'chart-bar',
+  Dashboard: 'chart-box', // 'chart-bar-outline' doesn't exist in MaterialCommunityIcons
   Profile: 'account',
 };
 
 function MainTabs() {
+  // Fixed height/padding override React Navigation's own inset handling, so add
+  // the bottom inset back — Android 15 is edge-to-edge and the gesture bar
+  // otherwise covers the tab labels.
+  const insets = useSafeAreaInsets();
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({
@@ -48,8 +53,8 @@ function MainTabs() {
         tabBarStyle: {
           backgroundColor: COLORS.surface,
           borderTopColor: COLORS.border,
-          height: 60,
-          paddingBottom: 8,
+          height: 60 + insets.bottom,
+          paddingBottom: 8 + insets.bottom,
           paddingTop: 4,
         },
         headerStyle: { backgroundColor: COLORS.primary },

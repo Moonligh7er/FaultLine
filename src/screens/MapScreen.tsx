@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef, useCallback } from 'react';
-import { View, Text, StyleSheet, ActivityIndicator, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, ActivityIndicator, TouchableOpacity, Linking } from 'react-native';
 import MapView, { Marker, Callout, Region } from 'react-native-maps';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -11,6 +11,7 @@ import { getCurrentLocation } from '../services/location';
 import { t } from '../services/i18n';
 import Icon from '../components/Icon';
 import { HapticButton, FadeIn } from '../components/AnimatedComponents';
+import { MAPS_AVAILABLE, WEB_MAP_URL } from '../services/maps';
 
 type MapNavProp = NativeStackNavigationProp<RootStackParamList>;
 
@@ -22,6 +23,33 @@ const DEFAULT_REGION: Region = {
 };
 
 export default function MapScreen() {
+  return MAPS_AVAILABLE ? <ReportsMap /> : <MapUnavailable />;
+}
+
+/** Shown on Android builds without a Google Maps key instead of crashing. */
+function MapUnavailable() {
+  return (
+    <View style={[styles.container, { backgroundColor: COLORS.background, alignItems: 'center', justifyContent: 'center', padding: SPACING.xl }]}>
+      <Icon name="map-marker-off" size={48} color={COLORS.textSecondary} />
+      <Text style={{ fontSize: FONT_SIZES.lg, fontWeight: '700', color: COLORS.text, marginTop: SPACING.md, textAlign: 'center' }}>
+        The map isn&apos;t available in this build
+      </Text>
+      <Text style={{ fontSize: FONT_SIZES.md, color: COLORS.textSecondary, marginTop: SPACING.sm, textAlign: 'center' }}>
+        You can still report issues. Browse nearby reports on the web map.
+      </Text>
+      <HapticButton
+        style={{ marginTop: SPACING.lg, backgroundColor: COLORS.primary, paddingHorizontal: SPACING.lg, paddingVertical: SPACING.md, borderRadius: BORDER_RADIUS.md }}
+        onPress={() => Linking.openURL(WEB_MAP_URL)}
+        hapticType="medium"
+        accessibilityLabel="Open the web map"
+      >
+        <Text style={{ color: COLORS.textOnPrimary, fontWeight: '700' }}>Open web map</Text>
+      </HapticButton>
+    </View>
+  );
+}
+
+function ReportsMap() {
   const navigation = useNavigation<MapNavProp>();
   const mapRef = useRef<MapView>(null);
   const [region, setRegion] = useState<Region>(DEFAULT_REGION);

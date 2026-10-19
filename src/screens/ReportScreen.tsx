@@ -12,6 +12,7 @@ import {
   Platform,
 } from 'react-native';
 import MapView, { Marker, Region } from 'react-native-maps';
+import { MAPS_AVAILABLE } from '../services/maps';
 import * as ImagePicker from 'expo-image-picker';
 import { useRoute, useNavigation } from '@react-navigation/native';
 import { COLORS, SPACING, FONT_SIZES, BORDER_RADIUS, SHADOWS } from '../constants/theme';
@@ -25,6 +26,7 @@ import {
 } from '../types';
 import { getCurrentLocation } from '../services/location';
 import { submitReport, checkRateLimit } from '../services/reports';
+import { registerForPushNotifications } from '../services/notifications';
 import { findAuthorityByLocation } from '../services/authorities';
 import { submitToAuthority } from '../services/authorityApi';
 import { addToQueue, isOnline } from '../services/offlineQueue';
@@ -247,6 +249,9 @@ export default function ReportScreen() {
         haptics.success();
         announce(t('reportSubmitted'));
 
+        // Ask for notifications now, in context — not as a cold prompt at app start.
+        registerForPushNotifications({ prompt: true }).catch(() => {});
+
         Alert.alert(
           isEmergencyFastTrack() ? 'URGENT Report Submitted' : t('reportSubmitted'),
           isEmergencyFastTrack() ? 'Flagged as critical safety issue — fast-tracked for review.' : t('thankYou'),
@@ -428,7 +433,7 @@ export default function ReportScreen() {
           </HapticButton>
           <View style={styles.categoryGrid}>
             {CATEGORIES.map((cat, i) => (
-              <StaggeredItem key={cat.key} index={i}>
+              <StaggeredItem key={cat.key} index={i} style={styles.categoryCell}>
                 <HapticButton
                   style={[styles.categoryCard, category === cat.key && styles.categoryCardSelected]}
                   onPress={() => setCategory(cat.key)}
@@ -464,7 +469,16 @@ export default function ReportScreen() {
               </HapticButton>
             </FadeIn>
           )}
-          {mapRegion && location ? (
+          {location && !MAPS_AVAILABLE ? (
+            <View style={styles.locationLoading}>
+              <Icon name="map-marker-check" size={32} color={COLORS.primary} />
+              <Text style={styles.locationLoadingText}>
+                Location set: {location.latitude.toFixed(5)}, {location.longitude.toFixed(5)}
+                {location.address ? `
+${location.address}` : ''}
+              </Text>
+            </View>
+          ) : mapRegion && location ? (
             <View style={styles.mapContainer}>
               <MapView style={styles.map} initialRegion={mapRegion} showsUserLocation>
                 <Marker coordinate={{ latitude: location.latitude, longitude: location.longitude }} draggable onDragEnd={handleMapPinDrag} pinColor={COLORS.primary} />
@@ -717,7 +731,10 @@ const styles = StyleSheet.create({
   stepContent: { padding: SPACING.md },
   stepTitle: { fontSize: FONT_SIZES.xxl, fontWeight: '700', color: COLORS.text, marginBottom: SPACING.lg },
   categoryGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: SPACING.sm },
-  categoryCard: { width: '31%', backgroundColor: COLORS.surface, borderRadius: BORDER_RADIUS.lg, padding: SPACING.md, alignItems: 'center', borderWidth: 2, borderColor: 'transparent', ...SHADOWS.sm },
+  // Width lives on the StaggeredItem wrapper: a % width on the card would
+  // resolve against the auto-sized wrapper and collapse.
+  categoryCell: { width: '31%' },
+  categoryCard: { flex: 1, backgroundColor: COLORS.surface, borderRadius: BORDER_RADIUS.lg, padding: SPACING.md, alignItems: 'center', borderWidth: 2, borderColor: 'transparent', ...SHADOWS.sm },
   categoryCardSelected: { borderColor: COLORS.primary, backgroundColor: COLORS.primary + '10' },
   categoryLabel: { fontSize: FONT_SIZES.xs, color: COLORS.text, textAlign: 'center', fontWeight: '500', marginTop: SPACING.xs },
   categoryLabelSelected: { color: COLORS.primary, fontWeight: '700' },
