@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://pagead2.googlesyndication.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: https:; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://www.google-analytics.com https://analytics.google.com https://pagead2.googlesyndication.com; frame-src https://googleads.g.doubleclick.net https://tpc.googlesyndication.com https://pagead2.googlesyndication.com; object-src 'none'; base-uri 'self';">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://pagead2.googlesyndication.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: https:; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://www.google-analytics.com https://analytics.google.com https://pagead2.googlesyndication.com https://ep1.adtrafficquality.google; frame-src https://googleads.g.doubleclick.net https://tpc.googlesyndication.com https://pagead2.googlesyndication.com; object-src 'none'; base-uri 'self';">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Fault Line — Report Potholes & Infrastructure Issues | Free App</title>
 <meta name="description" content="Report potholes, broken streetlights, and infrastructure problems in 10 seconds. Community-verified reports automatically escalate to government authorities. Free web app — no account required.">
@@ -102,6 +102,8 @@
   transition: border-color 0.2s;
 }
 .problem-card:hover { border-color: var(--signal-red); }
+/* Decorative watermark numerals: drawn as generated content, not text. */
+.problem-card .num::before { content: attr(data-n); }
 .problem-card .num {
   font-family: var(--ff-display);
   font-weight: 900; font-style: italic;
@@ -342,17 +344,17 @@
   <p class="section-lead">The American Society of Civil Engineers gives US infrastructure a C- grade. You see it every day. Here&apos;s what your city hopes you won&apos;t do about it.</p>
   <div class="problem-grid">
     <div class="problem-card">
-      <div class="num" aria-hidden="true">01</div>
+      <div class="num" data-n="01" aria-hidden="true"></div>
       <h3>You hit a pothole</h3>
       <p>Average vehicle repair cost: $306. AAA reports Americans spend $3 billion annually on pothole damage. Your city knows. They&apos;re counting on you not filing a claim.</p>
     </div>
     <div class="problem-card">
-      <div class="num" aria-hidden="true">02</div>
+      <div class="num" data-n="02" aria-hidden="true"></div>
       <h3>You call 311</h3>
       <p>You wait on hold. You describe the location. You hang up. Nothing happens for weeks. You call again. They have no record of your first call. You give up. They&apos;re counting on that too.</p>
     </div>
     <div class="problem-card">
-      <div class="num" aria-hidden="true">03</div>
+      <div class="num" data-n="03" aria-hidden="true"></div>
       <h3>Nothing changes</h3>
       <p>Individual complaints are easy to ignore. There&apos;s no public record, no accountability, no consequences. The same potholes reappear every spring. The cycle repeats.</p>
     </div>
