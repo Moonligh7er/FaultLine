@@ -11,6 +11,7 @@
 // ref so inbound replies can be matched back (inbound-email function).
 
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+import { submitSeeClickFixIssue } from './seeclickfix.ts';
 
 const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY') || '';
 const FROM_EMAIL = Deno.env.get('FROM_EMAIL') || 'onboarding@resend.dev';
@@ -242,7 +243,7 @@ async function submitViaApi(
 ): Promise<{ ok: boolean; error?: string; ticketId?: string }> {
   const protocol = (method.protocol || '').toLowerCase();
   if (protocol === 'open311' || method.endpoint.includes('open311')) return submitOpen311(method, p);
-  if (protocol === 'seeclickfix' || method.endpoint.includes('seeclickfix.com')) return submitSeeClickFix(method, p);
+  if (protocol === 'seeclickfix' || method.endpoint.includes('seeclickfix.com')) return submitSeeClickFixIssue(p, SEECLICKFIX_API_KEY);
   return { ok: false, error: `Unknown API protocol: ${protocol || method.endpoint}` };
 }
 
@@ -278,32 +279,6 @@ async function submitOpen311(
     return { ok: true, ticketId: j?.[0]?.service_request_id || j?.[0]?.token || j?.service_request_id || undefined };
   } catch (err) {
     return { ok: false, error: `Open311 network error: ${String(err)}` };
-  }
-}
-
-/** SeeClickFix v2 POST /issues (form-encoded; anonymous submissions identify via user[name]/user[email]). */
-async function submitSeeClickFix(
-  method: SubmissionMethod,
-  p: ApiPayload,
-): Promise<{ ok: boolean; error?: string; ticketId?: string }> {
-  const body = new URLSearchParams();
-  body.append('summary', `${p.category.replace(/_/g, ' ')} at ${p.address || `${p.latitude}, ${p.longitude}`}`);
-  body.append('description', p.api_description);
-  body.append('address', p.address || '');
-  body.append('lat', String(p.latitude));
-  body.append('lng', String(p.longitude));
-  body.append('user[name]', 'Fault Line Community Reports');
-  body.append('user[email]', ENV_REPLY_TO || FROM_EMAIL);
-  const headers: Record<string, string> = { 'Content-Type': 'application/x-www-form-urlencoded' };
-  if (SEECLICKFIX_API_KEY) headers.Authorization = `Bearer ${SEECLICKFIX_API_KEY}`;
-
-  try {
-    const res = await fetch(method.endpoint, { method: 'POST', headers, body });
-    if (!res.ok) return { ok: false, error: `SeeClickFix HTTP ${res.status}: ${(await res.text().catch(() => '')).slice(0, 200)}` };
-    const j = await res.json().catch(() => null);
-    return { ok: true, ticketId: j?.id ? String(j.id) : undefined };
-  } catch (err) {
-    return { ok: false, error: `SeeClickFix network error: ${String(err)}` };
   }
 }
 
