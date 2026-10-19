@@ -15,7 +15,7 @@ import type { CategoryRouting, RoutingDatasetMetadata } from './types';
 //  banner so the resident sees that the underlying routing claim has not
 //  yet been attorney-verified.
 //
-//  Coverage seeded here: MA / RI / NH pilot states + federal fallbacks.
+//  Coverage seeded here: MA / RI / NH / FL pilot states + federal fallbacks.
 //  Additional jurisdictions added as pilot cities commit.
 // ═══════════════════════════════════════════════════════════════════════════
 
@@ -543,6 +543,136 @@ const RECORDS: CategoryRouting[] = [
     verifiedAt: null,
     nextReviewAt: null,
     sources: [],
+  },
+
+  // ─────────────────────────────────────────────────────────────
+  // FLORIDA (pilot: Citrus County — Inverness, Crystal River,
+  // unincorporated county). Road owner decides the recipient: FDOT for
+  // the State Highway System, the county for unincorporated county
+  // roads, the city inside city limits. Authority rows + road-ownership
+  // routing: supabase migrations 030/031.
+  // ─────────────────────────────────────────────────────────────
+  {
+    categoryKey: 'pothole',
+    version: '0.1.0',
+    jurisdictionScope: 'FL',
+    primaryAuthority: {
+      name: 'City Public Works, County Road Maintenance, or FDOT (by road owner)',
+      notes:
+        'Inside city limits: city public works. Unincorporated: county road maintenance (county-accepted roads only). State Highway System (US/SR routes): FDOT.',
+    },
+    legalStatute: {
+      citation: 'Fla. Stat. § 768.28 (sovereign immunity waiver; claim presentment)',
+      url: 'https://www.flsenate.gov/Laws/Statutes/2025/768.28',
+      notes: 'No statutory repair deadline after notice — see statutes/dataset.ts FL (draft).',
+    },
+    verificationStatus: 'pending-review',
+    verifiedBy: null,
+    verifiedAt: null,
+    nextReviewAt: null,
+    sources: [
+      {
+        label: 'Fla. Stat. § 768.28',
+        url: 'https://www.flsenate.gov/Laws/Statutes/2025/768.28',
+        accessedAt: '2026-10-19',
+      },
+      {
+        label: 'Citrus County Road Maintenance',
+        url: 'https://www.citruscounty.gov/departments/public_works/road_maintenance/index.php',
+        accessedAt: '2026-10-19',
+      },
+      {
+        label: 'FDOT Customer Service Portal',
+        url: 'https://www.fdot.gov/info/ects/customer-service-portal',
+        accessedAt: '2026-10-19',
+      },
+    ],
+  },
+  {
+    categoryKey: 'sidewalk',
+    version: '0.1.0',
+    jurisdictionScope: 'FL',
+    primaryAuthority: {
+      name: 'City Public Works or County Road Maintenance',
+      notes: 'Sidewalks along State Highway System roads may be FDOT right-of-way; confirm per corridor during onboarding.',
+    },
+    legalStatute: {
+      citation: 'Fla. Stat. § 768.28',
+      url: 'https://www.flsenate.gov/Laws/Statutes/2025/768.28',
+    },
+    verificationStatus: 'pending-review',
+    verifiedBy: null,
+    verifiedAt: null,
+    nextReviewAt: null,
+    sources: [
+      {
+        label: 'Fla. Stat. § 768.28',
+        url: 'https://www.flsenate.gov/Laws/Statutes/2025/768.28',
+        accessedAt: '2026-10-19',
+      },
+    ],
+  },
+  {
+    categoryKey: 'missing_curb_cut',
+    version: '0.1.0',
+    jurisdictionScope: 'FL',
+    primaryAuthority: {
+      name: 'Municipal or County ADA Coordinator',
+      notes:
+        'Every public entity with 50+ employees must designate an ADA coordinator (28 CFR § 35.107). Coordinator identity confirmed during pilot onboarding.',
+    },
+    federalFallback: {
+      name: 'U.S. Department of Justice, Civil Rights Division',
+      webForm: 'https://civilrights.justice.gov/report/',
+    },
+    legalStatute: {
+      citation: '28 CFR Part 35 (ADA Title II) + PROWAG',
+      url: 'https://www.ada.gov/law-and-regs/regulations/title-ii-2010-regulations/',
+    },
+    verificationStatus: 'pending-review',
+    verifiedBy: null,
+    verifiedAt: null,
+    nextReviewAt: null,
+    sources: [
+      {
+        label: 'DOJ ADA Title II regulations',
+        url: 'https://www.ada.gov/law-and-regs/regulations/title-ii-2010-regulations/',
+        accessedAt: '2026-10-19',
+      },
+    ],
+  },
+  {
+    categoryKey: 'broken_elevator_public_housing',
+    version: '0.1.0',
+    jurisdictionScope: 'FL',
+    primaryAuthority: {
+      name: 'Local Public Housing Authority',
+      notes: 'PHA of the housing development where the elevator is located.',
+    },
+    escalationAuthority: {
+      name: 'Florida Commission on Human Relations',
+      webForm: 'https://fchr.myflorida.com/housing-complaint',
+      notes: 'State fair-housing agency (Florida Fair Housing Act).',
+    },
+    federalFallback: {
+      name: 'U.S. Department of Housing and Urban Development, Fair Housing Enforcement Center',
+      webForm: 'https://www.hud.gov/program_offices/fair_housing_equal_opp/online-complaint',
+    },
+    legalStatute: {
+      citation: 'Fair Housing Act + Section 504 Rehabilitation Act; Fla. Stat. §§ 760.20–760.37',
+      url: 'https://www.hud.gov/program_offices/fair_housing_equal_opp',
+    },
+    verificationStatus: 'pending-review',
+    verifiedBy: null,
+    verifiedAt: null,
+    nextReviewAt: null,
+    sources: [
+      {
+        label: 'Florida Commission on Human Relations',
+        url: 'https://fchr.myflorida.com/',
+        accessedAt: '2026-10-19',
+      },
+    ],
   },
 ];
 

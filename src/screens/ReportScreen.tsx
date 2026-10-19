@@ -195,7 +195,7 @@ export default function ReportScreen() {
     setSubmitting(true);
     haptics.medium();
 
-    const authority = await findAuthorityByLocation(location.latitude, location.longitude, location.state, location.city);
+    const authority = await findAuthorityByLocation(location.latitude, location.longitude, location.state, location.city, category);
     const severity = buildSeverity();
     const reportData = {
       userId: session?.user?.id,
