@@ -1,7 +1,8 @@
 // Supabase Edge Function: enrich-authority-boundaries
 //
-// Fetches US Census TIGER/Line "Incorporated Place" boundary polygons for every
-// authority row where boundary_geojson IS NULL and (city, state) are populated.
+// Fetches US Census TIGER/Line boundary polygons for every authority row where
+// boundary_geojson IS NULL: city/town rows by (city, state), county rows by
+// (county, state).
 // Updates the row in place so find_authority_by_point() can route reports.
 //
 // Manually invoked:
@@ -63,11 +64,10 @@ Deno.serve(async (req) => {
   const recheckCutoff = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
   const { data: rows, error } = await supabase
     .from('authorities')
-    .select('id, name, level, state, city')
+    .select('id, name, level, state, city, county')
     .is('boundary_geojson', null)
-    .not('city', 'is', null)
     .eq('is_active', true)
-    .in('level', ['city', 'town'])
+    .or('and(level.in.(city,town),city.not.is.null),and(level.eq.county,county.not.is.null)')
     .or(`boundary_checked_at.is.null,boundary_checked_at.lt.${recheckCutoff}`)
     .order('boundary_checked_at', { ascending: true, nullsFirst: true })
     .limit(limit);
@@ -82,14 +82,17 @@ Deno.serve(async (req) => {
   const results: Array<Record<string, unknown>> = [];
 
   for (const row of rows ?? []) {
-    if (!row.city || !row.state || !STATE_FIPS[row.state]) {
-      results.push({ id: row.id, skipped: 'missing city/state or unknown state' });
+    const placeName = row.level === 'county' ? row.county : row.city;
+    if (!placeName || !row.state || !STATE_FIPS[row.state]) {
+      results.push({ id: row.id, skipped: 'missing city/county/state or unknown state' });
       continue;
     }
 
     const checkedAt = new Date().toISOString();
     try {
-      const geojson = await fetchPlaceBoundary(row.city, row.state);
+      const geojson = row.level === 'county'
+        ? await fetchCountyBoundary(placeName, row.state)
+        : await fetchPlaceBoundary(placeName, row.state);
       if (!geojson) {
         // Mark as checked so we skip for 30 days.
         await supabase
@@ -154,20 +157,36 @@ async function fetchPlaceBoundary(
   );
   if (geom) return geom;
 
-  // Layer 22 = County Subdivisions (MCDs). Catches NE towns.
+  // Layer 22 = County Subdivisions (MCDs). Catches NE towns. MA towns that
+  // adopted city charters keep "Town" in the name ("Amherst Town",
+  // "Weymouth Town"), so try that spelling too.
   geom = await queryTigerLayer(
     'https://tigerweb.geo.census.gov/arcgis/rest/services/TIGERweb/tigerWMS_Current/MapServer/22/query',
-    `BASENAME='${nameEscaped}' AND STATE='${fips}'`,
+    `BASENAME IN ('${nameEscaped}', '${nameEscaped} Town') AND STATE='${fips}'`,
   );
   if (geom) return geom;
 
-  // Layer 34 = Census Designated Places (CDPs). Catches unincorporated
+  // Layer 30 = Census Designated Places (CDPs). Catches unincorporated
   // communities like Casas Adobes AZ, Holt MI.
   geom = await queryTigerLayer(
-    'https://tigerweb.geo.census.gov/arcgis/rest/services/TIGERweb/tigerWMS_Current/MapServer/34/query',
+    'https://tigerweb.geo.census.gov/arcgis/rest/services/TIGERweb/tigerWMS_Current/MapServer/30/query',
     `BASENAME='${nameEscaped}' AND STATE='${fips}'`,
   );
   return geom;
+}
+
+/** Layer 82 = Counties. BASENAME is the bare name ("Citrus"). */
+async function fetchCountyBoundary(
+  county: string,
+  stateAbbr: string,
+): Promise<Record<string, unknown> | null> {
+  const fips = STATE_FIPS[stateAbbr];
+  if (!fips) return null;
+  const nameEscaped = county.replace(/\s+County$/i, '').replace(/'/g, "''");
+  return queryTigerLayer(
+    'https://tigerweb.geo.census.gov/arcgis/rest/services/TIGERweb/tigerWMS_Current/MapServer/82/query',
+    `BASENAME='${nameEscaped}' AND STATE='${fips}'`,
+  );
 }
 
 async function queryTigerLayer(
@@ -179,6 +198,8 @@ async function queryTigerLayer(
   url.searchParams.set('outFields', 'BASENAME,NAME,STATE,GEOID');
   url.searchParams.set('returnGeometry', 'true');
   url.searchParams.set('outSR', '4326');
+  url.searchParams.set('maxAllowableOffset', '0.00005'); // ~5 m; coastlines are huge otherwise
+  url.searchParams.set('geometryPrecision', '6');
   url.searchParams.set('f', 'geojson');
 
   const res = await fetch(url.toString(), { headers: { Accept: 'application/json' } });

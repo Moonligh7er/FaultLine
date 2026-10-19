@@ -21,6 +21,52 @@ export const DATASET_METADATA: DatasetMetadata = {
 // Ordered by state code. When adding a state, insert alphabetically.
 const RECORDS: StateStatuteRecord[] = [
   {
+    // DRAFT — never shown to users (excluded by getSupportedStates()).
+    // Florida has no "notice of defect, then N days to repair" rule like
+    // M.G.L. c. 84 § 15; liability runs through the sovereign-immunity
+    // waiver and its claim-presentment rule. noticePeriodDays below is the
+    // claim-presentment window, which the letter template's "days to
+    // remedy" framing does NOT fit. Needs attorney review and a
+    // Florida-specific letter template before promotion.
+    stateCode: 'FL',
+    version: '0.0.1',
+    statute: 'Fla. Stat. § 768.28',
+    title: 'Florida Waiver of Sovereign Immunity in Tort Actions',
+    noticePeriodDays: 1095,
+    description:
+      'The state, counties and municipalities are liable in tort (including for negligent road maintenance) to the extent of the statutory waiver, subject to per-person and per-occurrence damages caps.',
+    filingRequirements:
+      'Present the claim in writing to the responsible agency within 3 years of accrual (§ 768.28(6)(a)); claims against state agencies must also be presented to the Department of Financial Services (not required for counties/municipalities). Suit may follow written denial or 6 months without final disposition (§ 768.28(6)(d)). Caps per § 768.28(5)(a): $200,000 per person / $300,000 per occurrence as read on 2026-10-19.',
+    knownAmbiguities: [
+      {
+        concern: 'No repair-deadline rule',
+        detail:
+          'Unlike MA/RI/NH, Florida sets no statutory days-to-repair after notice. The current letter template sentence "your office has N days to remedy" would be wrong for Florida.',
+      },
+      {
+        concern: 'Recent amendments',
+        detail:
+          'The Legislature has repeatedly considered raising the caps and shortening the presentment period. Confirm the in-force text and effective dates before relying on any number here.',
+      },
+      {
+        concern: 'Who owns the road',
+        detail:
+          'State Highway System roads are FDOT (state agency, so DFS presentment is required); county roads are the county; city streets are the city. Routing uses the FDOT State Highway System layer plus city/county boundaries (supabase migration 030).',
+      },
+    ],
+    verificationStatus: 'draft',
+    verifiedBy: null,
+    verifiedAt: null,
+    nextReviewAt: null,
+    sources: [
+      {
+        label: 'Fla. Stat. § 768.28 (Florida Senate)',
+        url: 'https://www.flsenate.gov/Laws/Statutes/2025/768.28',
+        accessedAt: '2026-10-19',
+      },
+    ],
+  },
+  {
     stateCode: 'MA',
     version: '0.1.0',
     statute: 'M.G.L. c. 84, § 15',

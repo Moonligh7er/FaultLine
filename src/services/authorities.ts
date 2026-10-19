@@ -5,12 +5,15 @@ export async function findAuthorityByLocation(
   latitude: number,
   longitude: number,
   state?: string,
-  city?: string
+  city?: string,
+  category?: string
 ): Promise<Authority | null> {
-  // First try PostGIS boundary lookup
+  // Road owner for roadway issues on state-owned roads, else the enclosing
+  // town/city/county boundary (server-side, migration 030).
   const { data: gisResult } = await supabase.rpc('find_authority_by_point', {
     lat: latitude,
     lng: longitude,
+    p_category: category ?? null,
   });
 
   if (gisResult && gisResult.length > 0) {
