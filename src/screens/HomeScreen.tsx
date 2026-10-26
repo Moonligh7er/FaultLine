@@ -235,7 +235,7 @@ const styles = StyleSheet.create({
   hero: { backgroundColor: COLORS.primary, padding: SPACING.lg, alignItems: 'center' },
   heroTitleRow: { flexDirection: 'row', alignItems: 'center', marginBottom: SPACING.xs },
   heroTitle: { fontSize: FONT_SIZES.hero, fontWeight: '800', color: COLORS.textOnPrimary },
-  brandSlash: { width: 8, height: 38, marginHorizontal: 10, backgroundColor: COLORS.textOnPrimary, transform: [{ skewX: '-15deg' }] },
+  brandSlash: { width: 8, height: 38, marginHorizontal: 10, backgroundColor: COLORS.textOnPrimary, transform: [{ rotate: '15deg' }] }, // rotate, not skewX: Android ignores skew on Views
   heroSubtitle: { fontSize: FONT_SIZES.md, color: COLORS.textOnPrimary, opacity: 0.9, marginBottom: SPACING.sm, textAlign: 'center' },
   streakBadge: { flexDirection: 'row', alignItems: 'center', gap: 4, backgroundColor: 'rgba(255,255,255,0.2)', paddingHorizontal: SPACING.md, paddingVertical: SPACING.xs, borderRadius: BORDER_RADIUS.round, marginBottom: SPACING.md },
   streakText: { color: COLORS.textOnPrimary, fontSize: FONT_SIZES.sm, fontWeight: '700' },
