@@ -81,10 +81,11 @@ export default function HomeScreen() {
     <>
       {/* Hero — responsive height */}
       <FadeIn style={[styles.hero, { paddingTop: Math.max(insets.top, SPACING.lg) + SPACING.md }]}>
-        <View style={styles.heroTitleRow}>
-          <Text style={[styles.heroTitle, IS_SMALL_SCREEN && { fontSize: 28 }]} accessibilityRole="header">
-            Fault Line
-          </Text>
+        {/* Fault / Line: the slash is visual only; the row reads aloud as one name. */}
+        <View style={styles.heroTitleRow} accessible accessibilityRole="header" accessibilityLabel="Fault Line beta">
+          <Text style={[styles.heroTitle, IS_SMALL_SCREEN && { fontSize: 28 }]}>Fault</Text>
+          <View style={[styles.brandSlash, IS_SMALL_SCREEN && { height: 26, width: 6 }]} />
+          <Text style={[styles.heroTitle, IS_SMALL_SCREEN && { fontSize: 28 }]}>Line</Text>
           <BetaBadge size={IS_SMALL_SCREEN ? 11 : 13} />
         </View>
         <Text style={styles.heroSubtitle}>{t('heroSubtitle')}</Text>
@@ -234,6 +235,7 @@ const styles = StyleSheet.create({
   hero: { backgroundColor: COLORS.primary, padding: SPACING.lg, alignItems: 'center' },
   heroTitleRow: { flexDirection: 'row', alignItems: 'center', marginBottom: SPACING.xs },
   heroTitle: { fontSize: FONT_SIZES.hero, fontWeight: '800', color: COLORS.textOnPrimary },
+  brandSlash: { width: 8, height: 38, marginHorizontal: 10, backgroundColor: COLORS.textOnPrimary, transform: [{ skewX: '-15deg' }] },
   heroSubtitle: { fontSize: FONT_SIZES.md, color: COLORS.textOnPrimary, opacity: 0.9, marginBottom: SPACING.sm, textAlign: 'center' },
   streakBadge: { flexDirection: 'row', alignItems: 'center', gap: 4, backgroundColor: 'rgba(255,255,255,0.2)', paddingHorizontal: SPACING.md, paddingVertical: SPACING.xs, borderRadius: BORDER_RADIUS.round, marginBottom: SPACING.md },
   streakText: { color: COLORS.textOnPrimary, fontSize: FONT_SIZES.sm, fontWeight: '700' },
