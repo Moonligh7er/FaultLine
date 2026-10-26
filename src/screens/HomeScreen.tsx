@@ -16,6 +16,7 @@ import { shareReport } from '../services/sharing';
 import { t } from '../services/i18n';
 import { supabase } from '../services/supabase';
 import SwipeableReportCard from '../components/SwipeableReportCard';
+import BetaBadge from '../components/BetaBadge';
 import { ReportCardSkeleton } from '../components/SkeletonLoader';
 import SmartAdBanner from '../components/SmartAdBanner';
 import Icon from '../components/Icon';
@@ -80,9 +81,12 @@ export default function HomeScreen() {
     <>
       {/* Hero — responsive height */}
       <FadeIn style={[styles.hero, { paddingTop: Math.max(insets.top, SPACING.lg) + SPACING.md }]}>
-        <Text style={[styles.heroTitle, IS_SMALL_SCREEN && { fontSize: 28 }]} accessibilityRole="header">
-          Fault Line
-        </Text>
+        <View style={styles.heroTitleRow}>
+          <Text style={[styles.heroTitle, IS_SMALL_SCREEN && { fontSize: 28 }]} accessibilityRole="header">
+            Fault Line
+          </Text>
+          <BetaBadge size={IS_SMALL_SCREEN ? 11 : 13} />
+        </View>
         <Text style={styles.heroSubtitle}>{t('heroSubtitle')}</Text>
 
         {streak > 0 && (
@@ -228,7 +232,8 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: COLORS.background },
   hero: { backgroundColor: COLORS.primary, padding: SPACING.lg, alignItems: 'center' },
-  heroTitle: { fontSize: FONT_SIZES.hero, fontWeight: '800', color: COLORS.textOnPrimary, marginBottom: SPACING.xs },
+  heroTitleRow: { flexDirection: 'row', alignItems: 'center', marginBottom: SPACING.xs },
+  heroTitle: { fontSize: FONT_SIZES.hero, fontWeight: '800', color: COLORS.textOnPrimary },
   heroSubtitle: { fontSize: FONT_SIZES.md, color: COLORS.textOnPrimary, opacity: 0.9, marginBottom: SPACING.sm, textAlign: 'center' },
   streakBadge: { flexDirection: 'row', alignItems: 'center', gap: 4, backgroundColor: 'rgba(255,255,255,0.2)', paddingHorizontal: SPACING.md, paddingVertical: SPACING.xs, borderRadius: BORDER_RADIUS.round, marginBottom: SPACING.md },
   streakText: { color: COLORS.textOnPrimary, fontSize: FONT_SIZES.sm, fontWeight: '700' },

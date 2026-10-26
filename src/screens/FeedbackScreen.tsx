@@ -5,6 +5,7 @@ import {
 import { COLORS, SPACING, FONT_SIZES, BORDER_RADIUS } from '../constants/theme';
 import { HapticButton, FadeIn, Pulse } from '../components/AnimatedComponents';
 import Icon from '../components/Icon';
+import BetaBadge from '../components/BetaBadge';
 
 const FORMSPREE_ENDPOINT = 'https://formspree.io/f/mlgojojg';
 
@@ -88,7 +89,10 @@ export default function FeedbackScreen() {
           <Pulse style={styles.activeDevDot} />
           <Text style={styles.activeDevText}>Beta</Text>
         </View>
-        <Text style={styles.title}>Help Shape Fault Line</Text>
+        <View style={styles.titleRow}>
+          <Text style={styles.title}>Help Shape Fault Line</Text>
+          <BetaBadge size={11} />
+        </View>
         <Text style={styles.subtitle}>
           We&apos;re actively building this app. Your feedback directly influences what we build next.
         </Text>
@@ -197,7 +201,8 @@ const styles = StyleSheet.create({
   },
   activeDevDot: { width: 8, height: 8, borderRadius: 4, backgroundColor: '#8B5CF6' },
   activeDevText: { fontSize: FONT_SIZES.xs, fontWeight: '700', color: '#8B5CF6', textTransform: 'uppercase', letterSpacing: 1 },
-  title: { fontSize: FONT_SIZES.xxl, fontWeight: '800', color: COLORS.text, textAlign: 'center', marginBottom: SPACING.xs },
+  titleRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', flexWrap: 'wrap', marginBottom: SPACING.xs },
+  title: { fontSize: FONT_SIZES.xxl, fontWeight: '800', color: COLORS.text, textAlign: 'center' },
   subtitle: { fontSize: FONT_SIZES.md, color: COLORS.textSecondary, textAlign: 'center', maxWidth: 360 },
   tabRow: { flexDirection: 'row', gap: SPACING.xs, paddingHorizontal: SPACING.md, marginBottom: SPACING.md },
   tab: {
