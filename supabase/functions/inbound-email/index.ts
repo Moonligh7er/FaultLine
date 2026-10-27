@@ -15,9 +15,8 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL') || '';
 const SUPABASE_SERVICE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') || '';
-// Needs a Resend key that can read received email (full access). Falls back
-// to the sending key.
-const RESEND_KEY = Deno.env.get('RESEND_RECEIVING_API_KEY') || Deno.env.get('RESEND_API_KEY') || '';
+// One Full-access Resend key both sends and reads received replies.
+const RESEND_KEY = (Deno.env.get('RESEND_API_KEY') || '').trim();
 
 const REF_RE = /\[?\b(FL-[23456789ABCDEFGHJKLMNPQRSTUVWXYZ]{6})\b\]?/;
 const MAX_BODY = 20_000;
@@ -38,7 +37,10 @@ Deno.serve(async (req) => {
     headers: { Authorization: `Bearer ${RESEND_KEY}` },
   });
   if (res.status === 404) return json({ error: 'unknown email' }, 400);
-  if (!res.ok) return json({ error: `resend ${res.status}` }, 502); // non-2xx → Resend retries
+  if (!res.ok) {
+    const detail = ((await res.json().catch(() => null))?.message ?? '').slice(0, 200);
+    return json({ error: `resend ${res.status}`, detail }, 502); // non-2xx → Resend retries
+  }
   const email = await res.json();
 
   const subject: string = email.subject ?? '';
