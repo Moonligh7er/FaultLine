@@ -9,9 +9,14 @@
 // (Open311 / SeeClickFix) → email (Resend) → web form (Modal worker, else
 // queued for manual submission). Email subjects carry the row's [FL-XXXXXX]
 // ref so inbound replies can be matched back (inbound-email function).
+//
+// Sandbox mode (app_settings.sandbox_mode, migration 037): nothing reaches a
+// real authority. Email goes to Resend's test sink, SeeClickFix is planned
+// but not posted, Open311 is logged only, web forms run as worker dry runs,
+// and escalation_log (the public record of notice) is not written.
 
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
-import { submitSeeClickFixIssue } from './seeclickfix.ts';
+import { planSeeClickFixIssue, submitSeeClickFixIssue } from './seeclickfix.ts';
 
 const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY') || '';
 const FROM_EMAIL = Deno.env.get('FROM_EMAIL') || 'onboarding@resend.dev';
@@ -25,6 +30,7 @@ const WEB_FORM_WORKER_URL = Deno.env.get('WEB_FORM_WORKER_URL') || '';
 const WEB_FORM_WORKER_SECRET = Deno.env.get('WEB_FORM_WORKER_SECRET') || '';
 
 const BATCH = 20;
+const SANDBOX_SINK = 'delivered@resend.dev';
 
 interface SubmissionMethod {
   method: 'api' | 'email' | 'web_form' | 'phone';
@@ -102,12 +108,16 @@ Deno.serve(async (req) => {
 
   const { data: replySetting } = await admin.rpc('get_setting', { p_key: 'reply_to' });
   const replyTo = typeof replySetting === 'string' && replySetting ? replySetting : ENV_REPLY_TO;
+  const { data: sandboxSetting } = await admin.rpc('get_setting', { p_key: 'sandbox_mode' });
+  const sandbox = sandboxSetting === true;
 
   const results: Record<string, unknown>[] = [];
   for (const row of (claimed ?? []) as OutboundRow[]) {
     const subject = `[${row.ref}] ${row.subject}`;
     const attempts: string[] = [];
-    const sent = await deliver(row, subject, replyTo, attempts);
+    const sent = sandbox
+      ? await deliverSandbox(row, subject, replyTo, attempts)
+      : await deliver(row, subject, replyTo, attempts);
     const now = new Date().toISOString();
 
     if (!sent) {
@@ -131,11 +141,11 @@ Deno.serve(async (req) => {
       updated_at: now,
     }).eq('id', row.id);
 
-    await recordInEscalationLog(row, sent, subject);
+    if (!sandbox) await recordInEscalationLog(row, sent, subject);
     results.push({ ref: row.ref, status: 'sent', method: sent.method, recipient: sent.recipient });
   }
 
-  return json({ message: 'Dispatch complete', results });
+  return json({ message: sandbox ? 'Dispatch complete (SANDBOX — nothing sent to authorities)' : 'Dispatch complete', sandbox, results });
 });
 
 async function deliver(
@@ -168,6 +178,52 @@ async function deliver(
       }
     } catch (err) {
       attempts.push(`${m.method}: ${String(err)}`);
+    }
+  }
+  return null;
+}
+
+/**
+ * Sandbox delivery: same method order as deliver(), but every channel is
+ * redirected or dry-run. The first method that would have succeeded wins.
+ */
+async function deliverSandbox(
+  row: OutboundRow,
+  subject: string,
+  replyTo: string,
+  attempts: string[],
+): Promise<Sent | null> {
+  for (const m of prioritizeMethods(row.methods ?? [])) {
+    try {
+      if (m.method === 'api') {
+        const protocol = (m.protocol || '').toLowerCase();
+        if (protocol === 'seeclickfix' || m.endpoint.includes('seeclickfix.com')) {
+          const plan = await planSeeClickFixIssue(row.payload);
+          if (!plan.ok) { attempts.push(`sandbox api:seeclickfix: ${plan.error}`); continue; }
+          attempts.push(`sandbox api:seeclickfix: would POST request type ${plan.requestTypeId} "${plan.title}" (${plan.organization}) answers=${JSON.stringify(plan.answers).slice(0, 300)}`);
+          return { method: 'sandbox:api:seeclickfix', recipient: m.endpoint };
+        }
+        attempts.push(`sandbox api:${protocol || 'unknown'}: would POST to ${m.endpoint}`);
+        return { method: `sandbox:api:${protocol || 'unknown'}`, recipient: m.endpoint };
+      } else if (m.method === 'email') {
+        const res = await sendEmail(SANDBOX_SINK, `[SANDBOX → ${m.endpoint}] ${subject}`, row.body, replyTo);
+        if (res.ok) {
+          const body = await res.json().catch(() => null);
+          attempts.push(`sandbox email: would send to ${m.endpoint}; sent to ${SANDBOX_SINK}`);
+          return { method: 'sandbox:email', recipient: `${SANDBOX_SINK} (for ${m.endpoint})`, messageId: body?.id as string | undefined };
+        }
+        attempts.push(`sandbox email → ${SANDBOX_SINK}: ${res.status} ${await res.text().catch(() => 'unknown')}`);
+      } else if (m.method === 'web_form') {
+        if (WEB_FORM_WORKER_URL && WEB_FORM_WORKER_SECRET) {
+          const w = await submitViaBrowser(m.endpoint, subject, row.body, replyTo, true);
+          attempts.push(`sandbox web_form dry run (${w.adapter}): ${w.ok ? 'form filled, not submitted' : w.error}`);
+        } else {
+          attempts.push(`sandbox web_form: would queue for manual submission at ${m.endpoint}`);
+        }
+        return { method: 'sandbox:web_form', recipient: m.endpoint };
+      }
+    } catch (err) {
+      attempts.push(`sandbox ${m.method}: ${String(err)}`);
     }
   }
   return null;
@@ -288,16 +344,18 @@ async function submitViaBrowser(
   subject: string,
   body: string,
   replyTo: string,
+  dryRun = false,
 ): Promise<{ ok: boolean; adapter?: string; error?: string }> {
   try {
     const res = await fetch(WEB_FORM_WORKER_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${WEB_FORM_WORKER_SECRET}` },
-      body: JSON.stringify({ url, name: 'Fault Line Community Reports', email: replyTo || FROM_EMAIL, subject, message: body }),
+      body: JSON.stringify({ url, name: 'Fault Line Community Reports', email: replyTo || FROM_EMAIL, subject, message: body, dry_run: dryRun }),
     });
     if (!res.ok) return { ok: false, error: `worker HTTP ${res.status}: ${(await res.text().catch(() => '')).slice(0, 200)}` };
     const j = await res.json().catch(() => null);
-    return { ok: Boolean(j?.success), adapter: j?.adapter ?? 'unknown', error: j?.success ? undefined : j?.error || 'no confirmation marker' };
+    const ok = dryRun ? j?.reason === 'dry_run' : Boolean(j?.success);
+    return { ok, adapter: j?.adapter ?? 'unknown', error: ok ? undefined : j?.error || 'no confirmation marker' };
   } catch (err) {
     return { ok: false, error: `worker network error: ${String(err)}` };
   }

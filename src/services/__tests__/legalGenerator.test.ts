@@ -82,7 +82,7 @@ describe('generateDemandLetter', () => {
 
   it('includes claimant and damages when supplied', () => {
     const letter = generateDemandLetter(makeReport(), 'DPW', 3, 'Jane Doe', 'Bent rim, $400');
-    expect(letter.letterText).toContain('I, Jane Doe, am');
+    expect(letter.letterText).toContain('I, Jane Doe, hereby give formal notice');
     expect(letter.letterText).toContain('DAMAGES CLAIMED');
     expect(letter.letterText).toContain('Bent rim, $400');
     expect(letter.letterText).toContain('3 independent community members have');
