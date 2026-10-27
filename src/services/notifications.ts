@@ -155,13 +155,13 @@ export function subscribeToReportUpdates(
         const reportId = payload.new?.report_id;
 
         // Check if this vote is on one of the user's reports
-        const { data: report } = await supabase
-          .from('reports')
-          .select('user_id, category, city')
-          .eq('id', reportId)
-          .single();
+        const [{ data: report }, { data: mine }] = await Promise.all([
+          supabase.from('reports').select('category, city').eq('id', reportId).single(),
+          // owns_report covers anonymous reports too (migration 036).
+          supabase.rpc('owns_report', { p_report_id: reportId }),
+        ]);
 
-        if (report?.user_id === userId) {
+        if (report && mine === true) {
           const action = voteType === 'upvote' ? 'upvoted' : 'confirmed';
           const category = report.category?.replace('_', ' ') || 'issue';
 
@@ -200,13 +200,12 @@ export function subscribeToReportUpdates(
           if (link && link.length > 0) {
             const reportIds = link.map((l: any) => l.report_id);
             const { data: userReport } = await supabase
-              .from('reports')
+              .rpc('my_reports')
               .select('id')
-              .eq('user_id', userId)
               .in('id', reportIds)
               .limit(1);
 
-            if (userReport && userReport.length > 0) {
+            if (Array.isArray(userReport) && userReport.length > 0) {
               await sendLocalNotification(
                 'Officials contacted!',
                 `The ${category} issue in ${city} with ${payload.new.report_count} reports has been escalated to authorities.`,
