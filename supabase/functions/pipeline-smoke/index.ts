@@ -66,6 +66,12 @@ Deno.serve(async (req) => {
 
   await cleanup();
 
+  // Sandbox mode (migration 037) redirects delivery; the test still runs end
+  // to end but expects sandbox results, and health warns while it's on.
+  const { data: sandboxSetting } = await admin.rpc('get_setting', { p_key: 'sandbox_mode' });
+  const sandbox = sandboxSetting === true;
+  if (sandbox) warnings.push('SANDBOX MODE IS ON: no report reaches a real authority until it is turned off (admin queue)');
+
   const reportId = crypto.randomUUID();
   let authorityId = '';
   let clusterId = '';
@@ -118,20 +124,28 @@ Deno.serve(async (req) => {
       .eq('id', outboundId).eq('status', 'pending_review');
     const res = await fetch(`${FN}/dispatch-outbound`, { method: 'POST', headers: cronHeader, body: '{}' });
     must(res.ok, `dispatch-outbound HTTP ${res.status}`);
-    let row: { status: string; sent_recipient: string | null; external_id: string | null; error: string | null } | null = null;
+    let row: { status: string; sent_method: string | null; sent_recipient: string | null; external_id: string | null; error: string | null } | null = null;
     for (let i = 0; i < 10; i++) {
-      const { data } = await admin.from('outbound_messages').select('status, sent_recipient, external_id, error').eq('id', outboundId).single();
+      const { data } = await admin.from('outbound_messages').select('status, sent_method, sent_recipient, external_id, error').eq('id', outboundId).single();
       row = data;
       if (row && row.status !== 'approved' && row.status !== 'sending') break;
       await sleep(1000);
     }
     must(row?.status === 'sent', `outbox status ${row?.status}: ${row?.error ?? ''}`);
-    must(row?.sent_recipient === SINK, `sent to ${row?.sent_recipient}`);
+    if (sandbox) {
+      must(row?.sent_method === 'sandbox:email', `sandbox sent via ${row?.sent_method}`);
+    } else {
+      must(row?.sent_recipient === SINK, `sent to ${row?.sent_recipient}`);
+    }
     must(row?.external_id, 'no Resend message id recorded');
   });
 
   await step('escalation_log records tagged notice', async () => {
     const { data } = await admin.from('escalation_log').select('subject, status').eq('cluster_id', clusterId);
+    if (sandbox) {
+      must(!data || data.length === 0, 'sandbox wrote to escalation_log (public record)');
+      return 'sandbox: correctly not recorded';
+    }
     must(data && data.length === 1, `expected 1 escalation_log row, got ${data?.length}`);
     must(data![0].subject?.startsWith(`[${ref}] `), `subject missing tag: ${data![0].subject}`);
   });

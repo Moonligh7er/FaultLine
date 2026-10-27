@@ -196,7 +196,7 @@ Days Since Notice: ${daysSinceReport}
 
 Dear ${recipient},
 
-${claimantName ? `I, ${claimantName}, am` : 'This letter serves as'} formal notice pursuant to ${effectiveStatute} ("${effectiveStatuteTitle}") regarding the condition described below within your jurisdiction.
+${claimantName ? `I, ${claimantName}, hereby give` : 'This letter serves as'} formal notice pursuant to ${effectiveStatute} ("${effectiveStatuteTitle}") regarding the condition described below within your jurisdiction.
 
 NATURE OF THE CONDITION
 ${'━'.repeat(50)}
