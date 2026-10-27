@@ -13,7 +13,18 @@ Composable UI sections for the extended report submission flow. Each section is 
 
 ## Wiring into ReportScreen
 
-Rough integration pattern (pseudo-code — actual ReportScreen edits will need to match the existing screen structure):
+**Wired (2026-10-26)** in the full (5-step) wizard; quick mode does not show these sections.
+
+| Section | Step | Trigger |
+|---|---|---|
+| Corridor | 2 · Location | "This report covers a stretch of road" toggle. No map picker yet: start / end pins use the device's current location (`getCurrentLocation`). |
+| Commercial | 2 · Location | "This is a commercial property" toggle |
+| Digital | 3 · Details | Category in `URL_FIRST_CATEGORIES` |
+| Insider | 3 · Details | "I'm a public employee reporting from inside" toggle (defaults the report to anonymous; an anonymous insider report carries no `user_id`) |
+
+Required fields are checked by `src/services/reportExtensions.ts` (`validateDigital` / `validateInsider` / `validateCommercial` / `validateCorridor`) when the user taps Next on that step, and again on submit. The same module maps each context to its DB columns (`buildExtendedColumns`) — see the header there and `supabase/migration_019*` / `migration_020*`. Commercial reports skip the direct 311/email submission and the cluster pipeline.
+
+Original integration sketch (pseudo-code), kept for reference:
 
 ```tsx
 import { useState } from 'react';

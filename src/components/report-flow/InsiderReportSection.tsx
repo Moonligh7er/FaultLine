@@ -1,7 +1,8 @@
-import React from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Linking } from 'react-native';
 import { COLORS, SPACING, FONT_SIZES, BORDER_RADIUS } from '../../constants/theme';
 import type { InsiderCategory, InsiderReportContext } from '../../types';
+import { getAllReferrals } from '../../services/insiderReports';
 
 // ============================================================
 // InsiderReportSection
@@ -45,6 +46,8 @@ export function InsiderReportSection({
     onChange({ ...value, [key]: v });
   };
 
+  const [showReferrals, setShowReferrals] = useState(false);
+
   return (
     <View style={styles.container} accessibilityLabel="Insider report context">
       <Text style={styles.sectionTitle}>Public-employee insider details</Text>
@@ -54,8 +57,7 @@ export function InsiderReportSection({
           Fault Line is not a specialized whistleblower channel. Scope is bounded to
           infrastructure conditions only. Personnel grievances, criminal misconduct,
           classified information, and retaliation claims go through different channels
-          — the reporting flow will surface referrals if you select an out-of-scope
-          category above.
+          — see where those go below.
         </Text>
       </View>
 
@@ -131,6 +133,33 @@ export function InsiderReportSection({
           only.
         </Text>
       </Field>
+
+      <TouchableOpacity
+        onPress={() => setShowReferrals(!showReferrals)}
+        accessibilityRole="button"
+        accessibilityState={{ expanded: showReferrals }}
+      >
+        <Text style={styles.referralToggle}>
+          {showReferrals ? 'Hide' : 'Not an infrastructure condition? See where to go'}
+        </Text>
+      </TouchableOpacity>
+      {showReferrals &&
+        getAllReferrals().map((r) => (
+          <View key={r.category} style={styles.referral}>
+            <Text style={styles.referralHeadline}>{r.headline}</Text>
+            {r.channels.map((ch) => (
+              <Text
+                key={ch.name}
+                style={[styles.referralChannel, ch.url ? styles.referralLink : null]}
+                onPress={ch.url ? () => Linking.openURL(ch.url as string).catch(() => {}) : undefined}
+                accessibilityRole={ch.url ? 'link' : 'text'}
+              >
+                • {ch.name}
+                {ch.notes ? ` (${ch.notes})` : ''}
+              </Text>
+            ))}
+          </View>
+        ))}
     </View>
   );
 }
@@ -226,6 +255,33 @@ const styles = StyleSheet.create({
   },
   chipLabelSelected: {
     color: COLORS.textOnPrimary,
+  },
+  referralToggle: {
+    color: COLORS.primary,
+    fontSize: FONT_SIZES.sm,
+    fontWeight: '700',
+    paddingVertical: SPACING.xs,
+  },
+  referral: {
+    backgroundColor: COLORS.card,
+    borderRadius: BORDER_RADIUS.sm,
+    padding: SPACING.sm,
+    marginTop: SPACING.xs,
+  },
+  referralHeadline: {
+    color: COLORS.text,
+    fontSize: FONT_SIZES.sm,
+    fontWeight: '600',
+    marginBottom: SPACING.xs,
+  },
+  referralChannel: {
+    color: COLORS.textSecondary,
+    fontSize: FONT_SIZES.xs,
+    lineHeight: 18,
+  },
+  referralLink: {
+    color: COLORS.primary,
+    textDecorationLine: 'underline',
   },
   hint: {
     color: COLORS.textLight,

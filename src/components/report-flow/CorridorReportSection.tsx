@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
 import { COLORS, SPACING, FONT_SIZES, BORDER_RADIUS } from '../../constants/theme';
-import type { CorridorGeometry, ReportLocation } from '../../types';
+import type { CorridorGeometry } from '../../types';
 
 // ============================================================
 // CorridorReportSection
@@ -25,6 +25,11 @@ export interface CorridorReportSectionProps {
   onChange: (next: Partial<CorridorGeometry>) => void;
   onPickStart: () => void;
   onPickEnd: () => void;
+  // Placeholder shown on an unset pin cell. Defaults to the map-pin wording;
+  // screens without a map picker pass their own (e.g. "use my location").
+  pickHint?: string;
+  // Which pin is currently being resolved, if any (shows a locating state).
+  locating?: 'start' | 'end' | null;
   disabled?: boolean;
 }
 
@@ -33,6 +38,8 @@ export function CorridorReportSection({
   onChange,
   onPickStart,
   onPickEnd,
+  pickHint = 'Tap to drop pin on map',
+  locating = null,
   disabled = false,
 }: CorridorReportSectionProps) {
   const update = <K extends keyof CorridorGeometry>(
@@ -94,13 +101,17 @@ export function CorridorReportSection({
           label="Start point"
           coord={value.start}
           onPick={onPickStart}
-          disabled={disabled}
+          hint={pickHint}
+          busy={locating === 'start'}
+          disabled={disabled || locating !== null}
         />
         <PinCell
           label="End point"
           coord={value.end}
           onPick={onPickEnd}
-          disabled={disabled}
+          hint={pickHint}
+          busy={locating === 'end'}
+          disabled={disabled || locating !== null}
         />
       </View>
     </View>
@@ -111,11 +122,15 @@ function PinCell({
   label,
   coord,
   onPick,
+  hint,
+  busy,
   disabled,
 }: {
   label: string;
   coord: { latitude: number; longitude: number } | undefined;
   onPick: () => void;
+  hint: string;
+  busy?: boolean;
   disabled?: boolean;
 }) {
   return (
@@ -127,12 +142,14 @@ function PinCell({
       accessibilityLabel={`Set ${label}`}
     >
       <Text style={styles.pinLabel}>{label}</Text>
-      {coord ? (
+      {busy ? (
+        <Text style={styles.pinPlaceholder}>Locating…</Text>
+      ) : coord ? (
         <Text style={styles.pinCoord}>
           {coord.latitude.toFixed(5)}, {coord.longitude.toFixed(5)}
         </Text>
       ) : (
-        <Text style={styles.pinPlaceholder}>Tap to drop pin on map</Text>
+        <Text style={styles.pinPlaceholder}>{hint}</Text>
       )}
     </TouchableOpacity>
   );

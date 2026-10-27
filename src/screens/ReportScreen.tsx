@@ -23,7 +23,17 @@ import {
 import {
   ReportCategory, SizeRating, HazardLevel, UrgencyLevel,
   ConditionLevel, MediaAttachment, ReportLocation, ReportSeverity,
+  ReportSubject, ReportGeometryType, DigitalReportContext, InsiderReportContext,
+  CommercialPropertyContext, CorridorGeometry,
 } from '../types';
+import {
+  DigitalReportSection, InsiderReportSection, CommercialPropertySection, CorridorReportSection,
+} from '../components/report-flow';
+import { isUrlFirstCategory, buildDigitalContext, captureSnapshot } from '../services/digitalSnapshot';
+import { buildInsiderContext } from '../services/insiderReports';
+import {
+  validateDigital, validateInsider, validateCommercial, validateCorridor, normalizeUrl,
+} from '../services/reportExtensions';
 import { getCurrentLocation } from '../services/location';
 import { submitReport, checkRateLimit } from '../services/reports';
 import { registerForPushNotifications } from '../services/notifications';
@@ -86,9 +96,21 @@ export default function ReportScreen() {
   const [mapRegion, setMapRegion] = useState<Region | null>(null);
   const [aiResult, setAiResult] = useState<AIResult | null>(null);
   const [analyzing, setAnalyzing] = useState(false);
+  // Extended report types (see src/components/report-flow/README.md)
+  const [reportSubject, setReportSubject] = useState<ReportSubject>('public_infrastructure');
+  const [geometryType, setGeometryType] = useState<ReportGeometryType>('point');
+  const [isInsider, setIsInsider] = useState(false);
+  const [digital, setDigital] = useState<Partial<DigitalReportContext>>({});
+  const [insider, setInsider] = useState<Partial<InsiderReportContext>>({});
+  const [commercial, setCommercial] = useState<Partial<CommercialPropertyContext>>({});
+  const [corridor, setCorridor] = useState<Partial<CorridorGeometry>>({});
+  const [locatingPin, setLocatingPin] = useState<'start' | 'end' | null>(null);
 
   const sensorTriggered = params?.sensorTriggered || false;
   const categoryInfo = CATEGORIES.find((c) => c.key === category);
+  const isDigital = isUrlFirstCategory(category);
+  const isCommercial = reportSubject === 'commercial_property';
+  const isCorridor = geometryType === 'corridor';
 
   useEffect(() => { loadLocation(); }, []);
 
@@ -181,10 +203,65 @@ export default function ReportScreen() {
     };
   };
 
+  // Required-field checks for the extended sections, per wizard step.
+  // Step 1 (location) owns commercial + corridor; step 2 (details) owns
+  // digital + insider. Quick mode never shows these sections.
+  const stepErrors = (s: number): string[] => {
+    if (isQuickMode) return [];
+    if (s === 1) {
+      return [
+        ...(isCommercial ? validateCommercial(commercial) : []),
+        ...(isCorridor ? validateCorridor(corridor) : []),
+      ];
+    }
+    if (s === 2) {
+      return [
+        ...(isDigital ? validateDigital(digital) : []),
+        ...(isInsider ? validateInsider(insider, media) : []),
+      ];
+    }
+    return [];
+  };
+
+  const showErrors = (errors: string[]) => {
+    haptics.error();
+    announce(errors[0]);
+    Alert.alert('Missing details', errors.join('\n'));
+  };
+
+  const goNext = () => {
+    const errors = stepErrors(step);
+    if (errors.length > 0) { showErrors(errors); return; }
+    setStep(step + 1);
+    haptics.light();
+  };
+
+  const toggleInsider = () => {
+    const next = !isInsider;
+    setIsInsider(next);
+    // Insider reports default to anonymous; the reporter can still opt out.
+    if (next) setIsAnonymous(true);
+  };
+
+  const setCorridorPin = async (which: 'start' | 'end') => {
+    setLocatingPin(which);
+    const loc = await getCurrentLocation().catch(() => null);
+    setLocatingPin(null);
+    if (!loc) {
+      Alert.alert(t('permissionNeeded'), 'Location access is required to set the corridor start and end points.');
+      return;
+    }
+    setCorridor((prev) => ({ ...prev, [which]: { latitude: loc.latitude, longitude: loc.longitude } }));
+    haptics.light();
+    announce(`${which === 'start' ? 'Start' : 'End'} point set to your current location`);
+  };
+
   const isEmergencyFastTrack = () => hazardLevel === 'extremely_dangerous' || urgency === 'critical';
 
   const handleSubmit = async () => {
     if (!location) { Alert.alert(t('locationRequired')); return; }
+    const extendedErrors = [...stepErrors(1), ...stepErrors(2)];
+    if (extendedErrors.length > 0) { showErrors(extendedErrors); return; }
 
     const { data: { session } } = await supabase.auth.getSession();
     if (session?.user) {
@@ -197,14 +274,47 @@ export default function ReportScreen() {
 
     const authority = await findAuthorityByLocation(location.latitude, location.longitude, location.state, location.city, category);
     const severity = buildSeverity();
+
+    // Extended report contexts, attached only when their section is active.
+    let digitalCtx: DigitalReportContext | undefined;
+    if (!isQuickMode && isDigital) {
+      const targetUrl = normalizeUrl(digital.targetUrl);
+      const snapshot = await captureSnapshot(targetUrl).catch(() => undefined);
+      digitalCtx = buildDigitalContext({ ...digital, targetUrl, snapshot });
+    }
+    const insiderCtx: InsiderReportContext | undefined =
+      !isQuickMode && isInsider && insider.insiderCategory
+        ? buildInsiderContext({ ...insider, insiderCategory: insider.insiderCategory })
+        : undefined;
+    const commercialCtx: CommercialPropertyContext | undefined =
+      !isQuickMode && isCommercial
+        ? {
+            businessName: (commercial.businessName || '').trim(),
+            businessAddressFull: (commercial.businessAddressFull || '').trim(),
+            chainIdentifier: commercial.chainIdentifier?.trim() || undefined,
+            publicViewConfirmed: commercial.publicViewConfirmed === true,
+            reporterAttestation: commercial.reporterAttestation === true,
+          }
+        : undefined;
+    const corridorCtx: CorridorGeometry | undefined =
+      !isQuickMode && isCorridor && corridor.start && corridor.end
+        ? { ...corridor, start: corridor.start, end: corridor.end }
+        : undefined;
+
     const reportData = {
-      userId: session?.user?.id,
+      // An anonymous insider report carries no account link at all.
+      userId: insiderCtx && isAnonymous ? undefined : session?.user?.id,
       category, location, description, severity, media,
       status: 'submitted' as const,
       authorityId: authority?.id,
-      clusterId: existingClusterId,
+      // Commercial reports stay out of the public cluster pipeline.
+      clusterId: commercialCtx ? undefined : existingClusterId,
       isAnonymous, sensorDetected: sensorTriggered,
       offlineQueued: false, isQuickReport: isQuickMode,
+      ...(digitalCtx && { digital: digitalCtx }),
+      ...(insiderCtx && { insider: insiderCtx }),
+      ...(commercialCtx && { reportSubject: 'commercial_property' as const, commercial: commercialCtx }),
+      ...(corridorCtx && { geometryType: 'corridor' as const, corridor: corridorCtx }),
     };
 
     const online = await isOnline();
@@ -238,13 +348,14 @@ export default function ReportScreen() {
           await recordReportForStreak();
         }
 
-        // Try direct 311/API submission if authority supports it
-        if (authority && authority.submissionMethods?.some((m) => m.method === 'api')) {
+        // Try direct 311/API submission if authority supports it. Commercial
+        // reports never go out individually; they wait for aggregation.
+        if (!commercialCtx && authority && authority.submissionMethods?.some((m) => m.method === 'api')) {
           submitToAuthority(result, authority).catch((err) => console.warn('[311 submit]', err?.message));
         }
 
         // Check escalation milestones
-        if (result.clusterId) checkEscalationProgress(result.clusterId).catch((err) => console.warn('[escalation]', err?.message));
+        if (!commercialCtx && result.clusterId) checkEscalationProgress(result.clusterId).catch((err) => console.warn('[escalation]', err?.message));
 
         haptics.success();
         announce(t('reportSubmitted'));
@@ -253,8 +364,10 @@ export default function ReportScreen() {
         registerForPushNotifications({ prompt: true }).catch(() => {});
 
         Alert.alert(
-          isEmergencyFastTrack() ? 'URGENT Report Submitted' : t('reportSubmitted'),
-          isEmergencyFastTrack() ? 'Flagged as critical safety issue — fast-tracked for review.' : t('thankYou'),
+          isEmergencyFastTrack() && !commercialCtx ? 'URGENT Report Submitted' : t('reportSubmitted'),
+          commercialCtx
+            ? 'Commercial reports are held privately until enough independent reports accumulate.'
+            : isEmergencyFastTrack() ? 'Flagged as critical safety issue — fast-tracked for review.' : t('thankYou'),
           [{ text: 'OK', onPress: () => navigation.goBack() }]
         );
       } else {
@@ -503,6 +616,32 @@ ${location.address}` : ''}
               </View>
             </FadeIn>
           )}
+          <OptionToggle
+            checked={isCorridor}
+            onPress={() => setGeometryType(isCorridor ? 'point' : 'corridor')}
+            label="This report covers a stretch of road"
+            hint="For a problem running along a street segment, not a single spot."
+          />
+          {isCorridor && (
+            <CorridorReportSection
+              value={corridor}
+              onChange={setCorridor}
+              onPickStart={() => setCorridorPin('start')}
+              onPickEnd={() => setCorridorPin('end')}
+              pickHint="Tap to use my current location"
+              locating={locatingPin}
+              disabled={submitting}
+            />
+          )}
+          <OptionToggle
+            checked={isCommercial}
+            onPress={() => setReportSubject(isCommercial ? 'public_infrastructure' : 'commercial_property')}
+            label="This is a commercial property"
+            hint="A business's parking lot, entrance or storefront rather than public infrastructure."
+          />
+          {isCommercial && (
+            <CommercialPropertySection value={commercial} onChange={setCommercial} disabled={submitting} />
+          )}
         </FadeIn>
       )}
 
@@ -510,6 +649,9 @@ ${location.address}` : ''}
       {step === 2 && (
         <FadeIn style={styles.stepContent}>
           <Text style={styles.stepTitle} accessibilityRole="header">{t('addDetails')}</Text>
+          {isDigital && (
+            <DigitalReportSection value={digital} onChange={setDigital} disabled={submitting} />
+          )}
           <Text style={styles.fieldLabel}>{t('descriptionOptional')}</Text>
           <TextInput style={styles.textArea} multiline numberOfLines={4} placeholder={t('descriptionPlaceholder')} placeholderTextColor={COLORS.textLight} value={description} onChangeText={setDescription} accessibilityLabel="Issue description" />
           <Text style={styles.fieldLabel}>{t('photosVideos')}</Text>
@@ -547,6 +689,15 @@ ${location.address}` : ''}
             <Icon name={isAnonymous ? 'checkbox-marked' : 'checkbox-blank-outline'} size={24} color={isAnonymous ? COLORS.primary : COLORS.border} />
             <Text style={styles.anonymousText}>{t('submitAnonymously')}</Text>
           </HapticButton>
+          <OptionToggle
+            checked={isInsider}
+            onPress={toggleInsider}
+            label="I'm a public employee reporting from inside"
+            hint="Insider details are stored privately and never shown on the public report."
+          />
+          {isInsider && (
+            <InsiderReportSection value={insider} onChange={setInsider} disabled={submitting} />
+          )}
         </FadeIn>
       )}
 
@@ -618,6 +769,15 @@ ${location.address}` : ''}
           <View style={styles.reviewCard} accessibilityRole="summary">
             <ReviewRow label="Category" value={categoryInfo?.label || category} icon={categoryInfo?.icon} />
             <ReviewRow label="Location" value={location?.address || location?.city || 'Detected'} />
+            {isCorridor && (
+              <ReviewRow
+                label="Stretch"
+                value={[corridor.streetName, corridor.fromCrossStreet && `from ${corridor.fromCrossStreet}`, corridor.toCrossStreet && `to ${corridor.toCrossStreet}`].filter(Boolean).join(' ')}
+              />
+            )}
+            {isCommercial && <ReviewRow label="Business" value={commercial.businessName || ''} />}
+            {isDigital && <ReviewRow label="URL" value={normalizeUrl(digital.targetUrl)} />}
+            {isInsider && <ReviewRow label="Insider" value="Public employee (kept private)" />}
             {categoryInfo?.severityDimensions.includes('size') && <ReviewRow label={t('size')} value={SIZE_RATINGS.find((s) => s.key === sizeRating)?.label || ''} />}
             <ReviewRow label={t('hazardLevel')} value={HAZARD_LEVELS.find((h) => h.key === hazardLevel)?.label || ''} />
             {categoryInfo?.severityDimensions.includes('urgency') && <ReviewRow label={t('urgency')} value={URGENCY_LEVELS.find((u) => u.key === urgency)?.label || ''} />}
@@ -639,7 +799,7 @@ ${location.address}` : ''}
           </HapticButton>
         )}
         {step < 4 ? (
-          <HapticButton style={[styles.nextButton, step === 0 && { flex: 1 }]} onPress={() => { setStep(step + 1); haptics.light(); }} hapticType="medium">
+          <HapticButton style={[styles.nextButton, step === 0 && { flex: 1 }]} onPress={goNext} hapticType="medium">
             <Text style={styles.nextButtonText}>{t('next')}</Text>
           </HapticButton>
         ) : (
@@ -669,6 +829,23 @@ function ReviewRow({ label, value, icon }: { label: string; value: string; icon?
         <Text style={reviewStyles.value}>{value}</Text>
       </View>
     </View>
+  );
+}
+
+function OptionToggle({ checked, onPress, label, hint }: { checked: boolean; onPress: () => void; label: string; hint?: string }) {
+  return (
+    <HapticButton
+      style={styles.optionToggle}
+      onPress={onPress}
+      hapticType="selection"
+      accessibilityLabel={`${label}, ${checked ? 'checked' : 'not checked'}`}
+    >
+      <Icon name={checked ? 'checkbox-marked' : 'checkbox-blank-outline'} size={24} color={checked ? COLORS.primary : COLORS.border} />
+      <View style={styles.optionToggleBody}>
+        <Text style={styles.anonymousText}>{label}</Text>
+        {hint ? <Text style={styles.optionToggleHint}>{hint}</Text> : null}
+      </View>
+    </HapticButton>
   );
 }
 
@@ -759,6 +936,9 @@ const styles = StyleSheet.create({
   mediaName: { flex: 1, fontSize: FONT_SIZES.sm, color: COLORS.textSecondary },
   anonymousToggle: { flexDirection: 'row', alignItems: 'center', marginTop: SPACING.lg, gap: SPACING.sm },
   anonymousText: { fontSize: FONT_SIZES.md, color: COLORS.text },
+  optionToggle: { flexDirection: 'row', alignItems: 'flex-start', marginTop: SPACING.lg, gap: SPACING.sm },
+  optionToggleBody: { flex: 1 },
+  optionToggleHint: { fontSize: FONT_SIZES.sm, color: COLORS.textSecondary, marginTop: 2 },
   ratingCard: { backgroundColor: COLORS.surface, borderRadius: BORDER_RADIUS.md, padding: SPACING.md, borderWidth: 2, borderColor: 'transparent', ...SHADOWS.sm, marginBottom: SPACING.xs },
   ratingCardSelected: { borderColor: COLORS.primary, backgroundColor: COLORS.primary + '10' },
   ratingLabel: { fontSize: FONT_SIZES.lg, fontWeight: '600', color: COLORS.text },

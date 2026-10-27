@@ -1,6 +1,7 @@
 import { supabase } from './supabase';
 import { Report, ReportCategory, ReportStatus, ReportSeverity } from '../types';
 import { uploadAllMedia } from './media';
+import { buildExtendedColumns, mapExtendedColumns, needsMinimalReturn } from './reportExtensions';
 
 type CreateReportInput = Omit<Report, 'id' | 'createdAt' | 'updatedAt' | 'upvoteCount' | 'confirmCount'>;
 
@@ -37,36 +38,63 @@ export async function submitReport(
 }
 
 export async function createReport(report: CreateReportInput, id?: string): Promise<Report | null> {
+  // Commercial reports can't be read back by their (possibly anonymous)
+  // submitter — see needsMinimalReturn — so they need a known id up front.
+  const minimalReturn = needsMinimalReturn(report);
+  if (minimalReturn && !id) id = generateReportId();
+
+  const row = {
+    ...(id && { id }),
+    user_id: report.userId,
+    category: report.category,
+    latitude: report.location.latitude,
+    longitude: report.location.longitude,
+    address: report.location.address,
+    city: report.location.city,
+    state: report.location.state,
+    zip: report.location.zip,
+    description: report.description,
+    size_rating: report.severity.sizeRating || null,
+    hazard_level: report.severity.hazardLevel,
+    urgency: report.severity.urgency || null,
+    condition_level: report.severity.condition || null,
+    media: report.media,
+    vehicle_damage: report.vehicleDamage,
+    status: report.status,
+    authority_id: report.authorityId,
+    cluster_id: report.clusterId,
+    submission_method: report.submissionMethod,
+    // RLS (migration 008) only accepts a user-less insert when it's
+    // flagged anonymous, so guests are always anonymous.
+    is_anonymous: report.isAnonymous || !report.userId,
+    sensor_detected: report.sensorDetected,
+    offline_queued: report.offlineQueued,
+    is_quick_report: report.isQuickReport,
+    // Extended report types (migrations 019/020). Empty for ordinary reports.
+    ...buildExtendedColumns(report),
+  };
+
+  if (minimalReturn) {
+    const { error } = await supabase.from('reports').insert(row);
+    if (error) {
+      console.error('Error creating report:', error);
+      return null;
+    }
+    const now = new Date().toISOString();
+    return {
+      ...report,
+      id: id as string,
+      isAnonymous: row.is_anonymous,
+      upvoteCount: 0,
+      confirmCount: 0,
+      createdAt: now,
+      updatedAt: now,
+    };
+  }
+
   const { data, error } = await supabase
     .from('reports')
-    .insert({
-      ...(id && { id }),
-      user_id: report.userId,
-      category: report.category,
-      latitude: report.location.latitude,
-      longitude: report.location.longitude,
-      address: report.location.address,
-      city: report.location.city,
-      state: report.location.state,
-      zip: report.location.zip,
-      description: report.description,
-      size_rating: report.severity.sizeRating || null,
-      hazard_level: report.severity.hazardLevel,
-      urgency: report.severity.urgency || null,
-      condition_level: report.severity.condition || null,
-      media: report.media,
-      vehicle_damage: report.vehicleDamage,
-      status: report.status,
-      authority_id: report.authorityId,
-      cluster_id: report.clusterId,
-      submission_method: report.submissionMethod,
-      // RLS (migration 008) only accepts a user-less insert when it's
-      // flagged anonymous, so guests are always anonymous.
-      is_anonymous: report.isAnonymous || !report.userId,
-      sensor_detected: report.sensorDetected,
-      offline_queued: report.offlineQueued,
-      is_quick_report: report.isQuickReport,
-    })
+    .insert(row)
     .select()
     .single();
 
@@ -75,7 +103,14 @@ export async function createReport(report: CreateReportInput, id?: string): Prom
     return null;
   }
 
-  return mapDbToReport(data);
+  const created = mapDbToReport(data);
+  // Fields the DB never hands back (insider context is moved to a private
+  // table) or may return in an unparsed form (geometry) come from the input.
+  if (report.insider) created.insider = report.insider;
+  if (report.digital && !created.digital) created.digital = report.digital;
+  if (report.corridor && !created.corridor) created.corridor = report.corridor;
+  if (report.area && !created.area) created.area = report.area;
+  return created;
 }
 
 export async function getReports(filters?: {
@@ -230,5 +265,6 @@ function mapDbToReport(row: any): Report {
     sensorDetected: row.sensor_detected,
     offlineQueued: row.offline_queued,
     isQuickReport: row.is_quick_report || false,
+    ...mapExtendedColumns(row),
   };
 }

@@ -1,7 +1,13 @@
 import { submitReport, createReport } from '../reports';
 import { uploadAllMedia } from '../media';
 import { supabase } from '../supabase';
-import { makeReportInput } from './fixtures';
+import {
+  makeReportInput,
+  makeDigitalContext,
+  makeInsiderContext,
+  makeCommercialContext,
+  makeCorridorGeometry,
+} from './fixtures';
 import type { MediaAttachment } from '../../types';
 
 jest.mock('../supabase', () => ({ supabase: { from: jest.fn() } }));
@@ -165,6 +171,120 @@ describe('createReport', () => {
       upvoteCount: 0,
       confirmCount: 0,
       isQuickReport: false,
+    });
+  });
+});
+
+describe('createReport — extended report types', () => {
+  const BASE_COLUMNS = [
+    'user_id', 'category', 'latitude', 'longitude', 'address', 'city', 'state', 'zip',
+    'description', 'size_rating', 'hazard_level', 'urgency', 'condition_level', 'media',
+    'vehicle_damage', 'status', 'authority_id', 'cluster_id', 'submission_method',
+    'is_anonymous', 'sensor_detected', 'offline_queued', 'is_quick_report',
+  ];
+
+  it('sends exactly the original columns for an ordinary report', async () => {
+    setupEchoInsert();
+    await createReport(makeReportInput());
+    expect(Object.keys(insert.mock.calls[0][0]).sort()).toEqual([...BASE_COLUMNS].sort());
+  });
+
+  it('persists digital context to digital_* columns', async () => {
+    setupEchoInsert();
+    const r = await createReport(makeReportInput({ category: 'broken_city_website_form', digital: makeDigitalContext() }));
+    expect(insert.mock.calls[0][0]).toMatchObject({
+      digital_target_url: 'https://www.boston.gov/permits/apply',
+      digital_assistive_tech: 'NVDA',
+      digital_browser: 'Firefox',
+      digital_platform: 'Windows',
+      digital_wcag_criterion: '4.1.2',
+      digital_snapshot_ref: 'snap/abc',
+    });
+    expect(r?.digital).toEqual(makeDigitalContext());
+  });
+
+  it('persists insider context as insider_context JSON and keeps it on the returned Report only', async () => {
+    setupEchoInsert();
+    const insider = makeInsiderContext();
+    const r = await createReport(makeReportInput({ insider }));
+    const row = insert.mock.calls[0][0];
+    expect(row.insider_context).toEqual({
+      insider_category: 'public_works',
+      observed_duration_days: 540,
+      prior_internal_report_ref: 'Internal ticket 2024-03-15',
+      documentary_reference: 'Work order #12345',
+    });
+    expect(Object.keys(row).some((k) => k.startsWith('insider_') && k !== 'insider_context')).toBe(false);
+    expect(r?.insider).toEqual(insider);
+  });
+
+  it('persists a corridor as geometry_type + EWKT and returns the input corridor', async () => {
+    setupEchoInsert();
+    const corridor = makeCorridorGeometry();
+    const r = await createReport(makeReportInput({ geometryType: 'corridor', corridor }));
+    expect(insert.mock.calls[0][0]).toMatchObject({
+      geometry_type: 'corridor',
+      corridor_geometry: 'SRID=4326;LINESTRING(-71.0589 42.3601,-71.0612 42.3622)',
+      corridor_street_name: 'Beacon Street',
+      corridor_from_cross_street: 'Park St',
+      corridor_to_cross_street: 'Charles St',
+    });
+    expect(r?.geometryType).toBe('corridor');
+    expect(r?.corridor).toEqual(corridor);
+  });
+
+  describe('commercial property', () => {
+    let selectSpy: jest.Mock;
+    function setupMinimalInsert(error: any = null) {
+      selectSpy = jest.fn();
+      insert = jest.fn(() => Object.assign(Promise.resolve({ data: null, error }), { select: selectSpy }));
+      mockFrom.mockImplementation(() => ({ insert }));
+    }
+
+    it('persists commercial columns and skips RETURNING (anonymous submitters cannot read the row back)', async () => {
+      setupMinimalInsert();
+      const commercial = makeCommercialContext({ chainIdentifier: 'CVS' });
+      const r = await createReport(
+        makeReportInput({ userId: undefined, isAnonymous: false, reportSubject: 'commercial_property', commercial }),
+      );
+      const row = insert.mock.calls[0][0];
+      expect(selectSpy).not.toHaveBeenCalled();
+      expect(row).toMatchObject({
+        report_subject: 'commercial_property',
+        commercial_business_name: 'Riverdale Retail Center',
+        commercial_business_address: '123 Main St, Springfield, MA 01103',
+        commercial_chain_identifier: 'cvs',
+        commercial_public_view_confirmed: true,
+        commercial_reporter_attestation: true,
+        is_anonymous: true,
+      });
+      expect(row.id).toMatch(UUID_V4_LOWER);
+      expect(r).toMatchObject({
+        id: row.id,
+        reportSubject: 'commercial_property',
+        commercial,
+        isAnonymous: true,
+        upvoteCount: 0,
+        confirmCount: 0,
+      });
+    });
+
+    it('uses the id passed by submitReport', async () => {
+      setupMinimalInsert();
+      const r = await createReport(
+        makeReportInput({ reportSubject: 'commercial_property', commercial: makeCommercialContext() }),
+        'fixed-id',
+      );
+      expect(insert.mock.calls[0][0].id).toBe('fixed-id');
+      expect(r?.id).toBe('fixed-id');
+    });
+
+    it('returns null when the insert errors', async () => {
+      setupMinimalInsert({ message: 'check violation' });
+      const r = await createReport(
+        makeReportInput({ reportSubject: 'commercial_property', commercial: makeCommercialContext() }),
+      );
+      expect(r).toBeNull();
     });
   });
 });
