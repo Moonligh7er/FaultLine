@@ -47,7 +47,8 @@ Deno.serve(async (req) => {
   const { data: ok } = secret ? await admin.rpc('verify_cron_secret', { p_secret: secret }) : { data: false };
   if (ok !== true) return json({ error: 'Unauthorized' }, 401);
 
-  const { action } = await req.json().catch(() => ({}));
+  const body = await req.json().catch(() => ({}));
+  const { action } = body ?? {};
 
   if (action === 'diagnose') {
     const domains = await api('GET', '/domains');
@@ -78,6 +79,34 @@ Deno.serve(async (req) => {
     const v = await api('POST', `/domains/${d.id}/verify`);
     const after = await findDomain();
     return json({ verify_status: v.status, domain_status: after?.status, records: records(after) });
+  }
+
+  if (action === 'enable-existing') {
+    // Turn on receiving for an existing verified domain (no new domain slot).
+    const list = await api('GET', '/domains');
+    const hit = (list.data?.data ?? []).find((d: { name: string }) => d.name === 'fault-line.dev');
+    if (!hit) return json({ error: 'fault-line.dev not in Resend' }, 404);
+    if (body?.verify === true) {
+      const v = await api('POST', `/domains/${hit.id}/verify`);
+      const after = (await api('GET', `/domains/${hit.id}`)).data;
+      return json({ verify_status: v.status, domain_status: after?.status, capabilities: after?.capabilities, records: records(after) });
+    }
+    const before = (await api('GET', `/domains/${hit.id}`)).data;
+    if (body?.apply !== true) return json({ preview: true, capabilities: before?.capabilities, records: records(before) });
+    const upd = await api('PATCH', `/domains/${hit.id}`, { capabilities: { sending: 'enabled', receiving: 'enabled' } });
+    const after = (await api('GET', `/domains/${hit.id}`)).data;
+    return json({ update_status: upd.status, update_message: upd.data?.message ?? null, capabilities: after?.capabilities, records: records(after) });
+  }
+
+  if (action === 'test-receive') {
+    // Sends one email to replies@fault-line.dev; it should come back through
+    // the email.received webhook and land in inbound_messages.
+    const from = Deno.env.get('FROM_EMAIL') || 'reports@fault-line.dev';
+    const sent = await api('POST', '/emails', {
+      from: `Fault Line receiving test <${from}>`, to: ['replies@fault-line.dev'],
+      subject: 'Fault Line receiving test', text: 'Automated check that replies reach Fault Line. Safe to ignore.',
+    });
+    return json({ send_status: sent.status, id: sent.data?.id ?? null, message: sent.data?.message ?? null });
   }
 
   if (action === 'webhook') {
