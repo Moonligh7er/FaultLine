@@ -678,9 +678,24 @@ const RECORDS: CategoryRouting[] = [
 
 // ── Public accessors ───────────────────────────────────────────────────────
 
+// Federal-fallback records are keyed by legal framework, not by category:
+// every category under a framework shares that framework's federal agency.
+const FEDERAL_FALLBACK_KEY: Record<string, string> = {
+  'ada-title-ii': 'ada-title-ii-any',
+  'fair-housing-504': 'fair-housing-any',
+  'title-vi-language': 'title-vi-language-access-any',
+  'transit-ada': 'fta-transit-ada-any',
+};
+
+/**
+ * Routing for a category in a jurisdiction. Falls back to the federal agency
+ * for the category's legal framework (pass `framing` from getFraming) when
+ * the jurisdiction has no record of its own.
+ */
 export function getRouting(
   categoryKey: string,
   jurisdictionScope: string,
+  framing?: string,
 ): CategoryRouting | null {
   const normalizedJurisdiction = jurisdictionScope?.toUpperCase();
   const specific = RECORDS.find(
@@ -690,8 +705,9 @@ export function getRouting(
     return effectiveRecord(specific);
   }
   // Fall through to federal fallback if there's a matching one
+  const federalKey = (framing && FEDERAL_FALLBACK_KEY[framing]) || categoryKey;
   const federal = RECORDS.find(
-    (r) => r.categoryKey === categoryKey && r.jurisdictionScope === 'federal-fallback',
+    (r) => r.categoryKey === federalKey && r.jurisdictionScope === 'federal-fallback',
   );
   if (federal && federal.verificationStatus !== 'draft') {
     return effectiveRecord(federal);

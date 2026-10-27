@@ -82,7 +82,9 @@ function unreviewedBanner(
   }
   if (routingUnreviewed && routing) {
     concerns.push(
-      `The addressee routing (${routing.primaryAuthority.name}) has NOT yet been reviewed against current municipal contact information — verify the recipient office and mailing address before sending.`,
+      routing.jurisdictionScope === 'federal-fallback'
+        ? `No state-specific routing is on file; the federal complaint pathway (${routing.primaryAuthority.name}) has NOT yet been legally reviewed — verify before relying on it.`
+        : `The addressee routing (${routing.primaryAuthority.name}) has NOT yet been reviewed against current municipal contact information — verify the recipient office and mailing address before sending.`,
     );
   }
 
@@ -126,8 +128,11 @@ export function generateDemandLetter(
   if (!state || !record) {
     throw new Error(`No statute template for state "${state ?? 'unknown'}" — check isLetterSupported() first`);
   }
-  const routing = getRouting(report.category, state);
   const framing = getFraming(report.category);
+  const routing = getRouting(report.category, state, framing);
+  // A federal-fallback record names the federal complaint agency, not the
+  // addressee: the demand letter still goes to the responsible local entity.
+  const federalOnly = routing?.jurisdictionScope === 'federal-fallback';
   const template = getTemplate(framing);
   const category = CATEGORIES.find((c) => c.key === report.category);
   const hazard = HAZARD_LEVELS.find((h) => h.key === report.severity.hazardLevel);
@@ -158,8 +163,8 @@ export function generateDemandLetter(
 
   // Recipient: prefer the routing dataset's named authority, fall back to the
   // per-report authority name passed in by the caller (backwards-compatible).
-  const recipient = routing?.primaryAuthority.name ?? authorityName;
-  const recipientAddressLine = routing?.primaryAuthority.address
+  const recipient = (!federalOnly && routing?.primaryAuthority.name) || authorityName;
+  const recipientAddressLine = !federalOnly && routing?.primaryAuthority.address
     ? `\n${routing.primaryAuthority.address}`
     : '';
 
@@ -170,7 +175,11 @@ export function generateDemandLetter(
   const templateFooter = templateDisclaimer(template);
   const federalPathwayLine =
     framing !== 'defective-highway'
-      ? `\n\nFEDERAL COMPLAINT PATHWAY\n${'━'.repeat(50)}\nIf this notice does not receive an adequate response, a federal complaint may be filed with: ${template.federalComplaintPathway}`
+      ? `\n\nFEDERAL COMPLAINT PATHWAY\n${'━'.repeat(50)}\nIf this notice does not receive an adequate response, a federal complaint may be filed with: ${
+          federalOnly && routing
+            ? `${routing.primaryAuthority.name}${routing.primaryAuthority.webForm ? ` — ${routing.primaryAuthority.webForm}` : ''}`
+            : template.federalComplaintPathway
+        }`
       : '';
 
   const letterText = `

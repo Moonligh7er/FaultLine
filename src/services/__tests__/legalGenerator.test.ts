@@ -6,6 +6,7 @@ import {
   getSupportedStates,
 } from '../legalGenerator';
 import { enhanceDemandLetter } from '../ai';
+import { getRouting } from '../routing';
 import { makeReport } from './fixtures';
 
 jest.mock('../supabase', () => ({ supabase: {} }));
@@ -91,6 +92,32 @@ describe('generateDemandLetter', () => {
     const letter = generateDemandLetter(makeReport({ category: 'missing_curb_cut' }), 'ADA Coordinator');
     expect(letter.framing).toBe('ada-title-ii');
     expect(letter.letterText).toContain('FEDERAL COMPLAINT PATHWAY');
+  });
+});
+
+describe('federal fallback routing', () => {
+  it("finds the framework's federal agency when the state has no record", () => {
+    // MA has no transit-accessibility record of its own.
+    const r = getRouting('missing_audible_signage_transit', 'MA', 'transit-ada');
+    expect(r?.jurisdictionScope).toBe('federal-fallback');
+    expect(r?.primaryAuthority.name).toMatch(/Federal Transit Administration/);
+    expect(getRouting('english_only_signage', 'CO', 'title-vi-language')?.categoryKey).toBe('title-vi-language-access-any');
+  });
+
+  it('prefers the state record over the federal one', () => {
+    expect(getRouting('missing_curb_cut', 'MA', 'ada-title-ii')?.jurisdictionScope).toBe('MA');
+  });
+
+  it('has no federal fallback for physical defects', () => {
+    expect(getRouting('pothole', 'CO', 'defective-highway')).toBeNull();
+  });
+
+  it('keeps the letter addressed locally and names the federal agency as the pathway', () => {
+    const r = makeReport({ category: 'missing_audible_signage_transit' as never });
+    const letter = generateDemandLetter(r, 'MBTA');
+    expect(letter.letterText).toContain('Dear MBTA,');
+    expect(letter.letterText).toMatch(/federal complaint may be filed with: Federal Transit Administration/);
+    expect(letter.letterText).toContain('No state-specific routing is on file');
   });
 });
 
