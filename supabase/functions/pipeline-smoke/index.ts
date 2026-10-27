@@ -162,7 +162,7 @@ Deno.serve(async (req) => {
     // 502 "resend 401" = the Resend key can't read inbound mail yet: a known
     // setup gap, reported as a warning rather than an outage.
     if (res.status === 502 && body?.error === 'resend 401') {
-      warnings.push('Inbound replies not readable: set a full-access RESEND_RECEIVING_API_KEY');
+      warnings.push('Inbound replies not readable: RESEND_API_KEY must be a Full-access key');
       return 'warning';
     }
     must(res.status === 400, `expected 400, got ${res.status} ${JSON.stringify(body)}`);
