@@ -18,6 +18,19 @@
 -- attribution on the Rapid Response Roll. Populated per pilot city.
 --
 -- Safe to run multiple times (idempotent CREATE IF NOT EXISTS).
+--
+-- Review fixes (2026-10-26, before first apply):
+--   * FK target was public.clusters, which doesn't exist — the cluster
+--     table is public.report_clusters (clustering.sql). The original
+--     script failed on CREATE TABLE.
+--   * departments UNIQUE now NULLS NOT DISTINCT so two rows with the same
+--     department and no crew can't coexist.
+--   * reopen_check_scheduled_at defaults to resolved_at + 180 days.
+--   * Indexes on the report_id / authority_id FKs (cascade + lookups).
+--   * verified_by_reporter_ids (user ids of re-photo verifiers) is no
+--     longer publicly readable: column-level SELECT grant excludes it.
+--   * Client roles get no write privileges at all (RLS already denied
+--     writes; TRUNCATE isn't covered by RLS, so revoke explicitly).
 -- ============================================================
 
 BEGIN;
@@ -37,7 +50,7 @@ CREATE TABLE IF NOT EXISTS public.departments (
   is_active BOOLEAN NOT NULL DEFAULT TRUE,
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-  UNIQUE (authority_id, department_name, crew_name)
+  UNIQUE NULLS NOT DISTINCT (authority_id, department_name, crew_name)
 );
 
 CREATE INDEX IF NOT EXISTS idx_departments_authority_id ON public.departments(authority_id);
@@ -46,8 +59,11 @@ CREATE INDEX IF NOT EXISTS idx_departments_is_active ON public.departments(is_ac
 -- ── resolution_events ────────────────────────────────────────────────────
 DO $$
 BEGIN
-  IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'resolution_source_enum') THEN
-    CREATE TYPE resolution_source_enum AS ENUM (
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_type t JOIN pg_namespace n ON n.oid = t.typnamespace
+    WHERE t.typname = 'resolution_source_enum' AND n.nspname = 'public'
+  ) THEN
+    CREATE TYPE public.resolution_source_enum AS ENUM (
       'community_repeat_photo',
       'authority_ticket_status',
       'both',
@@ -58,15 +74,15 @@ END $$;
 
 CREATE TABLE IF NOT EXISTS public.resolution_events (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  cluster_id UUID REFERENCES public.clusters(id) ON DELETE CASCADE,
+  cluster_id UUID REFERENCES public.report_clusters(id) ON DELETE CASCADE,
   report_id UUID REFERENCES public.reports(id) ON DELETE CASCADE,
   authority_id UUID REFERENCES public.authorities(id) ON DELETE SET NULL,
   department_id UUID REFERENCES public.departments(id) ON DELETE SET NULL,
-  resolution_source resolution_source_enum NOT NULL,
+  resolution_source public.resolution_source_enum NOT NULL,
   resolved_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   verified_by_reporter_ids UUID[] DEFAULT '{}',        -- User IDs that submitted re-photo confirmation
   severity_at_escalation TEXT,                          -- Snapshot of highest severity in cluster at escalation
-  reopen_check_scheduled_at TIMESTAMPTZ NOT NULL,       -- 180 days from resolved_at
+  reopen_check_scheduled_at TIMESTAMPTZ NOT NULL DEFAULT (NOW() + INTERVAL '180 days'), -- 180 days from resolved_at
   resolution_durable BOOLEAN,                           -- NULL until reopen_check runs; TRUE if no reopen
   reopened_at TIMESTAMPTZ,                              -- Set if a new report reopens the same GPS cluster within window
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
@@ -76,6 +92,8 @@ CREATE TABLE IF NOT EXISTS public.resolution_events (
 
 CREATE INDEX IF NOT EXISTS idx_resolution_events_cluster_id ON public.resolution_events(cluster_id);
 CREATE INDEX IF NOT EXISTS idx_resolution_events_department_id ON public.resolution_events(department_id);
+CREATE INDEX IF NOT EXISTS idx_resolution_events_report_id ON public.resolution_events(report_id);
+CREATE INDEX IF NOT EXISTS idx_resolution_events_authority_id ON public.resolution_events(authority_id);
 CREATE INDEX IF NOT EXISTS idx_resolution_events_resolved_at ON public.resolution_events(resolved_at DESC);
 CREATE INDEX IF NOT EXISTS idx_resolution_events_reopen_check ON public.resolution_events(reopen_check_scheduled_at)
   WHERE resolution_durable IS NULL;
@@ -90,7 +108,20 @@ CREATE POLICY departments_public_read ON public.departments FOR SELECT USING (TR
 DROP POLICY IF EXISTS resolution_events_public_read ON public.resolution_events;
 CREATE POLICY resolution_events_public_read ON public.resolution_events FOR SELECT USING (TRUE);
 
--- Writes are service-role only (default RLS behavior when no INSERT policy exists).
+-- Writes are service-role only (default RLS behavior when no INSERT policy
+-- exists). Also drop the write grants Supabase's default privileges hand to
+-- client roles, since TRUNCATE bypasses RLS.
+REVOKE INSERT, UPDATE, DELETE, TRUNCATE, REFERENCES, TRIGGER ON public.departments FROM anon, authenticated;
+REVOKE ALL ON public.resolution_events FROM anon, authenticated;
+
+-- Public read of resolution_events, minus verified_by_reporter_ids: those
+-- are the user ids of residents who re-photographed the fix, which would
+-- de-anonymize reporters. Column-level grant instead of table-level SELECT.
+GRANT SELECT (
+  id, cluster_id, report_id, authority_id, department_id, resolution_source,
+  resolved_at, severity_at_escalation, reopen_check_scheduled_at,
+  resolution_durable, reopened_at, created_at, updated_at
+) ON public.resolution_events TO anon, authenticated;
 
 COMMIT;
 
@@ -99,3 +130,5 @@ COMMIT;
 --   SELECT COUNT(*) FROM public.departments;         -- 0 until pilot cities onboard
 --   SELECT COUNT(*) FROM public.resolution_events;   -- 0 until first verified resolution fires
 --   \d public.resolution_events                       -- confirm all columns + FKs present
+--   SELECT NOT has_column_privilege('anon', 'public.resolution_events', 'verified_by_reporter_ids', 'select');
+--   SELECT NOT has_table_privilege('anon', 'public.departments', 'insert');
