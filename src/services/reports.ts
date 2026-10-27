@@ -122,16 +122,17 @@ export async function getReports(filters?: {
   limit?: number;
   offset?: number;
 }): Promise<Report[]> {
-  let query = supabase
-    .from('reports')
-    .select('*')
-    .order('created_at', { ascending: false });
+  // The caller's own reports come from my_reports(): anonymous reports keep
+  // their owner in a private table (migration 036), not in reports.user_id.
+  // userId is only ever the signed-in user's own id.
+  let query: any = filters?.userId
+    ? supabase.rpc('my_reports')
+    : supabase.from('reports').select('*').order('created_at', { ascending: false });
 
   if (filters?.category) query = query.eq('category', filters.category);
   if (filters?.status) query = query.eq('status', filters.status);
   if (filters?.state) query = query.eq('state', filters.state);
   if (filters?.city) query = query.eq('city', filters.city);
-  if (filters?.userId) query = query.eq('user_id', filters.userId);
   if (filters?.limit) query = query.limit(filters.limit);
   if (filters?.offset) query = query.range(filters.offset, filters.offset + (filters.limit || 20) - 1);
 
@@ -218,10 +219,10 @@ export async function getNearbyReports(lat: number, lng: number, radiusKm: numbe
 // Rate limiting: max reports per user per hour
 export async function checkRateLimit(userId: string, maxPerHour: number = 10): Promise<boolean> {
   const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000).toISOString();
+  // my_reports() includes the caller's anonymous reports (migration 036).
+  void userId;
   const { count, error } = await supabase
-    .from('reports')
-    .select('*', { count: 'exact', head: true })
-    .eq('user_id', userId)
+    .rpc('my_reports', {}, { count: 'exact', head: true })
     .gte('created_at', oneHourAgo);
 
   if (error) return false; // Deny on error — fail closed

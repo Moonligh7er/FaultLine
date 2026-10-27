@@ -81,7 +81,18 @@ Deno.serve(async (req) => {
     .select('id, user_id, category, latitude, longitude, address, city, state, description, hazard_level, upvote_count, confirm_count, media, created_at')
     .eq('id', reportId)
     .maybeSingle();
-  if (!report || report.user_id !== user.id) return json({ error: 'Report not found' }, 404);
+  // Anonymous reports keep their owner in report_owners, not reports.user_id
+  // (migration 036).
+  let isOwner = report?.user_id === user.id;
+  if (report && !isOwner) {
+    const { data: owner } = await admin
+      .from('report_owners')
+      .select('user_id')
+      .eq('report_id', report.id)
+      .maybeSingle();
+    isOwner = owner?.user_id === user.id;
+  }
+  if (!report || !isOwner) return json({ error: 'Report not found' }, 404);
   if (Date.now() - new Date(report.created_at).getTime() > MAX_REPORT_AGE_MS) {
     return json({ error: 'Report is too old for direct submission' }, 409);
   }
