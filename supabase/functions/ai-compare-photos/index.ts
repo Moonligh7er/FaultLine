@@ -29,6 +29,26 @@ async function withinRateLimit(
   const { error } = await admin.from('edge_rate_limit_log').insert({ user_id: userId, bucket });
   return !error;
 }
+// Org-wide daily AI spend ceiling (migration 039): checked before each call,
+// cost recorded after from the response's token usage. Fails closed.
+// $ per million tokens = micro-dollars per token.
+const PRICE_PER_MTOK: Record<string, [number, number]> = {
+  'claude-sonnet-5-5': [2, 10],
+  'claude-haiku-5-5': [0.1, 0.5],
+};
+async function aiBudgetOk(): Promise<boolean> {
+  const { data, error } = await createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY).rpc('ai_budget_ok');
+  return !error && data === true;
+}
+async function recordAiUsage(model: string, usage: Record<string, number> | undefined): Promise<void> {
+  if (!usage) return;
+  const input = (usage.input_tokens ?? 0) + (usage.cache_creation_input_tokens ?? 0) + (usage.cache_read_input_tokens ?? 0);
+  const [inRate, outRate] = PRICE_PER_MTOK[model] ?? [10, 50];
+  const long = model.startsWith('claude-haiku') && input > 100_000;
+  const micros = Math.ceil(input * (long ? inRate * 5 : inRate) + (usage.output_tokens ?? 0) * (long ? outRate * 5 : outRate));
+  await createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY).rpc('ai_record_usage', { p_cost_micros: micros });
+}
+
 const MAX_IMAGE_BYTES = 5 * 1024 * 1024;
 
 Deno.serve(async (req) => {
@@ -63,6 +83,10 @@ Deno.serve(async (req) => {
     return new Response(JSON.stringify({ error: 'Images too large' }), { status: 413, headers: { 'Content-Type': 'application/json' } });
   }
 
+  if (!(await aiBudgetOk())) {
+    return new Response(JSON.stringify({ isSameIssue: false, confidence: 0, reasoning: 'AI paused for today' }), { headers: { 'Content-Type': 'application/json' } });
+  }
+
   try {
     const response = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
@@ -72,8 +96,9 @@ Deno.serve(async (req) => {
         'content-type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'claude-haiku-4-5-20251001',
-        max_tokens: 300,
+        model: 'claude-haiku-5-5',
+        max_tokens: 1024,
+        output_config: { effort: 'low' },
         messages: [{
           role: 'user',
           content: [
@@ -94,7 +119,8 @@ Return JSON only: {"isSameIssue": true/false, "confidence": 0.0-1.0, "reasoning"
     }
 
     const result = await response.json();
-    const text = result.content?.[0]?.text || '';
+    await recordAiUsage('claude-haiku-5-5', result.usage).catch(() => {});
+    const text = (result.content ?? []).filter((b: { type: string }) => b.type === 'text').map((b: { text: string }) => b.text).join('') || '';
     const match = text.match(/\{[\s\S]*\}/);
 
     if (match) {
