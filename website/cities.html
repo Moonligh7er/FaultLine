@@ -5,13 +5,13 @@
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://pagead2.googlesyndication.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: https:; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://www.google-analytics.com https://analytics.google.com https://pagead2.googlesyndication.com; frame-src https://googleads.g.doubleclick.net https://tpc.googlesyndication.com https://pagead2.googlesyndication.com; object-src 'none'; base-uri 'self';">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>For Cities — Fault Line | Public Works Dashboard & Data</title>
-<meta name="description" content="Fault Line for public works departments: real-time report intake, contractor performance tracking, budget-meeting-ready exports, and predictive pre-deployment reports. Pilot pricing for New England municipalities.">
+<meta name="description" content="Fault Line for public works departments: real-time report intake, contractor performance tracking, budget-meeting-ready exports, and predictive pre-deployment reports. Free pilot, then annual plans by city size.">
 <meta name="robots" content="index, follow">
 <link rel="canonical" href="https://fault-line.dev/cities.html">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://fault-line.dev/cities.html">
 <meta property="og:title" content="For Cities — Fault Line Public Works Dashboard">
-<meta property="og:description" content="Real-time report intake, contractor performance data, budget-meeting exports, and predictive pre-deployment reports. Pilot pricing for New England.">
+<meta property="og:description" content="Real-time report intake, contractor performance data, budget-meeting exports, and predictive pre-deployment reports. Free pilot, then annual plans by city size.">
 <meta property="og:image" content="https://fault-line.dev/og/og-home.png">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="https://fault-line.dev/og/og-home.png">
@@ -101,27 +101,27 @@ table.tier td.price { color: var(--tile-hot); font-weight: 700; }
 <div class="pillars">
   <div class="pillar">
     <h3>📥 Real-time report intake</h3>
-    <p>Every Fault Line report inside your jurisdiction lands in a dashboard your team can triage. GPS, photos, category, community-verification count, deduplication against your existing tickets.</p>
+    <p>Every Fault Line report inside your jurisdiction lands in a dashboard your team can triage. GPS, photos, category, severity and community-verification count, with duplicate resident reports grouped into one issue.</p>
   </div>
   <div class="pillar">
     <h3>🔗 Open311 in &amp; out</h3>
-    <p>Bidirectional sync with your existing 311 or work-order system (SeeClickFix, CivicPlus, custom Open311 endpoints). Fault Line reports become tickets in your system; status updates flow back to residents automatically.</p>
+    <p>Works with the 311 or work-order system you already run (SeeClickFix, Open311 endpoints, or email intake). Fault Line reports become tickets in your system, and status changes on those tickets flow back to residents automatically.</p>
   </div>
   <div class="pillar">
     <h3>🏗️ Contractor performance data</h3>
-    <p>Recurrence tracking on every "closed" work order. When the same GPS reopens 90 days after a contractor signed off, that pattern goes into a contractor scorecard you can pull into procurement review.</p>
+    <p>Recurrence tracking on every "closed" issue. When the same problem is reported again at the same spot within 180 days of being fixed, it counts against the contractor your staff tagged on that fix, in a scorecard you can pull into procurement review.</p>
   </div>
   <div class="pillar">
     <h3>📊 Budget-meeting exports</h3>
-    <p>One-click PDF and CSV exports of open backlog, severity distribution, and neighborhood-level report density. Formatted for council packets and grant applications, not for engineers.</p>
+    <p>One-click PDF and CSV exports of open backlog, severity distribution, ZIP-code-level report density and the 12-month trend. Formatted for council packets and grant applications, not for engineers.</p>
   </div>
   <div class="pillar">
     <h3>🔮 Pre-deployment reports</h3>
-    <p>Designed to flag where damage is likely before pothole season based on seasonal patterns, deterioration curves, and historical density. Intended to make winter/spring pre-deployment routing defensible.</p>
+    <p>Flags the spots where issues have recurred in past seasons and are due again in the next three months, from your own report history. Built to make winter/spring pre-deployment routing defensible, and sharper every year the history grows.</p>
   </div>
   <div class="pillar">
     <h3>🏛️ Resident-facing city page</h3>
-    <p>An embeddable public page at <code>fault-line.dev/city/[yours]</code> showing your live grade (once above the data threshold), methodology, response-time trend, and the current backlog. Journalists and residents both land here.</p>
+    <p>An embeddable public page at <code>app.fault-line.dev/city/[yours]</code> (and an iframe card for your own website) showing your live grade (once above the data threshold), methodology, response-time trend, and the current backlog. Journalists and residents both land here.</p>
   </div>
 </div>
 
@@ -133,46 +133,60 @@ table.tier td.price { color: var(--tile-hot); font-weight: 700; }
 </ul>
 <p>Those three constraints are the reason Fault Line is trusted by residents. They&apos;re also the reason the city-side product has any value at all — a rubber-stamp app doesn&apos;t move behavior.</p>
 
-<h2>3. Pilot pricing</h2>
+<h2>3. Pricing</h2>
 
 <div class="callout">
-  <p><strong>The current posture is honest:</strong> Fault Line is in beta, no city has a live grade yet, and the citizen app is running on solo-maintainer infrastructure. Pilot pricing reflects that. Real pricing gets set when there are enough pilot cities to know what the value actually looks like.</p>
+  <p><strong>The current posture is honest:</strong> Fault Line is in beta, no city has a live grade yet, and the citizen app is running on solo-maintainer infrastructure. So every city starts with a free pilot. After the pilot, keeping the dashboard means an annual subscription at the published price for your size, unless we have waived your city&apos;s fee in writing. You choose up front whether it renews automatically, and can change that any time.</p>
 </div>
 
 <table class="tier">
   <thead>
-    <tr><th>Tier</th><th>Who it&apos;s for</th><th>What&apos;s included</th><th>Cost during pilot</th></tr>
+    <tr><th>Plan</th><th>Who it&apos;s for</th><th>What&apos;s included</th><th>Price</th></tr>
   </thead>
   <tbody>
     <tr>
-      <td><strong>Pilot city</strong><br><span style="font-size:11px;color:var(--steel-light);">(MA / RI / NH, through Q1 2027)</span></td>
-      <td>Public works departments serving &lt; 250k residents who want to shape the product.</td>
-      <td>Intake dashboard, Open311 sync, contractor scorecard, monthly budget-export bundle. Direct line to the maintainer.</td>
+      <td><strong>Pilot</strong></td>
+      <td>Every new city, until the pilot end date in its account (Q1 2027 for cities joining now).</td>
+      <td>The full dashboard for your size, below. Direct line to the maintainer.</td>
       <td class="price">$0</td>
     </tr>
     <tr>
-      <td><strong>Mid-market</strong></td>
-      <td>Cities 250k–1M residents.</td>
-      <td>Everything above plus quarterly pre-deployment predictive report + dedicated staging environment.</td>
-      <td class="price">Pilot-pricing conversation<br><span style="font-size:11px;color:var(--steel-light);">Target: covers infra + review time.</span></td>
+      <td><strong>Town</strong></td>
+      <td>Under 50,000 residents.</td>
+      <td>Intake dashboard, 311 / work-order sync, contractor scorecard, PDF &amp; CSV exports, pre-deployment report, public city page.</td>
+      <td class="price">$6,000 / year</td>
     </tr>
     <tr>
-      <td><strong>Major metro</strong></td>
-      <td>Cities &gt; 1M residents, or state-level DOT offices.</td>
-      <td>Custom scope. Multi-department dashboards, historical dataset import, on-site kickoff.</td>
-      <td class="price">Custom</td>
+      <td><strong>City</strong></td>
+      <td>50,000&ndash;250,000 residents.</td>
+      <td>Everything in Town.</td>
+      <td class="price">$9,600 / year</td>
+    </tr>
+    <tr>
+      <td><strong>Regional</strong></td>
+      <td>250,000&ndash;1 million residents.</td>
+      <td>Everything in City, sized for high report volume, with priority support.</td>
+      <td class="price">$30,000 / year</td>
+    </tr>
+    <tr>
+      <td><strong>Metro / State DOT</strong></td>
+      <td>Over 1 million residents, or a state agency.</td>
+      <td>Custom scope: multi-department dashboards, historical dataset import, on-site kickoff.</td>
+      <td class="price">By quote</td>
     </tr>
   </tbody>
 </table>
 
-<p>In exchange, pilot cities get: a named product contact, a written commitment on which methodology version their grade is computed under (so grades don&apos;t change out from under a council packet), and a two-week notice before any price changes.</p>
+<p>Billed annually by invoice, due in 30 days (bank transfer, ACH or card; your PO number goes on the invoice; governments are invoiced tax-exempt). Your price is locked at the published price on the day you sign up, for as long as you keep renewing. We email the account owner 60, 30 and 7 days before a pilot or term ends. If renewal is on, the invoice follows; if it isn&apos;t paid by the due date, dashboard access pauses until it is. If renewal is off, access simply ends and nothing is billed. Full terms: <a href="https://app.fault-line.dev/terms#city-accounts">City accounts</a>.</p>
+
+<p>In exchange, pilot cities get: a named product contact, a written commitment on which methodology version their grade is computed under (so grades don&apos;t change out from under a council packet), and at least 60 days&apos; written notice before any price change.</p>
 
 <h2>4. Why buy this instead of building it</h2>
 
 <ul>
   <li><strong>Residents already use it.</strong> The reporting pipeline exists and is running. Your existing 311 has been asking for behavior change from residents for a decade. Fault Line already changed the behavior.</li>
   <li><strong>Open311 in-and-out means no migration.</strong> Reports become tickets in the system you already have. Your work-order flow doesn&apos;t change. Your staff doesn&apos;t learn a new tool. The dashboard is a read layer.</li>
-  <li><strong>Contractor recurrence data is otherwise inaccessible.</strong> Nobody else is systematically tracking when a "fixed" pothole reopens 90 days later at the same GPS. That signal is worth the pilot alone.</li>
+  <li><strong>Contractor recurrence data is otherwise inaccessible.</strong> Nobody else is systematically tracking when a "fixed" pothole is reported again at the same spot months later. That signal is worth the pilot alone.</li>
   <li><strong>Grant-application material.</strong> The exports are formatted for the ask — density maps, severity distributions, cost projections. If your city is applying for federal infrastructure funding, these are the tables that go in the application.</li>
 </ul>
 
@@ -181,17 +195,17 @@ table.tier td.price { color: var(--tile-hot); font-weight: 700; }
 <p class="faq-q">Is our resident data being sold?</p>
 <p>No. Anonymous reports carry no PII. Signed-in reports carry the reporter&apos;s email (used for status updates back to them) and nothing else. There is no ad-tech or data-broker pipeline on the resident side.</p>
 
-<p class="faq-q">If we&apos;re a pilot, can we lock in the pricing?</p>
-<p>Pilot cities in MA/RI/NH get $0 through the end of Q1 2027 in writing. Beyond that, pilot cities get 60 days written notice of any pricing change and the option to continue at the pilot rate for one renewal cycle.</p>
+<p class="faq-q">If we&apos;re a pilot, can we lock in the price?</p>
+<p>Yes. The pilot is free until the end date in your account. Your annual price is locked at the published price on the day you sign up, for as long as you keep renewing, and any change gets at least 60 days&apos; written notice before the renewal it affects. Renewal is your choice, made up front and changeable any time.</p>
 
 <p class="faq-q">What happens to our data if we leave?</p>
-<p>You get a one-time export of all reports, tickets, and analytics your city generated, in CSV and JSON. Public-facing report threads remain visible on Fault Line (residents filed them) but the city dashboard access ends on the last day of the term.</p>
+<p>You can export every report and the analytics your city generated, as CSV, at any time while access is open (and on request for 60 days after); the same data is available as JSON through the API. Public-facing report threads remain visible on Fault Line (residents filed them) but the city dashboard access ends on the last day of the term.</p>
 
 <p class="faq-q">Can we get a grade even if the resident volume is low?</p>
 <p>Grades only publish once a city clears the <a href="methodology.html#minimum-data-thresholds" style="color:var(--tile-hot);">minimum-data threshold</a>. This is deliberate: a below-threshold grade is worse than no grade for everyone. Pilot cities that clear the threshold get their grade with a lead-time preview so nothing surprises the council.</p>
 
 <p class="faq-q">Is this replacing our 311?</p>
-<p>No. It sits on top. Cities that have gotten value from Fault Line have kept their 311 and used Fault Line for the parts 311 doesn&apos;t do well — de-duplication, community verification, and public-accountability data.</p>
+<p>No. It sits on top. You keep your 311, and Fault Line covers the parts 311 doesn&apos;t do well: grouping duplicate reports, community verification, and public-accountability data.</p>
 
 <p class="faq-q">Who runs Fault Line?</p>
 <p>Moonlit Social Labs — Michael Wylde, solo. That is the honest state. It is also why pilot pricing is what it is, and why the citizen app will never carry a paywall. See <a href="about.html" style="color:var(--tile-hot);">About</a>.</p>
