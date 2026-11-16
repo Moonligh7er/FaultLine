@@ -14,10 +14,10 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const root = path.resolve(__dirname, "..");
 
 const TARGETS = [
-  "website/og",
-  "website/blog-heroes",
-  "website/social",
-  "website/twitch",
+  "og",
+  "blog-heroes",
+  "social",
+  "twitch",
   "store-metadata",
   "assets",
 ];

@@ -12,7 +12,6 @@ Outputs:
 
 - `scripts/status/status.json` — machine-readable
 - `status.html` — served at `https://fault-line.dev/status.html`
-- `website/status.html` — mirror
 
 ## Interpret the results
 
@@ -52,7 +51,7 @@ jobs:
         run: |
           git config user.name  "status-bot"
           git config user.email "status-bot@moonlitsociallabs"
-          git add status.html website/status.html scripts/status/status.json
+          git add status.html scripts/status/status.json
           git diff --staged --quiet || git commit -m "Auto-update service status"
           git push
 ```

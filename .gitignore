@@ -107,3 +107,38 @@ GRANTS.md
 # Expo prebuild output (Continuous Native Generation) — regenerate, never commit
 /android/
 /ios/
+
+# ============================================================
+# Not needed for the app or the site to work — kept on disk only
+# (2026-11-16). Full prior history: D:\Dev - ACTIVE\FaultLine Build Cache\git-backups
+# ============================================================
+# Planning, strategy, investor and grant material
+DEFERRED.md
+ROADMAP
+ARCHITECTURE.html
+business-plan.html
+investorlanding.html
+roadmap.html
+pilot-outreach.html
+/docs/
+
+# Design explorations and one-off pages the site doesn't serve
+theme-mockup-*.html
+landing.html
+AD-BANNER.html
+
+# Store-listing drafts and external-platform marketing assets
+/store-metadata/
+/social/
+/twitch/
+
+# Duplicate of the served site (GitHub Pages serves the repo root)
+/website/
+
+# Image-generation pipeline and ops tooling
+scripts/add-seed-variants.mjs
+scripts/build-image-prompts.mjs
+scripts/build-image-review.mjs
+scripts/invoke-generate.mjs
+scripts/image-subjects.json
+scripts/open311/

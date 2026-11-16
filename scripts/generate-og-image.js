@@ -1,5 +1,5 @@
 /**
- * Generates website/og-image.png — 1200x630 Open Graph social share image
+ * Generates og-image.png (site root) — 1200x630 Open Graph social share image
  * Run: node scripts/generate-og-image.js
  */
 
@@ -7,7 +7,7 @@ const sharp = require('sharp');
 const path = require('path');
 const fs = require('fs');
 
-const OUT_PATH = path.join(__dirname, '..', 'website', 'og-image.png');
+const OUT_PATH = path.join(__dirname, '..', 'og-image.png');
 
 const WIDTH = 1200;
 const HEIGHT = 630;

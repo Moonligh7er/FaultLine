@@ -5,7 +5,6 @@
  * Probes every critical dependency and emits:
  *   - scripts/status/status.json (machine-readable)
  *   - status.html (root — served at https://fault-line.dev/status.html)
- *   - website/status.html (mirror for GitHub Pages)
  *
  * Read-only. Safe to run on any schedule (cron, GitHub Actions,
  * or manually before/after a deployment).
@@ -501,19 +500,11 @@ async function main() {
   );
   console.log(`\nWrote JSON: ${jsonPath}`);
 
-  // Write HTML to root + website mirror
+  // GitHub Pages serves the repo root.
   const html = renderHtml(results, summary, runAt);
   const htmlPath = path.resolve('status.html');
-  const mirrorPath = path.resolve('website/status.html');
   await fs.writeFile(htmlPath, html, 'utf8');
   console.log(`Wrote HTML: ${htmlPath}`);
-  try {
-    await fs.mkdir(path.dirname(mirrorPath), { recursive: true });
-    await fs.writeFile(mirrorPath, html, 'utf8');
-    console.log(`Wrote HTML mirror: ${mirrorPath}`);
-  } catch (err) {
-    console.warn(`Could not mirror to website/: ${err.message}`);
-  }
 }
 
 main().catch((err) => {
