@@ -102,21 +102,30 @@ export async function generateClaimEvidence(
   // Get escalation log
   let authorityNotification = { wasNotified: false } as ClaimEvidence['authorityNotification'];
   if (report.clusterId) {
+    // escalation_log is admin-only; public_escalations() exposes the
+    // public notice fields (no recipient addresses).
     const { data: escalations } = await supabase
-      .from('escalation_log')
-      .select('*')
-      .eq('cluster_id', report.clusterId)
+      .rpc('public_escalations', { p_cluster_id: report.clusterId })
       .eq('status', 'sent')
       .order('sent_at', { ascending: true })
       .limit(1);
 
     if (escalations && escalations.length > 0) {
-      const esc = escalations[0];
+      const esc = escalations[0] as { authority_id: string | null; method: string; sent_at: string };
       const sentDate = new Date(esc.sent_at);
+      let authorityName = 'Responsible authority';
+      if (esc.authority_id) {
+        const { data: authority } = await supabase
+          .from('authorities')
+          .select('name')
+          .eq('id', esc.authority_id)
+          .single();
+        if (authority?.name) authorityName = authority.name;
+      }
       authorityNotification = {
         wasNotified: true,
         notifiedDate: sentDate.toLocaleDateString(),
-        authorityName: esc.recipient,
+        authorityName,
         daysSinceNotification: Math.floor((Date.now() - sentDate.getTime()) / 86400000),
         method: esc.method,
       };
@@ -124,7 +133,7 @@ export async function generateClaimEvidence(
       timeline.push({
         date: sentDate.toLocaleDateString(),
         event: `Authority contacted via ${esc.method}`,
-        detail: `Sent to: ${esc.recipient}`,
+        detail: `Sent to: ${authorityName}`,
       });
     }
   }

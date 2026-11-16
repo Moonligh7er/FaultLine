@@ -37,7 +37,6 @@ import { supabase } from './src/services/supabase';
 import { listenForAuthLinks } from './src/services/authLinking';
 import { initCrashReporting, setUser } from './src/services/crashReporting';
 import { checkCommuteReports, checkWeeklyDigest, recordLocationPoint } from './src/services/smartPush';
-import { batchSyncStatuses } from './src/services/authorityApi';
 import { loadSavedLanguage } from './src/services/i18n';
 import { startProximityMonitoring, stopProximityMonitoring } from './src/services/proximityAlerts';
 import { runWitnessCheck } from './src/services/witnessNetwork';
@@ -91,7 +90,6 @@ export default function App() {
     recordLocationPoint().catch(logErr('commuteRecord'));
     checkCommuteReports().catch(logErr('commuteAlerts'));
     checkWeeklyDigest().catch(logErr('weeklyDigest'));
-    batchSyncStatuses().catch(logErr('statusSync'));
     startProximityMonitoring().catch(logErr('proximityAlerts'));
     checkBrokenPromises().catch(logErr('brokenPromises'));
 
@@ -140,7 +138,6 @@ export default function App() {
       if (appState.current.match(/inactive|background/) && nextState === 'active') {
         processQueue().catch(() => {});
         recordLocationPoint().catch(() => {});
-        batchSyncStatuses().catch(() => {});
       }
       appState.current = nextState;
     });

@@ -8,10 +8,11 @@
 //   * a notice on every renewal-choice change, invoice start, suspension,
 //     reactivation, end of access and waiver removal.
 // Each email is claimed in city_account_events (unique dedupe_key) before it
-// is sent, so a rerun never sends twice. Sandbox mode sends to Resend's test
-// inbox instead of the city.
+// is sent, so a rerun never sends twice. Renewal-choice changes send at most
+// one notice per city per day, describing the latest choice. Sandbox mode
+// sends to Resend's test inbox instead of the city.
 
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+import { createClient } from 'npm:@supabase/supabase-js@2.103.0';
 
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL') || '';
 const SUPABASE_SERVICE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') || '';
@@ -47,6 +48,11 @@ async function isCronCaller(req: Request): Promise<boolean> {
   return !error && data === true;
 }
 
+// Plain single address only (no display names, lists or header tricks).
+const EMAIL_RE = /^[A-Za-z0-9.!#$%&'*+/=?^_`{|}~-]+@[A-Za-z0-9](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?(?:\.[A-Za-z0-9](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?)+$/;
+const validEmail = (e: string | null | undefined): e is string =>
+  typeof e === 'string' && e.length <= 254 && EMAIL_RE.test(e);
+
 async function recipients(c: City): Promise<string[]> {
   const { data } = await admin.from('city_members').select('user_id').eq('city_account_id', c.id).eq('role', 'owner');
   const out = new Set<string>();
@@ -54,7 +60,9 @@ async function recipients(c: City): Promise<string[]> {
     const { data: u } = await admin.auth.admin.getUserById(m.user_id);
     if (u.user?.email) out.add(u.user.email.toLowerCase());
   }
-  if (c.billing_email) out.add(c.billing_email.toLowerCase());
+  const billing = c.billing_email?.trim();
+  if (validEmail(billing)) out.add(billing.toLowerCase());
+  else if (billing) console.error(`city-notices: ignoring malformed billing_email for city ${c.id}`);
   return [...out];
 }
 
@@ -195,11 +203,37 @@ Deno.serve(async (req) => {
   const since = new Date(Date.now() - 14 * 86_400_000).toISOString();
   const { data: events } = await admin
     .from('city_account_events')
-    .select('id, city_account_id, kind, detail')
+    .select('id, city_account_id, kind, detail, created_at')
     .in('kind', ['terms_accepted', 'auto_renew_changed', 'subscription_started', 'suspended', 'reactivated', 'ended', 'fee_waiver_removed'])
     .gte('created_at', since)
     .order('created_at');
+  // Renewal toggles: only the latest per city, at most one notice per day.
+  const latestRenewal = new Map<string, { id: string; city_account_id: string; kind: string; detail: Record<string, unknown> | null; created_at: string }>();
   for (const e of events ?? []) {
+    if (e.kind === 'auto_renew_changed') latestRenewal.set(e.city_account_id, e);
+  }
+  const today = new Date().toISOString().slice(0, 10);
+  for (const e of latestRenewal.values()) {
+    const c = byId.get(e.city_account_id);
+    if (!c) continue;
+    // Already told them about this (or a later) change?
+    const { data: last } = await admin
+      .from('city_account_events')
+      .select('created_at')
+      .eq('city_account_id', c.id)
+      .eq('kind', 'notice_sent')
+      .eq('detail->>for_event', 'auto_renew_changed')
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .maybeSingle();
+    if (last && new Date(last.created_at).getTime() >= new Date(e.created_at).getTime()) continue;
+    const mail = eventEmail(c, e.kind, e.detail ?? {});
+    if (!mail) continue;
+    tally(await deliver(c, 'notice_sent', `notice:auto_renew_changed:${today}`, mail.subject, mail.text, sandbox, { for_event: e.kind, event_id: e.id }));
+  }
+
+  for (const e of events ?? []) {
+    if (e.kind === 'auto_renew_changed') continue;
     const c = byId.get(e.city_account_id);
     const mail = c && eventEmail(c, e.kind, e.detail ?? {});
     if (!c || !mail) continue;

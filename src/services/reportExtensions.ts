@@ -33,7 +33,7 @@ import type {
 //                corridor_to_cross_street
 //   area       → geometry_type, area_geometry (EWKT Polygon),
 //                area_boundary_name, area_census_tract_geoid
-//   parentClusterId → parent_cluster_id
+//   parentClusterId ← parent_cluster_id (read only; set by the server)
 // ============================================================
 
 type ExtensionFields = Pick<
@@ -124,7 +124,7 @@ export function buildExtendedColumns(report: ExtensionFields): Record<string, un
     setIfPresent(row, 'area_census_tract_geoid', a.censusTractGeoid);
   }
 
-  setIfPresent(row, 'parent_cluster_id', report.parentClusterId);
+  // parent_cluster_id is server-owned (guard_report_write), never sent.
 
   return row;
 }

@@ -6,7 +6,7 @@
 // Authenticates via the same x-cron-secret (Vault) as escalate-clusters so the
 // pg_cron job can call it without a user session.
 
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+import { createClient } from 'npm:@supabase/supabase-js@2.103.0';
 
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL') || '';
 const SUPABASE_SERVICE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') || '';
@@ -66,7 +66,8 @@ Deno.serve(async (req) => {
     .limit(50);
 
   if (error) {
-    return new Response(JSON.stringify({ error: error.message }), {
+    console.error('sync-open311-statuses: escalation_log query failed', error.message);
+    return new Response(JSON.stringify({ error: 'Could not load escalations' }), {
       status: 500,
       headers: { 'Content-Type': 'application/json' },
     });
@@ -133,6 +134,7 @@ async function fetchOpen311Status(
   // Convert the POST endpoint URL into the GET-single-request URL.
   //   https://host/path/requests.json  →  https://host/path/requests/:id.json
   const url = endpoint.replace(/requests\.json$/i, `requests/${encodeURIComponent(ticketId)}.json`);
+  if (!url.startsWith('https://')) throw new Error('Open311 endpoint is not https; not polled');
   const res = await fetch(url, { headers: { Accept: 'application/json' } });
   if (!res.ok) throw new Error(`Open311 GET ${res.status}`);
   const json = await res.json();

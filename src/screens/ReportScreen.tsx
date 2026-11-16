@@ -14,7 +14,8 @@ import {
 import MapView, { Marker, Region } from 'react-native-maps';
 import { MAPS_AVAILABLE } from '../services/maps';
 import * as ImagePicker from 'expo-image-picker';
-import { useRoute, useNavigation } from '@react-navigation/native';
+import * as ScreenCapture from 'expo-screen-capture';
+import { useRoute, useNavigation, useIsFocused } from '@react-navigation/native';
 import { COLORS, SPACING, FONT_SIZES, BORDER_RADIUS, SHADOWS } from '../constants/theme';
 import {
   CATEGORIES, QUICK_CATEGORIES, SIZE_RATINGS, HAZARD_LEVELS,
@@ -40,9 +41,10 @@ import { registerForPushNotifications } from '../services/notifications';
 import { findAuthorityByLocation } from '../services/authorities';
 import { submitToAuthority } from '../services/authorityApi';
 import { addToQueue, isOnline } from '../services/offlineQueue';
+import { useSuppressAds } from '../services/adGate';
 import { analyzePhoto, getConfidenceLabel, getConfidenceColor } from '../services/aiAnalysis';
 import { generateDescription, cacheAIResult } from '../services/ai';
-import { recordReportForStreak, awardPoints, POINT_VALUES } from '../services/socialFeatures';
+import { recordReportForStreak } from '../services/socialFeatures';
 import { checkEscalationProgress } from '../services/smartPush';
 import { supabase } from '../services/supabase';
 import { t } from '../services/i18n';
@@ -111,8 +113,46 @@ export default function ReportScreen() {
   const isDigital = isUrlFirstCategory(category);
   const isCommercial = reportSubject === 'commercial_property';
   const isCorridor = geometryType === 'corridor';
+  const isFocused = useIsFocused();
+  const [signedIn, setSignedIn] = useState(false);
+  // Signed-out reports are always anonymous (see services/reports.ts).
+  const effectivelyAnonymous = isAnonymous || !signedIn;
+  const hasVideo = media.some((m) => m.type === 'video');
 
   useEffect(() => { loadLocation(); }, []);
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => setSignedIn(!!session?.user));
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => setSignedIn(!!session?.user));
+    return () => subscription.unsubscribe();
+  }, []);
+
+  // No ads anywhere while the report flow is on screen.
+  useSuppressAds(isFocused);
+
+  // Insider details: no screenshots or screen recording while they're on
+  // screen (FLAG_SECURE on Android; also hides the app-switcher preview).
+  useEffect(() => {
+    if (!isInsider || !isFocused) return;
+    ScreenCapture.preventScreenCaptureAsync('insider-report').catch(() => {});
+    if (Platform.OS === 'ios') ScreenCapture.enableAppSwitcherProtectionAsync().catch(() => {});
+    return () => {
+      ScreenCapture.allowScreenCaptureAsync('insider-report').catch(() => {});
+      if (Platform.OS === 'ios') ScreenCapture.disableAppSwitcherProtectionAsync().catch(() => {});
+    };
+  }, [isInsider, isFocused]);
+
+  // Video metadata can't be stripped on the device, so anonymous reports
+  // are photo-only.
+  useEffect(() => {
+    if (effectivelyAnonymous && hasVideo) {
+      setMedia((prev) => prev.filter((m) => m.type !== 'video'));
+      Alert.alert(
+        'Video removed',
+        'Anonymous reports can include photos only — video files carry details about your device and location that can’t be removed from your phone.',
+      );
+    }
+  }, [effectivelyAnonymous, hasVideo]);
 
   const loadLocation = async () => {
     const loc = await getCurrentLocation();
@@ -158,7 +198,7 @@ export default function ReportScreen() {
   const takePhoto = async () => {
     const { status } = await ImagePicker.requestCameraPermissionsAsync();
     if (status !== 'granted') { Alert.alert(t('permissionNeeded'), 'Camera access is required.'); return; }
-    const result = await ImagePicker.launchCameraAsync({ quality: 0.8 });
+    const result = await ImagePicker.launchCameraAsync({ quality: 0.8, exif: false });
     if (!result.canceled) {
       const newMedia: MediaAttachment = { id: `${Date.now()}`, uri: result.assets[0].uri, type: 'photo' };
       setMedia([...media, newMedia]);
@@ -169,9 +209,19 @@ export default function ReportScreen() {
   };
 
   const pickImage = async () => {
-    const result = await ImagePicker.launchImageLibraryAsync({ mediaTypes: ['images', 'videos'], allowsMultipleSelection: true, quality: 0.8 });
+    // Photos are re-encoded before upload (EXIF dropped); videos can't be,
+    // so they're only offered on reports tied to an account.
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: effectivelyAnonymous ? ['images'] : ['images', 'videos'],
+      allowsMultipleSelection: true,
+      quality: 0.8,
+      exif: false,
+    });
     if (!result.canceled) {
-      const newMedia: MediaAttachment[] = result.assets.map((asset, i) => ({ id: `${Date.now()}-${i}`, uri: asset.uri, type: asset.type === 'video' ? 'video' as const : 'photo' as const }));
+      const newMedia: MediaAttachment[] = result.assets
+        .filter((asset) => !(effectivelyAnonymous && asset.type === 'video'))
+        .map((asset, i) => ({ id: `${Date.now()}-${i}`, uri: asset.uri, type: asset.type === 'video' ? 'video' as const : 'photo' as const }));
+      if (newMedia.length === 0) return;
       setMedia([...media, ...newMedia]);
       haptics.light();
       if (media.length === 0 && newMedia[0].type === 'photo') runAIAnalysis(newMedia[0].uri);
@@ -256,10 +306,27 @@ export default function ReportScreen() {
     announce(`${which === 'start' ? 'Start' : 'End'} point set to your current location`);
   };
 
+  // The offline queue is stored encrypted only; if that isn't possible the
+  // report stays on screen instead of being written in plain text.
+  const queueForLater = async (reportData: Parameters<typeof addToQueue>[0]): Promise<boolean> => {
+    try {
+      await addToQueue(reportData);
+      return true;
+    } catch (err) {
+      console.warn('[offlineQueue]', (err as Error)?.message);
+      Alert.alert(t('error'), 'This report couldn’t be saved securely on this device. Please try again when you’re online.');
+      return false;
+    }
+  };
+
   const isEmergencyFastTrack = () => hazardLevel === 'extremely_dangerous' || urgency === 'critical';
 
   const handleSubmit = async () => {
     if (!location) { Alert.alert(t('locationRequired')); return; }
+    if (effectivelyAnonymous && hasVideo) {
+      Alert.alert('Remove video', 'Anonymous reports can include photos only.');
+      return;
+    }
     const extendedErrors = [...stepErrors(1), ...stepErrors(2)];
     if (extendedErrors.length > 0) { showErrors(extendedErrors); return; }
 
@@ -305,10 +372,8 @@ export default function ReportScreen() {
       // An anonymous insider report carries no account link at all.
       userId: insiderCtx && isAnonymous ? undefined : session?.user?.id,
       category, location, description, severity, media,
+      // Status, authority and cluster are assigned by the server on insert.
       status: 'submitted' as const,
-      authorityId: authority?.id,
-      // Commercial reports stay out of the public cluster pipeline.
-      clusterId: commercialCtx ? undefined : existingClusterId,
       isAnonymous, sensorDetected: sensorTriggered,
       offlineQueued: false, isQuickReport: isQuickMode,
       ...(digitalCtx && { digital: digitalCtx }),
@@ -341,12 +406,8 @@ export default function ReportScreen() {
             .catch(() => {}); // Fallback: report works fine without AI description
         }
 
-        // Award points
-        if (session?.user) {
-          const pts = media.length > 0 ? POINT_VALUES.submitWithPhoto : (isQuickMode ? POINT_VALUES.submitQuickReport : POINT_VALUES.submitReport);
-          await awardPoints(session.user.id, pts, 'report_submitted');
-          await recordReportForStreak();
-        }
+        // Points are awarded server-side; only the local streak is tracked here.
+        if (session?.user) await recordReportForStreak();
 
         // Try direct 311/API submission if authority supports it. Commercial
         // reports never go out individually; they wait for aggregation.
@@ -372,12 +433,12 @@ export default function ReportScreen() {
         );
       } else {
         haptics.error();
-        await addToQueue(reportData);
-        Alert.alert(t('error'), 'Saved for later.');
-        navigation.goBack();
+        if (await queueForLater(reportData)) {
+          Alert.alert(t('error'), 'Saved for later.');
+          navigation.goBack();
+        }
       }
-    } else {
-      await addToQueue(reportData);
+    } else if (await queueForLater(reportData)) {
       haptics.warning();
       Alert.alert(t('savedOffline'), t('willSubmitLater'), [{ text: 'OK', onPress: () => navigation.goBack() }]);
     }

@@ -1,5 +1,6 @@
 import * as FileSystem from 'expo-file-system/legacy';
 import { supabase } from './supabase';
+import { compressImage } from './media';
 import { SizeRating, HazardLevel, ReportCategory } from '../types';
 
 // ============================================================
@@ -26,8 +27,10 @@ export interface AIAnalysisResult {
 
 export async function analyzePhoto(photoUri: string): Promise<AIAnalysisResult | null> {
   try {
-    // Read photo as base64
-    const base64 = await FileSystem.readAsStringAsync(photoUri, {
+    // Re-encode first so the original EXIF (GPS, device) never leaves the
+    // device, then read as base64.
+    const reencodedUri = await compressImage(photoUri);
+    const base64 = await FileSystem.readAsStringAsync(reencodedUri, {
       encoding: 'base64' as any,
     });
 

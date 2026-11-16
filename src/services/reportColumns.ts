@@ -1,0 +1,63 @@
+// ============================================================
+// Public columns of `reports`
+// ============================================================
+// reports.user_id is not readable by clients (anon or signed in), so no
+// query may select('*') or name user_id. Every read of the table uses this
+// list instead. "Is this mine?" goes through owns_report() / my_reports().
+// Left out on purpose besides user_id: _hp (honeypot) and insider_context
+// (write-only inbox, always NULL once stored), which the app never reads.
+// Keep in step with the column grant on reports in supabase/.
+export const REPORT_COLUMNS = [
+  'id',
+  'category',
+  'latitude',
+  'longitude',
+  'address',
+  'city',
+  'state',
+  'zip',
+  'description',
+  'size_rating',
+  'hazard_level',
+  'urgency',
+  'condition_level',
+  'media',
+  'vehicle_damage',
+  'status',
+  'authority_id',
+  'cluster_id',
+  'parent_cluster_id',
+  'submission_method',
+  'submission_reference',
+  'upvote_count',
+  'confirm_count',
+  'is_anonymous',
+  'sensor_detected',
+  'offline_queued',
+  'is_quick_report',
+  'location_point',
+  'created_at',
+  'updated_at',
+  'resolved_at',
+  'resolved_media',
+  'geometry_type',
+  'corridor_geometry',
+  'area_geometry',
+  'corridor_street_name',
+  'corridor_from_cross_street',
+  'corridor_to_cross_street',
+  'area_boundary_name',
+  'area_census_tract_geoid',
+  'report_subject',
+  'commercial_business_name',
+  'commercial_business_address',
+  'commercial_chain_identifier',
+  'commercial_public_view_confirmed',
+  'commercial_reporter_attestation',
+  'digital_target_url',
+  'digital_assistive_tech',
+  'digital_browser',
+  'digital_platform',
+  'digital_wcag_criterion',
+  'digital_snapshot_ref',
+].join(', ');

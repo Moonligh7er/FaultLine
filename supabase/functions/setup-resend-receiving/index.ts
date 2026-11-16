@@ -7,9 +7,11 @@
 //                           enabled; returns its DNS records (public values)
 //   {"action":"verify"}   → trigger verification; returns record statuses
 //   {"action":"webhook"}  → ensure email.received webhook → inbound-email
+//   {"action":"store-webhook-secret"} → store that webhook's signing secret
+//                           in Vault (inbound-email verifies signatures)
 // Responses never include key material.
 
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+import { createClient } from 'npm:@supabase/supabase-js@2.103.0';
 
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL') || '';
 const SUPABASE_SERVICE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') || '';
@@ -116,8 +118,41 @@ Deno.serve(async (req) => {
     if (existing) return json({ webhook: 'exists', id: existing.id, events: existing.events });
     const created = await api('POST', '/webhooks', { endpoint: WEBHOOK, events: ['email.received'] });
     if (created.status >= 300) return json({ step: 'create webhook', status: created.status, message: created.data?.message }, 502);
-    return json({ webhook: 'created', id: created.data?.id });
+    const stored = await storeSigningSecret(created.data?.signing_secret);
+    return json({ webhook: 'created', id: created.data?.id, secret_stored: stored });
   }
 
-  return json({ error: 'action must be diagnose | domain | verify | webhook' }, 400);
+  if (action === 'store-webhook-secret') {
+    // inbound-email verifies Svix signatures with this secret (Vault, via
+    // set_resend_webhook_secret). GET /webhooks/{id} returns it; if it ever
+    // doesn't, replace the webhook (same endpoint + events) and keep the new
+    // one's secret, deleting the old webhook only after the secret is stored.
+    const list = await api('GET', '/webhooks?limit=100');
+    if (list.status >= 300) return json({ step: 'list webhooks', status: list.status, message: list.data?.message }, 502);
+    const existing = (list.data?.data ?? []).find((w: any) => w.endpoint === WEBHOOK && (w.events ?? []).includes('email.received'));
+    if (existing) {
+      const one = await api('GET', `/webhooks/${encodeURIComponent(existing.id)}`);
+      if (one.status < 300 && (await storeSigningSecret(one.data?.signing_secret))) {
+        return json({ webhook: existing.id, status: one.data?.status ?? existing.status, secret_stored: true, source: 'existing' });
+      }
+    }
+    const created = await api('POST', '/webhooks', { endpoint: WEBHOOK, events: existing?.events ?? ['email.received'] });
+    if (created.status >= 300) return json({ step: 'create webhook', status: created.status, message: created.data?.message }, 502);
+    if (!(await storeSigningSecret(created.data?.signing_secret))) {
+      await api('DELETE', `/webhooks/${encodeURIComponent(created.data?.id)}`); // keep the old one working
+      return json({ step: 'store secret', error: 'new webhook returned no usable signing secret' }, 502);
+    }
+    const removed = existing ? await api('DELETE', `/webhooks/${encodeURIComponent(existing.id)}`) : null;
+    return json({ webhook: created.data?.id, secret_stored: true, source: 'replaced', old_deleted: removed ? removed.status < 300 : null });
+  }
+
+  return json({ error: 'action must be diagnose | domain | verify | webhook | store-webhook-secret' }, 400);
 });
+
+/** Stores a Resend (Svix) signing secret in Vault. Never returned or logged. */
+async function storeSigningSecret(secret: unknown): Promise<boolean> {
+  if (typeof secret !== 'string' || !secret.startsWith('whsec_')) return false;
+  const { error } = await admin.rpc('set_resend_webhook_secret', { p_secret: secret });
+  if (error) console.error('set_resend_webhook_secret failed');
+  return !error;
+}

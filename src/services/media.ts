@@ -2,12 +2,17 @@ import * as ImageManipulator from 'expo-image-manipulator';
 import * as FileSystem from 'expo-file-system/legacy';
 import { supabase } from './supabase';
 import { MediaAttachment } from '../types';
+import { videoFileType } from './mediaPolicy';
 
 const MAX_IMAGE_WIDTH = 1920;
 const MAX_IMAGE_HEIGHT = 1920;
 const JPEG_QUALITY = 0.7;
 const MAX_FILE_SIZE_MB = 5;
 
+// Every photo is re-encoded through expo-image-manipulator before it leaves
+// the device (upload and AI analysis alike). Re-encoding writes a fresh JPEG
+// without the source EXIF block, so GPS, device and timestamp metadata from
+// the camera or the photo library are dropped.
 export async function compressImage(uri: string): Promise<string> {
   const result = await ImageManipulator.manipulateAsync(
     uri,
@@ -63,14 +68,15 @@ export async function uploadMedia(
     throw new Error('Invalid image file — file does not appear to be a valid image');
   }
 
-  const ext = isImage ? 'jpg' : 'mp4';
+  // Videos keep their container; an iPhone .mov is QuickTime, not MP4.
+  const { ext, contentType } = isImage ? { ext: 'jpg', contentType: 'image/jpeg' } : videoFileType(attachment);
   const path = `reports/${reportId}/${timestamp}_${attachment.id}.${ext}`;
 
   // Upload to Supabase Storage
   const { data, error } = await supabase.storage
     .from('report-media')
     .upload(path, decode(base64), {
-      contentType: isImage ? 'image/jpeg' : 'video/mp4',
+      contentType,
       upsert: false,
     });
 

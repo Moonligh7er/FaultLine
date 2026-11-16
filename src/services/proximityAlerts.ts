@@ -77,6 +77,13 @@ export function stopProximityMonitoring(): void {
   watchSubscription = null;
 }
 
+// Drops cached nearby reports and the record of which hazards were passed.
+export async function clearProximityCache(): Promise<void> {
+  cachedHazards = [];
+  lastCacheTime = 0;
+  await AsyncStorage.removeItem(ALERT_COOLDOWN_KEY);
+}
+
 async function checkNearbyHazards(lat: number, lng: number, prefs: ProximityPrefs): Promise<void> {
   // Refresh hazard cache periodically
   if (Date.now() - lastCacheTime > CACHE_DURATION_MS) {

@@ -1,10 +1,11 @@
 import { Platform } from 'react-native';
 import * as Device from 'expo-device';
 import * as FileSystem from 'expo-file-system/legacy';
+import Constants from 'expo-constants';
 
 // ============================================================
 // Security Services
-// SSL pinning, root/jailbreak detection, device attestation
+// Outbound request allow-list, root/jailbreak detection
 // ============================================================
 
 // --- ROOT / JAILBREAK DETECTION ---
@@ -89,57 +90,80 @@ async function checkIOSJailbreak(): Promise<boolean> {
   return false;
 }
 
-// --- SSL CERTIFICATE PINNING ---
+// --- OUTBOUND REQUEST ALLOW-LIST ---
+// The JS fetch() used by the app is limited to the hosts below. This is an
+// allow-list, not certificate pinning: TLS is validated by the OS as usual,
+// and native SDKs (maps, ads, crash reporting) make their own connections.
 
-// Supabase public key pins (SHA-256)
-// These should be updated when Supabase rotates their TLS certificates
-// For production: extract pins from your specific Supabase project's cert chain
-const PINNED_DOMAINS: Record<string, { sha256: string[] }> = {
-  'supabase.co': {
-    sha256: [
-      // Primary and backup pins
-      // To get your pins, run:
-      // openssl s_client -connect YOUR_PROJECT.supabase.co:443 | openssl x509 -pubkey -noout | openssl rsa -pubin -outform der | openssl dgst -sha256 -binary | openssl enc -base64
-      // For now, we use fetch validation rather than native pinning
-    ],
-  },
-};
+const extra = Constants.expoConfig?.extra || {};
 
-// Validate API responses come from expected domains
+function hostOf(url: unknown): string | null {
+  if (typeof url !== 'string' || !url) return null;
+  try {
+    return new URL(url).hostname.toLowerCase() || null;
+  } catch {
+    return null;
+  }
+}
+
+// Exact hosts: only this host, no subdomains.
+const EXACT_HOSTS = [
+  hostOf(extra.supabaseUrl) || 'dzewklljiksyivsfpunt.supabase.co', // our Supabase project
+  'exp.host', // Expo push token registration
+  'formspree.io', // in-app feedback form
+  'geocoding.geo.census.gov', // election district overlay (Census geocoder)
+  'tile.openstreetmap.org',
+  '311.boston.gov', // Open311 (Boston)
+  // Kokoro TTS on Modal: the configured endpoints only, not all of modal.run.
+  hostOf(extra.kokoroTtsUrl),
+  hostOf(extra.kokoroHealthUrl),
+  hostOf(extra.sentryDsn), // crash reports (JS transport)
+].filter((h): h is string => !!h);
+
+// Host plus its subdomains (matched on a dot boundary).
+const DOMAIN_SUFFIXES = [
+  'seeclickfix.com', // SeeClickFix API
+];
+
+export function isAllowedHost(hostname: string): boolean {
+  const host = hostname.toLowerCase().replace(/\.$/, '');
+  if (!host) return false;
+  if (EXACT_HOSTS.includes(host)) return true;
+  return DOMAIN_SUFFIXES.some((d) => host === d || host.endsWith('.' + d));
+}
+
+// Local, non-network URLs that React Native's fetch can read.
+const LOCAL_SCHEMES = new Set(['file:', 'content:', 'data:', 'blob:', 'asset:', 'ph:', 'assets-library:']);
+const DEV_LOOPBACK = new Set(['localhost', '127.0.0.1', '10.0.2.2', '[::1]']);
+
+/** Throws if `url` may not be fetched. Fails closed on anything unparseable. */
+export function assertRequestAllowed(url: string): void {
+  let urlObj: URL;
+  try {
+    urlObj = new URL(url);
+  } catch {
+    throw new Error('Request blocked: not an absolute URL');
+  }
+  const protocol = urlObj.protocol.toLowerCase();
+  if (LOCAL_SCHEMES.has(protocol)) return;
+
+  const host = urlObj.hostname.toLowerCase();
+  if (typeof __DEV__ !== 'undefined' && __DEV__ && DEV_LOOPBACK.has(host)) return;
+
+  if (protocol !== 'https:') {
+    throw new Error('HTTP requests are not allowed — use HTTPS');
+  }
+  if (!isAllowedHost(host)) {
+    console.warn(`Blocked request to non-allow-listed host: ${host}`);
+    throw new Error(`Request to ${host} blocked by domain allow-list`);
+  }
+}
+
+// Wraps fetch so every request is checked against the allow-list.
 export function createPinnedFetch(originalFetch: typeof fetch): typeof fetch {
   return async (input: RequestInfo | URL, init?: RequestInit): Promise<Response> => {
-    const url = typeof input === 'string' ? input : input instanceof URL ? input.toString() : input.url;
-
-    // Enforce HTTPS for all API calls
-    if (url.startsWith('http://') && !url.includes('localhost')) {
-      throw new Error('HTTP requests are not allowed — use HTTPS');
-    }
-
-    // Validate domain whitelist
-    const allowedDomains = [
-      'supabase.co',
-      'supabase.in',
-      'api.resend.com',
-      'api.anthropic.com',
-      'geocoding.geo.census.gov',
-      'tile.openstreetmap.org',
-      'formspree.io',
-      // Kokoro TTS server (shared Modal endpoint, see project memory)
-      'modal.run',
-    ];
-
-    try {
-      const urlObj = new URL(url);
-      const isAllowed = allowedDomains.some((d) => urlObj.hostname.endsWith(d));
-      if (!isAllowed && !urlObj.hostname.includes('localhost')) {
-        console.warn(`Blocked request to non-whitelisted domain: ${urlObj.hostname}`);
-        throw new Error(`Request to ${urlObj.hostname} blocked by domain whitelist`);
-      }
-    } catch (e) {
-      if ((e as Error).message.includes('blocked')) throw e;
-      // URL parsing failed — allow (might be relative URL)
-    }
-
+    const url = typeof input === 'string' ? input : input instanceof URL ? input.toString() : (input as Request)?.url;
+    assertRequestAllowed(url);
     return originalFetch(input, init);
   };
 }

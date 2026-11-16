@@ -57,46 +57,15 @@ export async function getAvailableRewards(
   return data.map(mapDbToReward);
 }
 
+// Claiming spends points, and points are server-owned: the client can't
+// deduct them or bump claim counts. Claims need a server-side function;
+// until one exists the app reports claiming as unavailable.
 export async function claimReward(
-  rewardId: string,
-  userId: string,
-  userPoints: number,
+  _rewardId: string,
+  _userId: string,
+  _userPoints: number,
 ): Promise<{ success: boolean; code?: string; error?: string }> {
-  // Get the reward
-  const { data: reward } = await supabase
-    .from('rewards')
-    .select('*')
-    .eq('id', rewardId)
-    .single();
-
-  if (!reward) return { success: false, error: 'Reward not found' };
-  if (reward.total_claimed >= reward.total_available) return { success: false, error: 'Reward sold out' };
-  if (userPoints < reward.points_cost) return { success: false, error: `Need ${reward.points_cost - userPoints} more points` };
-
-  // Generate redemption code
-  const code = generateRedemptionCode();
-
-  // Claim the reward
-  const { error: claimError } = await supabase.from('claimed_rewards').insert({
-    reward_id: rewardId,
-    user_id: userId,
-    redemption_code: code,
-    status: 'claimed',
-    claimed_at: new Date().toISOString(),
-  });
-
-  if (claimError) return { success: false, error: claimError.message };
-
-  // Deduct points
-  await supabase.rpc('award_points', { p_user_id: userId, p_points: -reward.points_cost });
-
-  // Increment claimed count
-  await supabase
-    .from('rewards')
-    .update({ total_claimed: reward.total_claimed + 1 })
-    .eq('id', rewardId);
-
-  return { success: true, code };
+  return { success: false, error: 'Rewards can’t be claimed from the app yet.' };
 }
 
 export async function getClaimedRewards(userId: string): Promise<ClaimedReward[]> {
@@ -118,15 +87,6 @@ export async function getClaimedRewards(userId: string): Promise<ClaimedReward[]
     status: row.status,
     reward: mapDbToReward(row.rewards),
   }));
-}
-
-function generateRedemptionCode(): string {
-  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; // No confusing chars (0/O, 1/I/L)
-  let code = 'FL-';
-  for (let i = 0; i < 8; i++) {
-    code += chars.charAt(Math.floor(Math.random() * chars.length));
-  }
-  return code;
 }
 
 function mapDbToReward(row: any): Reward {

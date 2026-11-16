@@ -206,6 +206,5 @@ export const POINT_VALUES = {
   fiftiethReport: 500,
 };
 
-export async function awardPoints(userId: string, points: number, reason: string): Promise<void> {
-  await supabase.rpc('award_points', { p_user_id: userId, p_points: points });
-}
+// Points, badges and profile counters are awarded by the server; the client
+// can't change them (award_points isn't callable from the API).

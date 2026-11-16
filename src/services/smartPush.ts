@@ -1,5 +1,6 @@
 import * as Location from 'expo-location';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { getEncryptedJSON, setEncryptedJSON } from './secureStorage';
 import { sendLocalNotification } from './notifications';
 import { supabase } from './supabase';
 import { generateNotificationCopy } from './ai';
@@ -12,12 +13,19 @@ import { generateNotificationCopy } from './ai';
 const ROUTE_HISTORY_KEY = 'commute_route_history';
 const PUSH_PREFS_KEY = 'smart_push_prefs';
 
+// Commute history is opt-in (commuteAlerts, off by default), coarse and
+// short-lived: only a ~1 km grid cell is kept per sample, never the exact
+// position; samples expire after 30 days; the list is AES-encrypted at rest
+// (secureStorage.ts) and wiped on sign-out or when the setting is turned off.
+const CELL_DEG = 0.01; // ~1.1 km of latitude, ~0.8 km of longitude at 42°N
+const HISTORY_TTL_MS = 30 * 86400000;
+const MAX_HISTORY = 500;
+const COMMUTE_MATCH_RADIUS_M = 1000;
+
 interface RoutePoint {
-  lat: number;
-  lng: number;
-  timestamp: string;
-  dayOfWeek: number;
-  hour: number;
+  cellLat: number;
+  cellLng: number;
+  t: number; // epoch ms
 }
 
 interface SmartPushPrefs {
@@ -30,7 +38,7 @@ interface SmartPushPrefs {
 }
 
 const DEFAULT_PREFS: SmartPushPrefs = {
-  commuteAlerts: true,
+  commuteAlerts: false,
   nearbyAlerts: true,
   milestoneAlerts: true,
   weeklyDigest: true,
@@ -45,6 +53,16 @@ export async function getSmartPushPrefs(): Promise<SmartPushPrefs> {
 
 export async function saveSmartPushPrefs(prefs: SmartPushPrefs): Promise<void> {
   await AsyncStorage.setItem(PUSH_PREFS_KEY, JSON.stringify(prefs));
+  if (!prefs.commuteAlerts) await clearCommuteHistory();
+}
+
+export async function setCommuteAlertsEnabled(enabled: boolean): Promise<void> {
+  const prefs = await getSmartPushPrefs();
+  await saveSmartPushPrefs({ ...prefs, commuteAlerts: enabled });
+}
+
+export async function clearCommuteHistory(): Promise<void> {
+  await AsyncStorage.removeItem(ROUTE_HISTORY_KEY);
 }
 
 function isQuietHours(prefs: SmartPushPrefs): boolean {
@@ -58,51 +76,58 @@ function isQuietHours(prefs: SmartPushPrefs): boolean {
 
 // ============================================================
 // COMMUTE LEARNING
-// Track user's frequent routes to identify relevant reports
+// Track the coarse areas the user passes often (opt-in only)
 // ============================================================
 
+function toCell(value: number): number {
+  return Math.round(Math.round(value / CELL_DEG) * CELL_DEG * 100) / 100;
+}
+
+async function readHistory(): Promise<RoutePoint[]> {
+  const history = await getEncryptedJSON<any[]>(ROUTE_HISTORY_KEY, []);
+  const cutoff = Date.now() - HISTORY_TTL_MS;
+  // Drops expired samples and any precise-format entries from older versions.
+  return (Array.isArray(history) ? history : []).filter(
+    (p): p is RoutePoint =>
+      p && typeof p.cellLat === 'number' && typeof p.cellLng === 'number' && typeof p.t === 'number' && p.t > cutoff,
+  );
+}
+
 export async function recordLocationPoint(): Promise<void> {
+  const prefs = await getSmartPushPrefs();
+  if (!prefs.commuteAlerts) {
+    // Also removes history left by older versions, which tracked by default.
+    await clearCommuteHistory();
+    return;
+  }
+
   const { status } = await Location.getForegroundPermissionsAsync();
   if (status !== 'granted') return;
 
-  const loc = await Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.Balanced });
-  const now = new Date();
+  const loc = await Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.Low });
 
-  const point: RoutePoint = {
-    lat: loc.coords.latitude,
-    lng: loc.coords.longitude,
-    timestamp: now.toISOString(),
-    dayOfWeek: now.getDay(),
-    hour: now.getHours(),
-  };
+  const history = await readHistory();
+  history.push({ cellLat: toCell(loc.coords.latitude), cellLng: toCell(loc.coords.longitude), t: Date.now() });
+  if (history.length > MAX_HISTORY) history.splice(0, history.length - MAX_HISTORY);
 
-  const raw = await AsyncStorage.getItem(ROUTE_HISTORY_KEY);
-  const history: RoutePoint[] = raw ? JSON.parse(raw) : [];
-
-  history.push(point);
-
-  // Keep last 500 points (~1 week of commute data)
-  if (history.length > 500) history.splice(0, history.length - 500);
-
-  await AsyncStorage.setItem(ROUTE_HISTORY_KEY, JSON.stringify(history));
+  // Not stored at all if it can't be stored encrypted.
+  await setEncryptedJSON(ROUTE_HISTORY_KEY, history);
 }
 
-// Identify frequent locations (home, work, commute corridors)
+// Identify frequently visited cells (home, work, commute corridors)
 async function getFrequentLocations(): Promise<{ lat: number; lng: number; frequency: number }[]> {
-  const raw = await AsyncStorage.getItem(ROUTE_HISTORY_KEY);
-  if (!raw) return [];
+  const history = await readHistory();
+  if (history.length === 0) return [];
 
-  const history: RoutePoint[] = JSON.parse(raw);
-  const gridSize = 0.005; // ~500m cells
   const clusters: Map<string, { lat: number; lng: number; count: number }> = new Map();
 
   for (const point of history) {
-    const key = `${Math.round(point.lat / gridSize)},${Math.round(point.lng / gridSize)}`;
+    const key = `${point.cellLat},${point.cellLng}`;
     const existing = clusters.get(key);
     if (existing) {
       existing.count++;
     } else {
-      clusters.set(key, { lat: point.lat, lng: point.lng, count: 1 });
+      clusters.set(key, { lat: point.cellLat, lng: point.cellLng, count: 1 });
     }
   }
 
@@ -137,7 +162,7 @@ export async function checkCommuteReports(): Promise<void> {
     for (const cluster of clusters) {
       // Check if near a frequent location
       const dist = haversineM(loc.lat, loc.lng, cluster.centroid_latitude, cluster.centroid_longitude);
-      if (dist > 200) continue; // Within 200m of commute
+      if (dist > COMMUTE_MATCH_RADIUS_M) continue; // Within the user's ~1 km commute cell
 
       const neededReports = 10 - cluster.report_count;
       if (neededReports > 0 && neededReports <= 3) {

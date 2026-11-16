@@ -1,4 +1,5 @@
 import * as Linking from 'expo-linking';
+import * as SecureStore from 'expo-secure-store';
 import { supabase } from './supabase';
 
 // Magic-link redirect target. Resolves to faultline://auth/callback in
@@ -6,9 +7,51 @@ import { supabase } from './supabase';
 // Both must be in Supabase Auth → URL Configuration → Redirect URLs.
 export const AUTH_CALLBACK_URL = Linking.createURL('auth/callback');
 
-// Completes a magic-link sign-in from the redirect URL. Handles the PKCE
-// `?code=` form (our client default) and the implicit `#access_token=` form
-// in case the project's email template still emits it.
+// A callback link is only honoured while a sign-in this device started is
+// pending: set when the magic link is requested, good for 15 minutes,
+// cleared once the code is exchanged. Any other faultline://auth/callback
+// link (e.g. one planted by another app or web page) is ignored.
+const PENDING_KEY = 'fl_pending_signin';
+export const PENDING_SIGNIN_TTL_MS = 15 * 60 * 1000;
+let memoryPendingUntil = 0; // fallback where SecureStore is unavailable (web)
+
+async function setPendingSignIn(): Promise<void> {
+  const until = Date.now() + PENDING_SIGNIN_TTL_MS;
+  memoryPendingUntil = until;
+  try {
+    await SecureStore.setItemAsync(PENDING_KEY, String(until));
+  } catch {}
+}
+
+async function hasPendingSignIn(): Promise<boolean> {
+  let until = memoryPendingUntil;
+  try {
+    const stored = await SecureStore.getItemAsync(PENDING_KEY);
+    if (stored) until = Math.max(until, Number(stored) || 0);
+  } catch {}
+  return until > Date.now();
+}
+
+export async function clearPendingSignIn(): Promise<void> {
+  memoryPendingUntil = 0;
+  try {
+    await SecureStore.deleteItemAsync(PENDING_KEY);
+  } catch {}
+}
+
+// Requests a magic link (PKCE) and marks the sign-in as pending.
+export async function requestMagicLink(email: string): Promise<{ error: { message: string } | null }> {
+  await setPendingSignIn();
+  const { error } = await supabase.auth.signInWithOtp({
+    email,
+    options: { emailRedirectTo: AUTH_CALLBACK_URL },
+  });
+  if (error) await clearPendingSignIn();
+  return { error };
+}
+
+// Completes a magic-link sign-in from the redirect URL. Only the PKCE
+// `?code=` form is accepted; tokens in a URL fragment are never trusted.
 export async function completeAuthFromUrl(url: string): Promise<void> {
   if (!url.includes('auth/callback')) return;
 
@@ -23,18 +66,19 @@ export async function completeAuthFromUrl(url: string): Promise<void> {
   }
 
   const code = query.get('code');
-  if (code) {
-    const { error } = await supabase.auth.exchangeCodeForSession(code);
-    if (error) console.warn('[auth] code exchange failed:', error.message);
+  if (!code) return;
+
+  if (!(await hasPendingSignIn())) {
+    console.warn('[auth] ignoring sign-in link: no sign-in was started on this device in the last 15 minutes');
     return;
   }
 
-  const accessToken = fragment.get('access_token');
-  const refreshToken = fragment.get('refresh_token');
-  if (accessToken && refreshToken) {
-    const { error } = await supabase.auth.setSession({ access_token: accessToken, refresh_token: refreshToken });
-    if (error) console.warn('[auth] setSession failed:', error.message);
+  const { error } = await supabase.auth.exchangeCodeForSession(code);
+  if (error) {
+    console.warn('[auth] code exchange failed:', error.message);
+    return;
   }
+  await clearPendingSignIn();
 }
 
 // Handles both cold starts (app opened by the link) and warm links.

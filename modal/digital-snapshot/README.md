@@ -15,8 +15,7 @@ Digital-infrastructure failures don't photograph well — a screen-reader trap h
    ```
    modal secret create fault-line-digital-snapshot \
      WORKER_SECRET=<the-random-32-byte-base64> \
-     SUPABASE_URL=https://dzewklljiksyivsfpunt.supabase.co \
-     SUPABASE_SERVICE_ROLE_KEY=<from-supabase-project-settings>
+     SUPABASE_URL=https://dzewklljiksyivsfpunt.supabase.co
    ```
 5. Deploy: `modal deploy main.py`
 6. Modal prints the endpoint URL (e.g. `https://moons7onr--fault-line-digital-snapshot-capture-snapshot.modal.run`)
@@ -31,32 +30,14 @@ Digital-infrastructure failures don't photograph well — a screen-reader trap h
 
 ## API
 
-**POST** `<endpoint>/capture-snapshot`
-
-Headers:
-- `x-worker-secret`: the shared WORKER_SECRET
-- `Content-Type: application/json`
-
-Body:
-```json
-{ "url": "https://example-city.gov/permits/apply", "reportId": "opt-uuid" }
-```
-
-Response (200):
-```json
-{
-  "ref": "snapshots/1725000000-a1b2c3d4e5f6a7b8",
-  "capturedAt": 1725000000,
-  "httpStatus": 200,
-  "htmlBytes": 128456,
-  "screenshotBytes": 245789
-}
-```
-
-Errors:
-- `400` — invalid URL or missing field
-- `401` — bad `x-worker-secret`
-- `500` — capture or upload failure with `{"error": "..."}` detail
+See the docstring at the top of `main.py` for the full contract. In short:
+`POST <endpoint>/capture-snapshot` with header `x-worker-secret` and body
+`{ "url", "reportId"?, "uploadUrls"? }`. The worker holds no Supabase key:
+pass signed upload URLs (html / png / meta, created by the caller with
+`createSignedUploadUrl` in `digital-infra-snapshots`) to have it upload, or
+omit them to get the HTML and PNG back base64-encoded. Errors: `400` bad
+input or non-public URL, `401` bad secret, `502` capture/upload failed,
+`503` worker not configured.
 
 ## Cost estimate
 
@@ -69,7 +50,8 @@ Expected volume during pilot: single-digit snapshots per day per pilot city. Pla
 ## Security notes
 
 - **Never accept URLs from unauthenticated callers.** The worker enforces `x-worker-secret`; the Fault Line app enforces user authentication before submitting a URL for snapshot.
-- **Sandbox Chromium.** `--no-sandbox` is set for Modal's containerized environment; do not run this worker locally without container isolation.
+- **Sandbox Chromium.** Chromium keeps its sandbox: it runs in a child process as the unprivileged `snapshot` user with `chromium_sandbox=True`. If the sandbox can't start, the capture fails (502) instead of running unsandboxed.
+- **Public URLs only.** The URL and every request the page makes (each redirect hop included) must be http(s) and resolve only to public addresses.
 - **Sensitive-header stripping.** Response headers are not persisted by default — only status code + body. If Fault Line ever surfaces response headers, add a strip pass before storage (auth tokens, session cookies, tracking IDs).
 - **Storage bucket is private.** Public exposure of snapshots would create both privacy issues (residents might submit URLs that contain their own session state in query strings) and a legal target for cities that don't want their broken pages archived. Snapshots are retrievable only via signed URLs by ADA coordinators / reporters / DOJ complaint recipients.
 

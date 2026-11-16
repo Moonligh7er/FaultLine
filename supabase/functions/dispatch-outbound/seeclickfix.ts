@@ -94,7 +94,7 @@ export function rankRequestTypes(types: RequestTypeRef[], category: string): Req
   const score = (title: string) =>
     has(title, own) ? (has(title, others) ? 2 : 3) : has(title, GENERIC_TERMS) ? 1 : 0;
   return types
-    .filter((t) => t.organization && !/internal/i.test(`${t.organization} ${t.title}`) && NUMERIC_TYPE_URL.test(t.url))
+    .filter((t) => t.organization && !/internal/i.test(`${t.organization} ${t.title}`) && NUMERIC_TYPE_URL.test(t.url) && isSeeClickFixUrl(t.url))
     .map((t) => ({ t, score: score(t.title) }))
     .filter((x) => x.score > 0)
     .sort((a, b) => b.score - a.score)
@@ -132,8 +132,24 @@ export function buildAnswers(
   return answers;
 }
 
+/** Request-type URLs come back from the API: only ever follow them to SeeClickFix itself, over https. */
+export function isSeeClickFixUrl(url: string): boolean {
+  try {
+    const u = new URL(url);
+    const host = u.hostname.toLowerCase();
+    return u.protocol === 'https:' && (host === 'seeclickfix.com' || host.endsWith('.seeclickfix.com'));
+  } catch {
+    return false;
+  }
+}
+
 async function getJson(url: string): Promise<any> {
+  if (!isSeeClickFixUrl(url)) throw new Error(`refusing non-SeeClickFix URL ${url.slice(0, 100)}`);
   const res = await fetch(url, { headers: { Accept: 'application/json', 'User-Agent': USER_AGENT } });
+  if (res.url && !isSeeClickFixUrl(res.url)) {
+    await res.body?.cancel();
+    throw new Error('SeeClickFix redirected off-site');
+  }
   if (!res.ok) throw new Error(`HTTP ${res.status} for ${url}`);
   return res.json();
 }

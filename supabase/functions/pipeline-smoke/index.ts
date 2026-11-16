@@ -7,19 +7,24 @@
 //   4. queued message approved → dispatch-outbound sends it by email
 //   5. outbox marked sent, escalation_log row with [FL-XXXXXX] subject
 //   6. a reply is recorded and applied → cluster + report resolved
-//   7. inbound-email rejects a forged webhook (and Resend key can read inbound)
+//   7. inbound-email rejects an unsigned webhook (and Resend key can read inbound)
 //   8. SeeClickFix personal access token present and accepted (read-only)
 //
 // The only recipient is Resend's test sink (delivered@resend.dev) via a
-// throwaway authority, so no real authority is ever contacted. Everything
-// created is deleted at the end (and leftovers from a crashed run at the
-// start). Results go to public.health_checks (migration 029).
+// throwaway authority, so no real authority is ever contacted. Every row the
+// test creates is recorded by id in public.smoke_artifacts (migration 041)
+// before or right after it is created, and cleanup deletes only those ids
+// (at the end, and leftovers from a crashed run at the start). Nothing is
+// ever selected by marker text, and a cluster is never deleted (or modified)
+// if it holds any report the test didn't create. Results go to
+// public.health_checks (migration 029).
 
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+import { createClient } from 'npm:@supabase/supabase-js@2.103.0';
 
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL') || '';
 const SUPABASE_ANON = Deno.env.get('SUPABASE_ANON_KEY') || '';
 const SUPABASE_SERVICE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') || '';
+const RESEND_KEY = (Deno.env.get('RESEND_API_KEY') || '').trim();
 const FN = `${SUPABASE_URL}/functions/v1`;
 
 const MARKER = 'FAULT LINE SMOKE TEST';
@@ -39,6 +44,13 @@ async function isCronCaller(req: Request): Promise<boolean> {
 }
 
 type Step = { step: string; ok: boolean; detail?: unknown; ms: number };
+type Kind = 'authority' | 'report' | 'cluster' | 'outbound' | 'escalation' | 'inbound';
+
+/** Records an id this run created, so cleanup can remove exactly it. Throws if it can't be recorded. */
+async function track(kind: Kind, id: string): Promise<void> {
+  const { error } = await admin.from('smoke_artifacts').upsert({ kind, id }, { onConflict: 'kind,id', ignoreDuplicates: true });
+  if (error) throw new Error(`could not record ${kind} artifact: ${error.message}`);
+}
 
 Deno.serve(async (req) => {
   if (req.method !== 'POST') return new Response('Method not allowed', { status: 405 });
@@ -73,21 +85,24 @@ Deno.serve(async (req) => {
   if (sandbox) warnings.push('SANDBOX MODE IS ON: no report reaches a real authority until it is turned off (admin queue)');
 
   const reportId = crypto.randomUUID();
-  let authorityId = '';
+  const authorityId = crypto.randomUUID();
   let clusterId = '';
   let outboundId = '';
   let ref = '';
 
+  // Ids are generated here and recorded before the insert, so a crash at any
+  // point still leaves cleanup an exact list.
   await step('create test authority', async () => {
-    const { data, error } = await admin.from('authorities').insert({
-      name: MARKER, level: 'city', state: 'MA', city: 'Smoketest', is_active: true,
+    await track('authority', authorityId);
+    const { error } = await admin.from('authorities').insert({
+      id: authorityId, name: MARKER, level: 'city', state: 'MA', city: 'Smoketest', is_active: true,
       submission_methods: [{ method: 'email', endpoint: SINK, priority: 1 }],
-    }).select('id').single();
-    must(!error && data, `authority insert: ${error?.message}`);
-    authorityId = data!.id;
+    });
+    must(!error, `authority insert: ${error?.message}`);
   });
 
   await step('anonymous report insert (RLS + trigger)', async () => {
+    await track('report', reportId);
     const { error } = await anon.from('reports').insert({
       id: reportId, category: 'pothole', latitude: LAT, longitude: LNG,
       description: MARKER, hazard_level: 'dangerous', size_rating: 'large',
@@ -99,7 +114,14 @@ Deno.serve(async (req) => {
   await step('report clustered', async () => {
     const { data } = await admin.from('cluster_reports').select('cluster_id').eq('report_id', reportId).maybeSingle();
     must(data?.cluster_id, 'no cluster_reports row — clustering trigger did not run');
+    // Only a cluster made of nothing but this run's report is ours to change
+    // or delete. If the report joined a real cluster, stop here.
+    const { data: members, error } = await admin.from('cluster_reports').select('report_id').eq('cluster_id', data!.cluster_id);
+    must(!error, `cluster members: ${error?.message}`);
+    must((members ?? []).every((m: { report_id: string }) => m.report_id === reportId),
+      'test report joined an existing cluster; refusing to modify it');
     clusterId = data!.cluster_id;
+    await track('cluster', clusterId);
     return { clusterId };
   });
 
@@ -114,6 +136,7 @@ Deno.serve(async (req) => {
     const { data } = await admin.from('outbound_messages').select('id, ref, status').eq('cluster_id', clusterId).maybeSingle();
     must(data, 'no outbound message queued for the cluster');
     outboundId = data!.id; ref = data!.ref;
+    await track('outbound', outboundId);
     must(['pending_review', 'approved'].includes(data!.status), `unexpected outbox status ${data!.status}`);
     return { ref, status: data!.status };
   });
@@ -141,7 +164,8 @@ Deno.serve(async (req) => {
   });
 
   await step('escalation_log records tagged notice', async () => {
-    const { data } = await admin.from('escalation_log').select('subject, status').eq('cluster_id', clusterId);
+    const { data } = await admin.from('escalation_log').select('id, subject, status').eq('cluster_id', clusterId);
+    for (const e of data ?? []) await track('escalation', e.id);
     if (sandbox) {
       must(!data || data.length === 0, 'sandbox wrote to escalation_log (public record)');
       return 'sandbox: correctly not recorded';
@@ -151,8 +175,10 @@ Deno.serve(async (req) => {
   });
 
   await step('reply applied → cluster + report resolved', async () => {
+    const inboundId = crypto.randomUUID();
+    await track('inbound', inboundId);
     const { data: inbound, error } = await admin.from('inbound_messages').insert({
-      resend_email_id: `smoke-${reportId}`, from_address: 'smoke@example.gov', subject: `Re: [${ref}]`,
+      id: inboundId, resend_email_id: `smoke-${reportId}`, from_address: 'smoke@example.gov', subject: `Re: [${ref}]`,
       reply_excerpt: 'The pothole has been repaired.', ref, outbound_id: outboundId,
       cluster_id: clusterId, suggested_status: 'resolved', status: 'pending_review',
     }).select('id').single();
@@ -166,20 +192,24 @@ Deno.serve(async (req) => {
     must(c?.status === 'resolved' && r?.status === 'resolved', `cluster=${c?.status} report=${r?.status}`);
   });
 
-  await step('inbound-email rejects forged webhook', async () => {
+  await step('inbound-email rejects unsigned webhook', async () => {
     const res = await fetch(`${FN}/inbound-email`, {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ type: 'email.received', data: { email_id: '00000000-0000-0000-0000-000000000000' } }),
     });
-    const body = await res.json().catch(() => ({}));
-    // 400 = Resend says no such email (key can read inbound) — healthy.
-    // 502 "resend 401" = the Resend key can't read inbound mail yet: a known
-    // setup gap, reported as a warning rather than an outage.
-    if (res.status === 502 && body?.error === 'resend 401') {
+    await res.body?.cancel();
+    must(res.status === 401, `expected 401, got ${res.status}`);
+    const { data: hasSecret } = await admin.rpc('get_resend_webhook_secret');
+    if (!hasSecret) warnings.push('Inbound replies rejected: Resend webhook signing secret not stored (setup-resend-receiving store-webhook-secret)');
+    // Read-only probe: can the Resend key read received mail? 404 = yes.
+    const probe = await fetch('https://api.resend.com/emails/receiving/00000000-0000-0000-0000-000000000000', {
+      headers: { Authorization: `Bearer ${RESEND_KEY}` },
+    });
+    await probe.body?.cancel();
+    if (probe.status === 401 || probe.status === 403) {
       warnings.push('Inbound replies not readable: RESEND_API_KEY must be a Full-access key');
       return 'warning';
     }
-    must(res.status === 400, `expected 400, got ${res.status} ${JSON.stringify(body)}`);
   });
 
   // Read-only: SeeClickFix rejects issue creation without a personal access
@@ -213,27 +243,65 @@ Deno.serve(async (req) => {
   });
 });
 
-/** Removes everything this test creates, including leftovers from a crashed run. */
+/**
+ * Removes exactly the rows recorded in smoke_artifacts (this run's, plus
+ * leftovers from a crashed run). Rows that reference a test cluster (outbox,
+ * escalation_log, replies) are deleted only when that cluster holds nothing
+ * but test reports. A cluster holding any other report is never deleted.
+ */
 async function cleanup(): Promise<boolean> {
-  const { data: auths } = await admin.from('authorities').select('id').eq('name', MARKER);
-  const authIds = (auths ?? []).map((a: { id: string }) => a.id);
-  const { data: reps } = await admin.from('reports').select('id').eq('description', MARKER);
-  const reportIds = (reps ?? []).map((r: { id: string }) => r.id);
-  const { data: links } = reportIds.length
-    ? await admin.from('cluster_reports').select('cluster_id').in('report_id', reportIds)
-    : { data: [] };
-  const clusterIds = [...new Set((links ?? []).map((l: { cluster_id: string }) => l.cluster_id))];
+  const { data: rows, error } = await admin.from('smoke_artifacts').select('kind, id');
+  if (error) return false;
+  const ids = (k: Kind) => (rows ?? []).filter((r: { kind: string }) => r.kind === k).map((r: { id: string }) => r.id);
+  const reportIds = ids('report');
+  const ownReports = new Set(reportIds);
 
-  if (clusterIds.length) {
-    await admin.from('inbound_messages').delete().in('cluster_id', clusterIds);
-    await admin.from('escalation_log').delete().in('cluster_id', clusterIds);
-    await admin.from('outbound_messages').delete().in('cluster_id', clusterIds);
+  // Clusters: ours only if every member report is a recorded test report.
+  const safeClusters: string[] = [];
+  const foreignClusters: string[] = [];
+  for (const c of ids('cluster')) {
+    const { data: members, error: mErr } = await admin.from('cluster_reports').select('report_id').eq('cluster_id', c);
+    if (mErr) return false;
+    ((members ?? []).every((m: { report_id: string }) => ownReports.has(m.report_id)) ? safeClusters : foreignClusters).push(c);
   }
-  if (reportIds.length) await admin.from('reports').delete().in('id', reportIds);
-  if (clusterIds.length) await admin.from('report_clusters').delete().in('id', clusterIds);
-  if (authIds.length) await admin.from('authorities').delete().in('id', authIds);
 
-  const { count: left } = await admin.from('reports').select('id', { count: 'exact', head: true }).eq('description', MARKER);
-  const { count: leftAuth } = await admin.from('authorities').select('id', { count: 'exact', head: true }).eq('name', MARKER);
-  return (left ?? 0) === 0 && (leftAuth ?? 0) === 0;
+  let ok = true;
+  const del = async (table: string, col: string, list: string[]) => {
+    if (!list.length) return;
+    const { error: e } = await admin.from(table).delete().in(col, list);
+    if (e) { ok = false; console.error(`smoke cleanup ${table}: ${e.message}`); }
+  };
+
+  await del('inbound_messages', 'id', ids('inbound'));
+  await del('escalation_log', 'id', ids('escalation'));
+  await del('outbound_messages', 'id', ids('outbound'));
+  if (safeClusters.length) {
+    // Rows other functions created for a test-only cluster before this run could record them.
+    await del('inbound_messages', 'cluster_id', safeClusters);
+    await del('escalation_log', 'cluster_id', safeClusters);
+    await del('outbound_messages', 'cluster_id', safeClusters);
+  }
+  await del('reports', 'id', reportIds);
+  await del('report_clusters', 'id', safeClusters);
+  await del('authorities', 'id', ids('authority'));
+  if (!ok) return false;
+
+  // Forget what is gone. A foreign cluster is left in place and forgotten
+  // (it is real data); everything else must actually be deleted.
+  const groups: [Kind, string, string[]][] = [
+    ['inbound', 'inbound_messages', ids('inbound')], ['escalation', 'escalation_log', ids('escalation')],
+    ['outbound', 'outbound_messages', ids('outbound')], ['report', 'reports', reportIds],
+    ['cluster', 'report_clusters', safeClusters], ['authority', 'authorities', ids('authority')],
+  ];
+  for (const [kind, table, list] of groups) {
+    if (!list.length) continue;
+    const { count, error: cErr } = await admin.from(table).select('id', { count: 'exact', head: true }).in('id', list);
+    if (cErr || (count ?? 0) > 0) { ok = false; continue; }
+    await admin.from('smoke_artifacts').delete().eq('kind', kind).in('id', list);
+  }
+  if (foreignClusters.length) {
+    console.error(`smoke cleanup: left ${foreignClusters.length} cluster(s) holding non-test reports in place`);
+    await admin.from('smoke_artifacts').delete().eq('kind', 'cluster').in('id', foreignClusters);
+  }
+  return ok;
 }

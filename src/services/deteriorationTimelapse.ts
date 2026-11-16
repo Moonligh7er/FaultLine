@@ -52,20 +52,21 @@ export async function getDeterioriationTimelapse(clusterId: string): Promise<Tim
 
   const { data: reports } = await supabase
     .from('reports')
-    .select('id, media, hazard_level, description, created_at, user_id')
+    .select('id, media, hazard_level, description, created_at')
     .in('id', reportIds)
     .order('created_at', { ascending: true });
 
   if (!reports || reports.length === 0) return null;
 
   const firstDate = new Date(reports[0].created_at);
-  const uniqueReporters = new Set<string>();
+  // Reporter identities aren't readable; count reports so far, capped at
+  // the cluster's unique-reporter count.
+  const totalReporters: number = cluster.unique_reporters ?? reports.length;
 
   const frames: TimelapseFrame[] = [];
 
-  for (const report of reports) {
-    if (report.user_id) uniqueReporters.add(report.user_id);
-
+  for (const [index, report] of reports.entries()) {
+    const reporterCount = Math.min(index + 1, totalReporters);
     const media = report.media || [];
     const photo = media.find((m: any) => m.type === 'photo' && (m.uploadedUrl || m.thumbnailUrl));
 
@@ -78,7 +79,7 @@ export async function getDeterioriationTimelapse(clusterId: string): Promise<Tim
         daysSinceFirst: Math.floor((new Date(report.created_at).getTime() - firstDate.getTime()) / 86400000),
         hazardLevel: report.hazard_level || 'moderate',
         description: report.description,
-        reporterCount: uniqueReporters.size,
+        reporterCount,
       });
     }
   }

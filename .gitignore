@@ -142,3 +142,6 @@ scripts/build-image-review.mjs
 scripts/invoke-generate.mjs
 scripts/image-subjects.json
 scripts/open311/
+
+# Play Console service-account key (EAS submit) — NEVER commit
+google-service-account.json

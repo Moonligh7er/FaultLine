@@ -5,18 +5,25 @@
 // plays via expo-av. Falls back to native expo-speech on failure
 // (network error, cold-start timeout, server unreachable).
 //
-// Server: https://moons7onr--kokoro-tts-server-kokorotts-tts.modal.run
+// Server URLs come from app config (extra.kokoroTtsUrl /
+// extra.kokoroHealthUrl, set in app.config.js, overridable with
+// KOKORO_TTS_URL / KOKORO_HEALTH_URL). Without them the app speaks with
+// expo-speech only.
 // Cold start: ~10-15s. Warm: <1s. Cost: ~$0.001/request.
+//
+// Auth: the endpoint is currently open. Request authentication has to be
+// added on the Modal side (e.g. a proxy/edge function holding the token);
+// a secret shipped in this app would be extractable, so none is sent here.
 // ============================================================
 
 import { Audio } from 'expo-av';
 import * as FileSystem from 'expo-file-system/legacy';
 import * as Speech from 'expo-speech';
+import Constants from 'expo-constants';
 
-const KOKORO_ENDPOINT =
-  'https://moons7onr--kokoro-tts-server-kokorotts-tts.modal.run';
-const KOKORO_HEALTH =
-  'https://moons7onr--kokoro-tts-server-kokorotts-health.modal.run';
+const extra = Constants.expoConfig?.extra || {};
+const KOKORO_ENDPOINT: string = extra.kokoroTtsUrl || '';
+const KOKORO_HEALTH: string = extra.kokoroHealthUrl || '';
 
 export type KokoroVoice =
   | 'af_bella'
@@ -108,6 +115,7 @@ export async function kokoroStop(): Promise<void> {
 
 /** Health-check the Kokoro server. Useful on app start to warm cold start. */
 export async function kokoroHealthCheck(): Promise<boolean> {
+  if (!KOKORO_HEALTH) return false;
   try {
     const ctrl = new AbortController();
     const t = setTimeout(() => ctrl.abort(), 5000);
@@ -126,6 +134,7 @@ async function fetchKokoroAudio(
   voice: KokoroVoice,
   speed: number,
 ): Promise<string> {
+  if (!KOKORO_ENDPOINT) throw new Error('Kokoro TTS URL not configured');
   const ctrl = new AbortController();
   const timer = setTimeout(() => ctrl.abort(), REQUEST_TIMEOUT_MS);
 

@@ -119,41 +119,6 @@ async function syncSeeClickFixStatus(issueId: string, endpoint: string): Promise
 
 // ============================================================
 // BATCH STATUS SYNC
-// Run periodically to update all submitted reports
+// Runs server-side only (sync-open311-statuses edge function): the
+// escalation log is admin-only and clients can't change cluster status.
 // ============================================================
-
-export async function batchSyncStatuses(): Promise<{ updated: number; failed: number }> {
-  const { data: submissions } = await supabase
-    .from('escalation_log')
-    .select('*')
-    .eq('status', 'sent')
-    .not('recipient', 'is', null);
-
-  if (!submissions) return { updated: 0, failed: 0 };
-
-  let updated = 0;
-  let failed = 0;
-
-  for (const sub of submissions) {
-    if (!sub.submission_reference) continue;
-
-    const statusUpdate = await syncReportStatus(
-      sub.submission_reference,
-      sub.method,
-      sub.recipient
-    );
-
-    if (statusUpdate) {
-      // Update cluster status
-      await supabase
-        .from('report_clusters')
-        .update({ status: statusUpdate.status, updated_at: new Date().toISOString() })
-        .eq('id', sub.cluster_id);
-      updated++;
-    } else {
-      failed++;
-    }
-  }
-
-  return { updated, failed };
-}

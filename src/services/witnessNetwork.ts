@@ -41,7 +41,7 @@ export async function checkForWitnessOpportunities(
 
   const { data: reports } = await supabase
     .from('reports')
-    .select('id, category, hazard_level, latitude, longitude, address, cluster_id, user_id, created_at')
+    .select('id, category, hazard_level, latitude, longitude, address, cluster_id, created_at')
     .gte('created_at', oneHourAgo)
     .neq('status', 'resolved')
     .neq('status', 'closed')
@@ -49,9 +49,16 @@ export async function checkForWitnessOpportunities(
 
   if (!reports) return null;
 
+  // Don't ask the reporter to verify their own report. Ownership comes from
+  // my_reports() (covers anonymous reports); user_id isn't readable.
+  const mine = new Set<string>();
+  if (userId) {
+    const { data: own } = await supabase.rpc('my_reports').select('id').gte('created_at', oneHourAgo);
+    for (const r of (own as { id: string }[] | null) || []) mine.add(r.id);
+  }
+
   for (const report of reports) {
-    // Don't ask the reporter to verify their own report
-    if (userId && report.user_id === userId) continue;
+    if (mine.has(report.id)) continue;
 
     // Only for significant+ hazards
     if ((HAZARD_PRIORITY[report.hazard_level] || 0) < MIN_HAZARD_FOR_WITNESS) continue;

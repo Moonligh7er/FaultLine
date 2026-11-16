@@ -9,6 +9,19 @@ jest.mock('@react-native-async-storage/async-storage', () =>
 );
 jest.mock('expo-network', () => ({ getNetworkStateAsync: jest.fn() }));
 jest.mock('../reports', () => ({ submitReport: jest.fn() }));
+jest.mock('react-native-get-random-values', () => ({}));
+jest.mock('expo-secure-store', () => {
+  const store = new Map<string, string>();
+  return {
+    AFTER_FIRST_UNLOCK_THIS_DEVICE_ONLY: 0,
+    getItemAsync: jest.fn(async (k: string) => store.get(k) ?? null),
+    setItemAsync: jest.fn(async (k: string, v: string) => { store.set(k, v); }),
+    deleteItemAsync: jest.fn(async (k: string) => { store.delete(k); }),
+  };
+});
+if (!(globalThis as any).crypto?.getRandomValues) {
+  Object.defineProperty(globalThis, 'crypto', { value: require('crypto').webcrypto, configurable: true });
+}
 
 const mockNetwork = Network.getNetworkStateAsync as jest.Mock;
 const mockSubmit = submitReport as jest.MockedFunction<typeof submitReport>;
@@ -41,6 +54,30 @@ describe('queue storage', () => {
     expect(q[0]).toMatchObject({ description: 'a', offlineQueued: true });
     expect(typeof q[0]._queuedAt).toBe('string');
     expect(await getQueueSize()).toBe(2);
+  });
+
+  it('stores the queue encrypted — no plaintext (incl. insider context) at rest', async () => {
+    await addToQueue(makeReportInput({
+      description: 'secret description',
+      insider: { insiderCategory: 'public_works', documentaryReference: 'Work order #12345' },
+    }));
+    const raw = (await AsyncStorage.getItem('offline_report_queue')) as string;
+    expect(raw.startsWith('enc1:')).toBe(true);
+    expect(raw).not.toContain('secret description');
+    expect(raw).not.toContain('Work order');
+    expect((await getQueue())[0].insider.documentaryReference).toBe('Work order #12345');
+  });
+
+  it('migrates a plaintext queue from an older version to encrypted storage', async () => {
+    await AsyncStorage.setItem('offline_report_queue', JSON.stringify([{ ...makeReportInput({ description: 'legacy' }), _queuedAt: 'x' }]));
+    expect((await getQueue())[0].description).toBe('legacy');
+    expect(((await AsyncStorage.getItem('offline_report_queue')) as string).startsWith('enc1:')).toBe(true);
+  });
+
+  it('refuses to queue video on an anonymous report', async () => {
+    const video = { id: 'v', uri: 'file:///v.mov', type: 'video' as const };
+    await expect(addToQueue(makeReportInput({ isAnonymous: true, media: [video] }))).rejects.toThrow(/anonymous/);
+    expect(await getQueueSize()).toBe(0);
   });
 
   it('clearQueue empties it', async () => {

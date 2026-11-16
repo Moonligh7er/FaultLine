@@ -1,4 +1,10 @@
-import { completeAuthFromUrl, AUTH_CALLBACK_URL } from '../authLinking';
+import {
+  completeAuthFromUrl,
+  requestMagicLink,
+  clearPendingSignIn,
+  AUTH_CALLBACK_URL,
+  PENDING_SIGNIN_TTL_MS,
+} from '../authLinking';
 import { supabase } from '../supabase';
 
 jest.mock('expo-linking', () => ({
@@ -6,23 +12,37 @@ jest.mock('expo-linking', () => ({
   getInitialURL: jest.fn(),
   addEventListener: jest.fn(),
 }));
+jest.mock('expo-secure-store', () => {
+  const store = new Map<string, string>();
+  return {
+    __store: store,
+    getItemAsync: jest.fn(async (k: string) => store.get(k) ?? null),
+    setItemAsync: jest.fn(async (k: string, v: string) => { store.set(k, v); }),
+    deleteItemAsync: jest.fn(async (k: string) => { store.delete(k); }),
+  };
+});
 jest.mock('../supabase', () => ({
   supabase: {
     auth: {
       exchangeCodeForSession: jest.fn(),
       setSession: jest.fn(),
+      signInWithOtp: jest.fn(),
     },
   },
 }));
 
 const mockExchange = supabase.auth.exchangeCodeForSession as jest.Mock;
 const mockSetSession = supabase.auth.setSession as jest.Mock;
+const mockOtp = supabase.auth.signInWithOtp as jest.Mock;
 
-beforeEach(() => {
+beforeEach(async () => {
   jest.clearAllMocks();
+  await clearPendingSignIn();
   mockExchange.mockResolvedValue({ error: null });
   mockSetSession.mockResolvedValue({ error: null });
+  mockOtp.mockResolvedValue({ error: null });
   jest.spyOn(console, 'warn').mockImplementation(() => {});
+  await requestMagicLink('me@example.com');
 });
 
 afterEach(() => (console.warn as jest.Mock).mockRestore());
@@ -43,15 +63,50 @@ describe('completeAuthFromUrl', () => {
     expect(mockExchange).toHaveBeenCalledWith('xyz');
   });
 
-  it('sets the session from #access_token / #refresh_token', async () => {
+  it('requests the magic link with the callback redirect', () => {
+    expect(mockOtp).toHaveBeenCalledWith({
+      email: 'me@example.com',
+      options: { emailRedirectTo: 'faultline://auth/callback' },
+    });
+  });
+
+  it('never trusts #access_token / #refresh_token (implicit flow)', async () => {
     await completeAuthFromUrl('faultline://auth/callback#access_token=AT&refresh_token=RT&type=magiclink');
-    expect(mockSetSession).toHaveBeenCalledWith({ access_token: 'AT', refresh_token: 'RT' });
+    expect(mockSetSession).not.toHaveBeenCalled();
     expect(mockExchange).not.toHaveBeenCalled();
   });
 
-  it('does nothing with only an access token (no refresh token)', async () => {
-    await completeAuthFromUrl('faultline://auth/callback#access_token=AT');
-    expect(mockSetSession).not.toHaveBeenCalled();
+  it('ignores a code when no sign-in is pending on this device', async () => {
+    await clearPendingSignIn();
+    await completeAuthFromUrl('faultline://auth/callback?code=planted');
+    expect(mockExchange).not.toHaveBeenCalled();
+  });
+
+  it('ignores a code after the 15-minute window', async () => {
+    const now = Date.now();
+    const spy = jest.spyOn(Date, 'now').mockReturnValue(now + PENDING_SIGNIN_TTL_MS + 1);
+    try {
+      await completeAuthFromUrl('faultline://auth/callback?code=late');
+      expect(mockExchange).not.toHaveBeenCalled();
+    } finally {
+      spy.mockRestore();
+    }
+  });
+
+  it('clears the pending flag after a successful exchange (a second link is ignored)', async () => {
+    await completeAuthFromUrl('faultline://auth/callback?code=first');
+    await completeAuthFromUrl('faultline://auth/callback?code=second');
+    expect(mockExchange).toHaveBeenCalledTimes(1);
+    expect(mockExchange).toHaveBeenCalledWith('first');
+  });
+
+  it('clears the pending flag when the link request fails', async () => {
+    await clearPendingSignIn();
+    mockOtp.mockResolvedValue({ error: { message: 'rate limited' } });
+    const { error } = await requestMagicLink('me@example.com');
+    expect(error?.message).toBe('rate limited');
+    await completeAuthFromUrl('faultline://auth/callback?code=abc');
+    expect(mockExchange).not.toHaveBeenCalled();
   });
 
   it.each([

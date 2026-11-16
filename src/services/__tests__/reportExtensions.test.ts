@@ -114,8 +114,8 @@ describe('buildExtendedColumns', () => {
     });
   });
 
-  it('maps parentClusterId', () => {
-    expect(buildExtendedColumns({ parentClusterId: 'c-1' })).toEqual({ parent_cluster_id: 'c-1' });
+  it('never sends parent_cluster_id (server-owned)', () => {
+    expect(buildExtendedColumns({ parentClusterId: 'c-1' })).toEqual({});
   });
 
   it('combines several extensions in one row', () => {

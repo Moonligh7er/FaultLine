@@ -65,7 +65,7 @@ export default function PrivacyPolicyScreen() {
       <Text style={styles.heading}>5. Your Rights</Text>
       <Text style={styles.body}>
         • Access: View all your reports and profile data in the app.{'\n'}
-        • Delete: Request deletion of your account and all associated data by emailing privacy@fault-line.dev.{'\n'}
+        • Delete: Delete your account any time from Profile → Delete my account, or email privacy@fault-line.dev.{'\n'}
         • Anonymous reporting: You can submit reports without creating an account.{'\n'}
         • Opt-out of tracking: Deny the iOS tracking prompt to prevent personalized ads.
       </Text>

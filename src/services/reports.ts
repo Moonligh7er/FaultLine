@@ -1,7 +1,9 @@
 import { supabase } from './supabase';
-import { Report, ReportCategory, ReportStatus, ReportSeverity } from '../types';
+import { MediaAttachment, Report, ReportCategory, ReportStatus } from '../types';
 import { uploadAllMedia } from './media';
 import { buildExtendedColumns, mapExtendedColumns, needsMinimalReturn } from './reportExtensions';
+import { REPORT_COLUMNS } from './reportColumns';
+import { hasAnonymousVideo, isAllowedMediaUrl } from './mediaPolicy';
 
 type CreateReportInput = Omit<Report, 'id' | 'createdAt' | 'updatedAt' | 'upvoteCount' | 'confirmCount'>;
 
@@ -24,6 +26,10 @@ export async function submitReport(
   report: CreateReportInput,
   onProgress?: (completed: number, total: number) => void
 ): Promise<Report | null> {
+  if (hasAnonymousVideo(report)) {
+    console.error('Video cannot be attached to an anonymous report');
+    return null;
+  }
   const id = generateReportId();
   let media = report.media;
   if (media.length > 0) {
@@ -37,7 +43,22 @@ export async function submitReport(
   return createReport({ ...report, media }, id);
 }
 
+// Only our own storage URLs may go into the media JSON (the server rejects
+// anything else); local file:// uris are kept as the device-side copy.
+function sanitizeMedia(media: MediaAttachment[]): MediaAttachment[] {
+  return (media || []).map((m) => {
+    const clean: MediaAttachment = { id: String(m.id), uri: isAllowedMediaUrl(m.uri) ? m.uri : '', type: m.type === 'video' ? 'video' : 'photo' };
+    if (isAllowedMediaUrl(m.uploadedUrl)) clean.uploadedUrl = m.uploadedUrl;
+    if (isAllowedMediaUrl(m.thumbnailUrl)) clean.thumbnailUrl = m.thumbnailUrl;
+    return clean;
+  });
+}
+
 export async function createReport(report: CreateReportInput, id?: string): Promise<Report | null> {
+  if (hasAnonymousVideo(report)) {
+    console.error('Video cannot be attached to an anonymous report');
+    return null;
+  }
   // Commercial reports can't be read back by their (possibly anonymous)
   // submitter — see needsMinimalReturn — so they need a known id up front.
   const minimalReturn = needsMinimalReturn(report);
@@ -58,12 +79,10 @@ export async function createReport(report: CreateReportInput, id?: string): Prom
     hazard_level: report.severity.hazardLevel,
     urgency: report.severity.urgency || null,
     condition_level: report.severity.condition || null,
-    media: report.media,
+    media: sanitizeMedia(report.media),
     vehicle_damage: report.vehicleDamage,
-    status: report.status,
-    authority_id: report.authorityId,
-    cluster_id: report.clusterId,
-    submission_method: report.submissionMethod,
+    // status, counts, cluster, authority and timestamps are set by the
+    // server (guard_report_write), so they are not sent.
     // RLS (migration 008) only accepts a user-less insert when it's
     // flagged anonymous, so guests are always anonymous.
     is_anonymous: report.isAnonymous || !report.userId,
@@ -95,7 +114,7 @@ export async function createReport(report: CreateReportInput, id?: string): Prom
   const { data, error } = await supabase
     .from('reports')
     .insert(row)
-    .select()
+    .select(REPORT_COLUMNS)
     .single();
 
   if (error) {
@@ -127,7 +146,7 @@ export async function getReports(filters?: {
   // userId is only ever the signed-in user's own id.
   let query: any = filters?.userId
     ? supabase.rpc('my_reports')
-    : supabase.from('reports').select('*').order('created_at', { ascending: false });
+    : supabase.from('reports').select(REPORT_COLUMNS).order('created_at', { ascending: false });
 
   if (filters?.category) query = query.eq('category', filters.category);
   if (filters?.status) query = query.eq('status', filters.status);
@@ -148,7 +167,7 @@ export async function getReports(filters?: {
 export async function getReportById(id: string): Promise<Report | null> {
   const { data, error } = await supabase
     .from('reports')
-    .select('*')
+    .select(REPORT_COLUMNS)
     .eq('id', id)
     .single();
 
@@ -172,6 +191,8 @@ export async function addResolvedPhoto(reportId: string, media: any[]): Promise<
   return !error;
 }
 
+// Vote counts on reports are maintained by a trigger on report_votes. The
+// database rejects a vote on your own report (anonymous ones included).
 export async function upvoteReport(reportId: string, userId: string): Promise<boolean> {
   const { error } = await supabase
     .from('report_votes')
@@ -181,8 +202,6 @@ export async function upvoteReport(reportId: string, userId: string): Promise<bo
     console.error('Error upvoting:', error);
     return false;
   }
-
-  await supabase.rpc('increment_upvote', { report_id: reportId });
   return true;
 }
 
@@ -195,8 +214,6 @@ export async function confirmReport(reportId: string, userId: string): Promise<b
     console.error('Error confirming:', error);
     return false;
   }
-
-  await supabase.rpc('increment_confirm', { report_id: reportId });
   return true;
 }
 
@@ -232,7 +249,8 @@ export async function checkRateLimit(userId: string, maxPerHour: number = 10): P
 function mapDbToReport(row: any): Report {
   return {
     id: row.id,
-    userId: row.user_id,
+    // user_id is not readable; ownership is answered by owns_report().
+    userId: undefined,
     category: row.category,
     location: {
       latitude: row.latitude,

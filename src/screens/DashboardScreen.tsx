@@ -26,9 +26,9 @@ export default function DashboardScreen() {
 
   const loadData = async () => {
     const [totalResult, resolvedResult, pendingResult] = await Promise.all([
-      supabase.from('reports').select('*', { count: 'exact', head: true }),
-      supabase.from('reports').select('*', { count: 'exact', head: true }).eq('status', 'resolved'),
-      supabase.from('reports').select('*', { count: 'exact', head: true }).in('status', ['submitted', 'acknowledged', 'in_progress']),
+      supabase.from('reports').select('id', { count: 'exact', head: true }),
+      supabase.from('reports').select('id', { count: 'exact', head: true }).eq('status', 'resolved'),
+      supabase.from('reports').select('id', { count: 'exact', head: true }).in('status', ['submitted', 'acknowledged', 'in_progress']),
     ]);
 
     setTotalReports(totalResult.count || 0);

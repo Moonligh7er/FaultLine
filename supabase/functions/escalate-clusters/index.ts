@@ -9,7 +9,7 @@
 // sent here: rows wait for admin review ('pending_review'), or are created
 // 'approved' when app_settings.auto_send is on. dispatch-outbound sends.
 
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+import { createClient } from 'npm:@supabase/supabase-js@2.103.0';
 
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL') || '';
 const SUPABASE_SERVICE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') || '';
@@ -23,6 +23,11 @@ async function isCronCaller(req: Request): Promise<boolean> {
   const { data, error } = await admin.rpc('verify_cron_secret', { p_secret: secret });
   return !error && data === true;
 }
+
+/** Resident-written text goes to officials: no clickable links in it. */
+const stripLinks = (t: string) => t.replace(/\b(?:https?:\/\/|www\.)[^\s<>"')\]]+/gi, '[link removed]');
+/** Subject fragments: no CR/LF (header injection) or other control characters. */
+const oneLine = (t: string) => t.replace(/[\x00-\x1f\x7f]+/g, ' ').trim();
 
 interface ClusterSummary {
   cluster_id: string;
@@ -56,7 +61,8 @@ Deno.serve(async (req) => {
 
   const { data: clusters, error: fetchError } = await supabase.rpc('get_clusters_ready_for_escalation');
   if (fetchError) {
-    return new Response(JSON.stringify({ error: fetchError.message }), { status: 500 });
+    console.error('escalate-clusters: get_clusters_ready_for_escalation failed', fetchError.message);
+    return new Response(JSON.stringify({ error: 'Could not load clusters' }), { status: 500 });
   }
   if (!clusters || clusters.length === 0) {
     return new Response(JSON.stringify({ message: 'No clusters ready for escalation', count: 0 }));
@@ -133,8 +139,8 @@ Deno.serve(async (req) => {
 
 function buildSubject(s: ClusterSummary): string {
   const category = s.category.replace(/_/g, ' ');
-  const location = s.address || s.city || 'Unknown location';
-  return `${s.report_count} Community Reports: ${category} at ${location}, ${s.state}`;
+  const location = stripLinks(s.address || s.city || 'Unknown location').slice(0, 200);
+  return oneLine(`${s.report_count} Community Reports: ${category} at ${location}, ${s.state}`);
 }
 
 function buildEmailBody(s: ClusterSummary): string {
@@ -142,7 +148,7 @@ function buildEmailBody(s: ClusterSummary): string {
   const hazard = s.max_hazard.replace(/_/g, ' ');
   const descriptions = s.sample_descriptions
     .filter(Boolean)
-    .map((d, i) => `  ${i + 1}. "${d}"`)
+    .map((d, i) => `  ${i + 1}. "${stripLinks(d)}"`)
     .join('\n');
 
   return `Dear ${s.authority_name || 'Public Works Department'},
@@ -152,7 +158,7 @@ We are writing to bring to your attention a community-reported infrastructure is
 ISSUE SUMMARY
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 Category:          ${category}
-Location:          ${s.address || 'See coordinates below'}
+Location:          ${stripLinks(s.address || 'See coordinates below')}
 City/Town:         ${s.city || 'N/A'}, ${s.state}
 GPS Coordinates:   ${s.latitude.toFixed(6)}, ${s.longitude.toFixed(6)}
 Google Maps:       https://maps.google.com/?q=${s.latitude},${s.longitude}

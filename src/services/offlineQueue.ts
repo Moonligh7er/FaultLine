@@ -2,23 +2,34 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Network from 'expo-network';
 import { Report } from '../types';
 import { submitReport } from './reports';
+import { hasAnonymousVideo } from './mediaPolicy';
+import { getEncryptedJSON, setEncryptedJSON } from './secureStorage';
 
+// Queued reports (location, description, insider context, local media
+// paths) are stored encrypted with the keystore-held key — see
+// secureStorage.ts. If encryption isn't available nothing is queued: the
+// queue is never written in plain text.
 const QUEUE_KEY = 'offline_report_queue';
+
+type QueuedReport = Omit<Report, 'id' | 'createdAt' | 'updatedAt' | 'upvoteCount' | 'confirmCount'>;
 
 export async function isOnline(): Promise<boolean> {
   const state = await Network.getNetworkStateAsync();
   return state.isConnected === true && state.isInternetReachable === true;
 }
 
-export async function addToQueue(report: Omit<Report, 'id' | 'createdAt' | 'updatedAt' | 'upvoteCount' | 'confirmCount'>): Promise<void> {
+export async function addToQueue(report: QueuedReport): Promise<void> {
+  if (hasAnonymousVideo(report)) {
+    throw new Error('Video cannot be attached to an anonymous report');
+  }
   const queue = await getQueue();
   queue.push({ ...report, offlineQueued: true, _queuedAt: new Date().toISOString() });
-  await AsyncStorage.setItem(QUEUE_KEY, JSON.stringify(queue));
+  await setEncryptedJSON(QUEUE_KEY, queue);
 }
 
 export async function getQueue(): Promise<any[]> {
-  const raw = await AsyncStorage.getItem(QUEUE_KEY);
-  return raw ? JSON.parse(raw) : [];
+  const queue = await getEncryptedJSON<any[]>(QUEUE_KEY, []);
+  return Array.isArray(queue) ? queue : [];
 }
 
 export async function getQueueSize(): Promise<number> {
@@ -39,6 +50,11 @@ export async function processQueue(): Promise<{ success: number; failed: number 
 
   for (const item of queue) {
     const { _queuedAt, ...reportData } = item;
+    if (hasAnonymousVideo(reportData)) {
+      // Can never be accepted; drop it rather than retry forever.
+      failed++;
+      continue;
+    }
     const result = await submitReport(reportData);
     if (result) {
       success++;
@@ -48,7 +64,8 @@ export async function processQueue(): Promise<{ success: number; failed: number 
     }
   }
 
-  await AsyncStorage.setItem(QUEUE_KEY, JSON.stringify(remaining));
+  if (remaining.length === 0) await clearQueue();
+  else await setEncryptedJSON(QUEUE_KEY, remaining);
   return { success, failed };
 }
 

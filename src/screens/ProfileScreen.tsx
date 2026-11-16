@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, Alert, TextInput, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Alert, TextInput, ActivityIndicator, Switch } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { COLORS, SPACING, FONT_SIZES, BORDER_RADIUS, SHADOWS } from '../constants/theme';
 import { RootStackParamList } from '../types';
 import { supabase } from '../services/supabase';
-import { AUTH_CALLBACK_URL } from '../services/authLinking';
+import { requestMagicLink } from '../services/authLinking';
+import { clearLocalUserData } from '../services/localData';
+import { getSmartPushPrefs, setCommuteAlertsEnabled } from '../services/smartPush';
 import { UserProfile } from '../types';
 import { getQueueSize, processQueue } from '../services/offlineQueue';
 import { getStreak, StreakInfo } from '../services/socialFeatures';
@@ -25,11 +27,14 @@ export default function ProfileScreen() {
   const [authEmail, setAuthEmail] = useState('');
   const [authLoading, setAuthLoading] = useState(false);
   const [authSent, setAuthSent] = useState(false);
+  const [commuteAlerts, setCommuteAlerts] = useState(false);
+  const [deleting, setDeleting] = useState(false);
 
   useEffect(() => {
     checkAuth();
-    getQueueSize().then(setOfflineCount);
+    getQueueSize().then(setOfflineCount).catch(() => setOfflineCount(0));
     getStreak().then(setStreakInfo);
+    getSmartPushPrefs().then((p) => setCommuteAlerts(p.commuteAlerts)).catch(() => {});
 
     // The magic link completes in services/authLinking.ts while this screen
     // is mounted — refresh when the session lands.
@@ -46,7 +51,12 @@ export default function ProfileScreen() {
     const { data: { session } } = await supabase.auth.getSession();
     if (session?.user) {
       setIsGuest(false);
-      const { data } = await supabase.from('profiles').select('*').eq('id', session.user.id).single();
+      // Only these profile columns are readable (push_token never is).
+      const { data } = await supabase
+        .from('profiles')
+        .select('id, display_name, avatar_url, total_reports, total_upvotes, total_confirms, points, badges, created_at')
+        .eq('id', session.user.id)
+        .single();
       if (data) {
         setUser({
           id: data.id, email: session.user.email, displayName: data.display_name,
@@ -58,7 +68,66 @@ export default function ProfileScreen() {
     }
   };
 
-  const handleSignOut = async () => { await supabase.auth.signOut(); setUser(null); setIsGuest(true); };
+  // Sign-out also removes personal data kept on this device: unsent
+  // reports, commute history and cached reports (services/localData.ts).
+  const finishSignOut = async (scope: 'global' | 'local') => {
+    await supabase.auth.signOut({ scope }).catch(() => {});
+    await clearLocalUserData();
+    setUser(null);
+    setIsGuest(true);
+    setOfflineCount(0);
+    setStreakInfo({ currentStreak: 0, longestStreak: 0, lastReportDate: null, isActiveToday: false });
+  };
+
+  const handleSignOut = async () => {
+    const pending = await getQueueSize().catch(() => 0);
+    Alert.alert(
+      t('signOut'),
+      pending > 0
+        ? `Signing out removes your data from this device, including ${pending} unsent offline report(s).`
+        : 'Signing out removes your Fault Line data from this device.',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        { text: t('signOut'), style: 'destructive', onPress: () => { finishSignOut('global'); } },
+      ],
+    );
+  };
+
+  const deleteAccount = async () => {
+    setDeleting(true);
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) throw new Error('You are not signed in.');
+      const { error } = await supabase.functions.invoke('delete-account', {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${session.access_token}` },
+      });
+      if (error) throw error;
+      // The account no longer exists server-side; just drop the local session.
+      await finishSignOut('local');
+      Alert.alert('Account deleted', 'Your account and its data have been deleted.');
+    } catch (err) {
+      Alert.alert(t('error'), `Your account couldn’t be deleted: ${(err as Error)?.message || 'please try again.'}`);
+    } finally {
+      setDeleting(false);
+    }
+  };
+
+  const handleDeleteAccount = () => {
+    Alert.alert(
+      'Delete your account?',
+      'This permanently deletes your Fault Line account, profile and votes, and removes your data from this device. Reports you filed stay up as anonymous community records, with their photos removed. This can’t be undone.',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        { text: 'Delete account', style: 'destructive', onPress: () => { deleteAccount(); } },
+      ],
+    );
+  };
+
+  const toggleCommuteAlerts = async (enabled: boolean) => {
+    setCommuteAlerts(enabled);
+    await setCommuteAlertsEnabled(enabled).catch(() => setCommuteAlerts(!enabled));
+  };
 
   const syncOffline = async () => {
     const result = await processQueue();
@@ -73,10 +142,7 @@ export default function ProfileScreen() {
       return;
     }
     setAuthLoading(true);
-    const { error } = await supabase.auth.signInWithOtp({
-      email: trimmed,
-      options: { emailRedirectTo: AUTH_CALLBACK_URL },
-    });
+    const { error } = await requestMagicLink(trimmed);
     setAuthLoading(false);
     if (error) {
       Alert.alert(t('error'), error.message);
@@ -231,10 +297,40 @@ export default function ProfileScreen() {
             </View>
           )
         ) : (
-          <HapticButton style={styles.signOutButton} onPress={handleSignOut} hapticType="light">
-            <Text style={styles.signOutText}>{t('signOut')}</Text>
-          </HapticButton>
+          <View style={{ gap: SPACING.sm }}>
+            <HapticButton style={styles.signOutButton} onPress={handleSignOut} hapticType="light">
+              <Text style={styles.signOutText}>{t('signOut')}</Text>
+            </HapticButton>
+            <HapticButton
+              style={[styles.deleteAccountButton, deleting && { opacity: 0.6 }]}
+              onPress={handleDeleteAccount}
+              hapticType="medium"
+              disabled={deleting}
+              accessibilityLabel="Delete my account"
+            >
+              {deleting && <ActivityIndicator color={COLORS.error} size="small" />}
+              <Text style={styles.deleteAccountText}>{deleting ? 'Deleting…' : 'Delete my account'}</Text>
+            </HapticButton>
+          </View>
         )}
+      </View>
+
+      {/* Commute alerts (opt-in location history) */}
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle} accessibilityRole="header">Commute Alerts</Text>
+        <View style={styles.settingsRow}>
+          <View style={{ flex: 1, paddingRight: SPACING.sm }}>
+            <Text style={styles.settingsText}>Alert me about issues on my usual routes</Text>
+            <Text style={styles.settingHint}>
+              Keeps a rough (about 1 km) record of where you open the app, encrypted on this device only, for 30 days.
+            </Text>
+          </View>
+          <Switch
+            value={commuteAlerts}
+            onValueChange={toggleCommuteAlerts}
+            accessibilityLabel="Commute alerts"
+          />
+        </View>
       </View>
 
       {/* Settings */}
@@ -355,6 +451,9 @@ const styles = StyleSheet.create({
   loginButtonText: { color: COLORS.textOnPrimary, fontSize: FONT_SIZES.lg, fontWeight: '700' },
   signOutButton: { backgroundColor: COLORS.error + '15', borderRadius: BORDER_RADIUS.md, padding: SPACING.md, alignItems: 'center' },
   signOutText: { color: COLORS.error, fontSize: FONT_SIZES.lg, fontWeight: '600' },
+  deleteAccountButton: { flexDirection: 'row', justifyContent: 'center', gap: SPACING.sm, borderWidth: 1, borderColor: COLORS.error, borderRadius: BORDER_RADIUS.md, padding: SPACING.md, alignItems: 'center' },
+  deleteAccountText: { color: COLORS.error, fontSize: FONT_SIZES.md, fontWeight: '600' },
+  settingHint: { fontSize: FONT_SIZES.xs, color: COLORS.textSecondary, marginTop: 2 },
 
   settingsRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', backgroundColor: COLORS.surface, padding: SPACING.md, borderRadius: BORDER_RADIUS.md, marginBottom: SPACING.xs },
   settingsText: { fontSize: FONT_SIZES.md, color: COLORS.text },

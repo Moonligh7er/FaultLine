@@ -1,6 +1,8 @@
-import { submitReport, createReport } from '../reports';
+import { submitReport, createReport, upvoteReport, confirmReport } from '../reports';
 import { uploadAllMedia } from '../media';
 import { supabase } from '../supabase';
+import { REPORT_COLUMNS } from '../reportColumns';
+import { REPORT_MEDIA_URL_PREFIX } from '../mediaPolicy';
 import {
   makeReportInput,
   makeDigitalContext,
@@ -10,7 +12,7 @@ import {
 } from './fixtures';
 import type { MediaAttachment } from '../../types';
 
-jest.mock('../supabase', () => ({ supabase: { from: jest.fn() } }));
+jest.mock('../supabase', () => ({ supabase: { from: jest.fn(), rpc: jest.fn() } }));
 jest.mock('../media', () => ({ uploadAllMedia: jest.fn() }));
 
 const UUID_V4_LOWER = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/;
@@ -20,11 +22,12 @@ const mockUpload = uploadAllMedia as jest.MockedFunction<typeof uploadAllMedia>;
 
 let insert: jest.Mock;
 let single: jest.Mock;
+let select: jest.Mock;
 const calls: string[] = [];
 
 function setupInsert(result: { data: any; error: any }) {
   single = jest.fn().mockResolvedValue(result);
-  const select = jest.fn(() => ({ single }));
+  select = jest.fn(() => ({ single }));
   insert = jest.fn((row: any) => {
     calls.push('insert');
     return { select };
@@ -42,6 +45,7 @@ function setupEchoInsert() {
 }
 
 const photo = (id: string): MediaAttachment => ({ id, uri: `file:///${id}.jpg`, type: 'photo' });
+const video = (id: string): MediaAttachment => ({ id, uri: `file:///${id}.mov`, type: 'video' });
 
 beforeEach(() => {
   jest.clearAllMocks();
@@ -87,7 +91,7 @@ describe('submitReport', () => {
   it('uploads media under the report id before inserting, and inserts the uploaded media', async () => {
     setupEchoInsert();
     const local = [photo('a'), photo('b')];
-    const uploaded = local.map((m) => ({ ...m, uploadedUrl: `https://cdn/${m.id}` }));
+    const uploaded = local.map((m) => ({ ...m, uploadedUrl: `${REPORT_MEDIA_URL_PREFIX}reports/x/${m.id}.jpg` }));
     mockUpload.mockImplementation(async () => {
       calls.push('upload');
       return uploaded;
@@ -114,6 +118,24 @@ describe('submitReport', () => {
   it('returns null when the insert errors', async () => {
     setupInsert({ data: null, error: { message: 'rls' } });
     expect(await submitReport(makeReportInput())).toBeNull();
+  });
+
+  it.each([
+    ['anonymous', { userId: 'u1', isAnonymous: true }],
+    ['signed out', { userId: undefined, isAnonymous: false }],
+  ])('refuses video on a %s report without uploading anything', async (_label, who) => {
+    setupEchoInsert();
+    const result = await submitReport(makeReportInput({ ...who, media: [photo('a'), video('v')] }));
+    expect(result).toBeNull();
+    expect(mockUpload).not.toHaveBeenCalled();
+    expect(insert).not.toHaveBeenCalled();
+  });
+
+  it('allows video on a signed-in, non-anonymous report', async () => {
+    setupEchoInsert();
+    mockUpload.mockImplementation(async (m) => m);
+    expect(await submitReport(makeReportInput({ userId: 'u1', isAnonymous: false, media: [video('v')] }))).not.toBeNull();
+    expect(insert).toHaveBeenCalledTimes(1);
   });
 });
 
@@ -154,6 +176,29 @@ describe('createReport', () => {
     });
   });
 
+  it('reads back only the public column list (never * or user_id)', async () => {
+    setupEchoInsert();
+    await createReport(makeReportInput());
+    expect(select).toHaveBeenCalledWith(REPORT_COLUMNS);
+    expect(REPORT_COLUMNS.split(', ')).not.toContain('user_id');
+    expect(REPORT_COLUMNS).not.toContain('*');
+  });
+
+  it('drops media URLs outside our storage bucket, keeps local and storage URLs', async () => {
+    setupEchoInsert();
+    const ours = `${REPORT_MEDIA_URL_PREFIX}reports/r/1.jpg`;
+    await createReport(makeReportInput({
+      media: [
+        { id: '1', uri: 'file:///1.jpg', type: 'photo', uploadedUrl: ours, thumbnailUrl: 'https://evil.example/t.jpg' },
+        { id: '2', uri: 'https://evil.example/x.jpg', type: 'photo', uploadedUrl: 'https://evil.example/x.jpg' },
+      ],
+    }));
+    expect(insert.mock.calls[0][0].media).toEqual([
+      { id: '1', uri: 'file:///1.jpg', type: 'photo', uploadedUrl: ours },
+      { id: '2', uri: '', type: 'photo' },
+    ]);
+  });
+
   it('maps the returned row back to a Report', async () => {
     setupInsert({
       data: {
@@ -163,6 +208,7 @@ describe('createReport', () => {
       error: null,
     });
     const r = await createReport(makeReportInput());
+    expect(r?.userId).toBeUndefined();
     expect(r).toMatchObject({
       id: 'r1',
       location: { latitude: 1, longitude: 2 },
@@ -176,14 +222,15 @@ describe('createReport', () => {
 });
 
 describe('createReport — extended report types', () => {
+  // status, authority_id, cluster_id, submission_method and counts are
+  // server-owned and never sent.
   const BASE_COLUMNS = [
     'user_id', 'category', 'latitude', 'longitude', 'address', 'city', 'state', 'zip',
     'description', 'size_rating', 'hazard_level', 'urgency', 'condition_level', 'media',
-    'vehicle_damage', 'status', 'authority_id', 'cluster_id', 'submission_method',
-    'is_anonymous', 'sensor_detected', 'offline_queued', 'is_quick_report',
+    'vehicle_damage', 'is_anonymous', 'sensor_detected', 'offline_queued', 'is_quick_report',
   ];
 
-  it('sends exactly the original columns for an ordinary report', async () => {
+  it('sends exactly the client-owned columns for an ordinary report', async () => {
     setupEchoInsert();
     await createReport(makeReportInput());
     expect(Object.keys(insert.mock.calls[0][0]).sort()).toEqual([...BASE_COLUMNS].sort());
@@ -286,5 +333,24 @@ describe('createReport — extended report types', () => {
       );
       expect(r).toBeNull();
     });
+  });
+});
+
+describe('votes', () => {
+  it.each([
+    ['upvote', upvoteReport],
+    ['confirm', confirmReport],
+  ] as const)('%s inserts the vote and calls no counter RPC (a trigger keeps counts)', async (type, fn) => {
+    const voteInsert = jest.fn().mockResolvedValue({ error: null });
+    mockFrom.mockImplementation(() => ({ insert: voteInsert }));
+    expect(await fn('r1', 'u1')).toBe(true);
+    expect(mockFrom).toHaveBeenCalledWith('report_votes');
+    expect(voteInsert).toHaveBeenCalledWith({ report_id: 'r1', user_id: 'u1', vote_type: type });
+    expect(supabase.rpc).not.toHaveBeenCalled();
+  });
+
+  it('returns false when the database rejects the vote (e.g. own report)', async () => {
+    mockFrom.mockImplementation(() => ({ insert: jest.fn().mockResolvedValue({ error: { message: 'rls' } }) }));
+    expect(await upvoteReport('r1', 'u1')).toBe(false);
   });
 });

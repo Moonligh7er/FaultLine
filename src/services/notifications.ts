@@ -93,25 +93,44 @@ export async function sendLocalNotification(
 // ============================================================
 
 let realtimeSubscription: ReturnType<typeof supabase.channel> | null = null;
+let subscriptionGeneration = 0;
+
+// Realtime "in" filters accept at most 100 values.
+const MAX_WATCHED_REPORTS = 100;
 
 export function subscribeToReportUpdates(
-  userId: string,
+  _userId: string,
   onUpdate: (payload: any) => void
 ) {
   // Unsubscribe from any existing subscription
   unsubscribeFromReportUpdates();
+  const generation = ++subscriptionGeneration;
 
-  realtimeSubscription = supabase
-    .channel('report-updates')
+  // reports.user_id isn't readable, so the caller's reports (anonymous ones
+  // included) come from my_reports() and are watched by id.
+  supabase
+    .rpc('my_reports')
+    .select('id')
+    .limit(MAX_WATCHED_REPORTS)
+    .then(({ data }) => {
+      if (generation !== subscriptionGeneration) return; // superseded or unsubscribed
+      const ids = ((data as { id: string }[] | null) || []).map((r) => r.id);
+      realtimeSubscription = buildChannel(ids, onUpdate);
+    }, (err: any) => console.warn('[realtime] my_reports:', err?.message || err));
+}
 
-    // Listen for status changes on user's reports
-    .on(
+function buildChannel(myReportIds: string[], onUpdate: (payload: any) => void) {
+  let channel = supabase.channel('report-updates');
+
+  // Listen for status changes on user's reports
+  if (myReportIds.length > 0) {
+    channel = channel.on(
       'postgres_changes',
       {
         event: 'UPDATE',
         schema: 'public',
         table: 'reports',
-        filter: `user_id=eq.${userId}`,
+        filter: `id=in.(${myReportIds.join(',')})`,
       },
       async (payload) => {
         const oldStatus = payload.old?.status;
@@ -140,41 +159,13 @@ export function subscribeToReportUpdates(
 
         onUpdate(payload);
       }
-    )
+    );
+  }
 
-    // Listen for upvotes/confirms on user's reports
-    .on(
-      'postgres_changes',
-      {
-        event: 'INSERT',
-        schema: 'public',
-        table: 'report_votes',
-      },
-      async (payload) => {
-        const voteType = payload.new?.vote_type;
-        const reportId = payload.new?.report_id;
-
-        // Check if this vote is on one of the user's reports
-        const [{ data: report }, { data: mine }] = await Promise.all([
-          supabase.from('reports').select('category, city').eq('id', reportId).single(),
-          // owns_report covers anonymous reports too (migration 036).
-          supabase.rpc('owns_report', { p_report_id: reportId }),
-        ]);
-
-        if (report && mine === true) {
-          const action = voteType === 'upvote' ? 'upvoted' : 'confirmed';
-          const category = report.category?.replace('_', ' ') || 'issue';
-
-          await sendLocalNotification(
-            `Report ${action}!`,
-            `Someone ${action} your ${category} report${report.city ? ` in ${report.city}` : ''}.`,
-            { reportId, screen: 'ReportDetail' },
-            'community'
-          );
-        }
-      }
-    )
-
+  // Votes on the user's reports aren't watched here: report_votes is
+  // readable only by the voter, so realtime never delivers other people's
+  // votes to this client. Counts arrive with the report UPDATE above.
+  return channel
     // Listen for cluster escalations (authority was contacted)
     .on(
       'postgres_changes',
@@ -222,6 +213,7 @@ export function subscribeToReportUpdates(
 }
 
 export function unsubscribeFromReportUpdates() {
+  subscriptionGeneration++;
   if (realtimeSubscription) {
     supabase.removeChannel(realtimeSubscription);
     realtimeSubscription = null;

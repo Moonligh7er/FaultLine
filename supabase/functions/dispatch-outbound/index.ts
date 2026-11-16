@@ -10,12 +10,17 @@
 // queued for manual submission). Email subjects carry the row's [FL-XXXXXX]
 // ref so inbound replies can be matched back (inbound-email function).
 //
+// A web form queued for manual submission is NOT delivered: the outbox row
+// becomes 'manual_pending' and its escalation_log row 'pending' (no sent_at,
+// cluster untouched) until an admin submits the form and marks it in the
+// queue (mark_escalation_handled, migration 042).
+//
 // Sandbox mode (app_settings.sandbox_mode, migration 037): nothing reaches a
 // real authority. Email goes to Resend's test sink, SeeClickFix is planned
 // but not posted, Open311 is logged only, web forms run as worker dry runs,
 // and escalation_log (the public record of notice) is not written.
 
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+import { createClient } from 'npm:@supabase/supabase-js@2.103.0';
 import { planSeeClickFixIssue, submitSeeClickFixIssue } from './seeclickfix.ts';
 
 const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY') || '';
@@ -104,7 +109,10 @@ Deno.serve(async (req) => {
     .in('id', ids)
     .eq('status', 'approved')
     .select('id, ref, kind, cluster_id, report_id, authority_id, methods, subject, body, payload');
-  if (claimError) return json({ error: claimError.message }, 500);
+  if (claimError) {
+    console.error('dispatch-outbound: claim failed', claimError.message);
+    return json({ error: 'Could not claim messages' }, 500);
+  }
 
   const { data: replySetting } = await admin.rpc('get_setting', { p_key: 'reply_to' });
   const replyTo = typeof replySetting === 'string' && replySetting ? replySetting : ENV_REPLY_TO;
@@ -113,7 +121,7 @@ Deno.serve(async (req) => {
 
   const results: Record<string, unknown>[] = [];
   for (const row of (claimed ?? []) as OutboundRow[]) {
-    const subject = `[${row.ref}] ${row.subject}`;
+    const subject = `[${row.ref}] ${row.subject}`.replace(/[\r\n]+/g, ' ');
     const attempts: string[] = [];
     const sent = sandbox
       ? await deliverSandbox(row, subject, replyTo, attempts)
@@ -128,6 +136,20 @@ Deno.serve(async (req) => {
         updated_at: now,
       }).eq('id', row.id);
       results.push({ ref: row.ref, status: 'failed', attempts });
+      continue;
+    }
+
+    if (sent.method === 'web_form_manual') {
+      // Waiting for a person to submit the form: not notice yet.
+      await admin.from('outbound_messages').update({
+        status: 'manual_pending',
+        sent_method: sent.method,
+        sent_recipient: sent.recipient,
+        attempts,
+        updated_at: now,
+      }).eq('id', row.id);
+      await queueManualWebForm(row, sent, subject);
+      results.push({ ref: row.ref, status: 'manual_pending', method: sent.method, recipient: sent.recipient });
       continue;
     }
 
@@ -229,6 +251,28 @@ async function deliverSandbox(
   return null;
 }
 
+/**
+ * Puts a manual web form in the admin queue (fault-line-web /admin/queue
+ * lists escalation_log rows with method web_form_manual): status 'pending',
+ * no sent_at, cluster status unchanged. mark_escalation_handled() turns it
+ * into notice once a person has actually submitted the form.
+ */
+async function queueManualWebForm(row: OutboundRow, sent: Sent, subject: string) {
+  const clusterId = row.cluster_id ?? row.payload?.cluster_id ?? null;
+  if (!clusterId) return; // escalation_log.cluster_id is NOT NULL; the outbox row stays manual_pending
+  const { error } = await admin.from('escalation_log').insert({
+    cluster_id: clusterId,
+    authority_id: row.authority_id,
+    method: sent.method,
+    recipient: sent.recipient,
+    subject,
+    body: row.body,
+    status: 'pending',
+    sent_at: null,
+  });
+  if (error) console.error(`dispatch-outbound: could not queue manual web form ${row.ref}`, error.message);
+}
+
 /** escalation_log is the public record of notice (and feeds the bounce webhook + status sync). */
 async function recordInEscalationLog(row: OutboundRow, sent: Sent, subject: string) {
   const clusterId = row.cluster_id ?? row.payload?.cluster_id ?? null;
@@ -321,7 +365,8 @@ async function submitOpen311(
   if (p.address) body.append('address_string', p.address);
   body.append('description', p.api_description);
   if (p.image_url) body.append('media_url', p.image_url);
-  if (OPEN311_API_KEY) body.append('api_key', OPEN311_API_KEY);
+  // Our one global key never travels over plain HTTP.
+  if (OPEN311_API_KEY && method.endpoint.startsWith('https://')) body.append('api_key', OPEN311_API_KEY);
   if (OPEN311_JURISDICTION_ID) body.append('jurisdiction_id', OPEN311_JURISDICTION_ID);
 
   try {

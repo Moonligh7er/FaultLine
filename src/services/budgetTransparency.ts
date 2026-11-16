@@ -90,7 +90,7 @@ export async function getBudgetVsReality(
 
   const { count: unresolvedCount } = await supabase
     .from('reports')
-    .select('*', { count: 'exact', head: true })
+    .select('id', { count: 'exact', head: true })
     .eq('city', city)
     .eq('state', state)
     .neq('status', 'resolved')

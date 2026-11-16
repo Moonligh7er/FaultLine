@@ -4,13 +4,16 @@
 // into public.outbound_messages for admin review (or 'approved' when
 // app_settings.auto_send is on) and dispatch-outbound sends it.
 //
-// Abuse guards: the caller only names a report + authority. The report must
-// be the caller's own and recent; recipients come from the authority's
-// methods on file (never caller-supplied); the body is built here from the
-// stored report; one live message per report (unique index); and each user
-// is rate-limited (edge_rate_limit_log, migration 023).
+// Abuse guards: the caller only names a report. The report must be the
+// caller's own and recent; the authority is worked out here from the
+// report's location and category (find_authority_by_point), never taken from
+// the caller; recipients come from that authority's methods on file; the
+// body is built here from the stored report, with links in resident-written
+// text removed and line breaks kept out of the subject; one live message per
+// report (unique index); and each user is rate-limited (edge_rate_limit_log,
+// migration 023).
 
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+import { createClient } from 'npm:@supabase/supabase-js@2.103.0';
 
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL') || '';
 const SUPABASE_ANON = Deno.env.get('SUPABASE_ANON_KEY') || '';
@@ -47,6 +50,11 @@ async function withinRateLimit(
 
 type Method = { method?: string; endpoint?: string; priority?: number; protocol?: string };
 
+/** Resident-written text goes to officials: no clickable links in it. */
+const stripLinks = (t: string) => t.replace(/\b(?:https?:\/\/|www\.)[^\s<>"')\]]+/gi, '[link removed]');
+/** Subject fragments: no CR/LF (header injection) or other control characters. */
+const oneLine = (t: string) => t.replace(/[\x00-\x1f\x7f]+/g, ' ').trim();
+
 /** Methods that can be automated: API endpoints and valid email addresses. */
 function usableMethods(raw: unknown): Method[] {
   return ((raw as Method[] | null) ?? []).filter((m) =>
@@ -68,10 +76,10 @@ Deno.serve(async (req) => {
   const { data: { user }, error: authError } = await supabase.auth.getUser(authHeader.substring(7));
   if (authError || !user) return json({ error: 'Invalid token' }, 401);
 
-  const { reportId, authorityId } = await req.json().catch(() => ({}));
-  if (typeof reportId !== 'string' || !UUID_RE.test(reportId) ||
-      typeof authorityId !== 'string' || !UUID_RE.test(authorityId)) {
-    return json({ error: 'reportId and authorityId are required' }, 400);
+  // authorityId is still accepted from older clients but never trusted.
+  const { reportId } = await req.json().catch(() => ({}));
+  if (typeof reportId !== 'string' || !UUID_RE.test(reportId)) {
+    return json({ error: 'reportId is required' }, 400);
   }
 
   const admin = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY);
@@ -97,13 +105,18 @@ Deno.serve(async (req) => {
     return json({ error: 'Report is too old for direct submission' }, 409);
   }
 
-  const { data: authority } = await admin
-    .from('authorities')
-    .select('id, name, submission_methods, is_active')
-    .eq('id', authorityId)
-    .maybeSingle();
+  // The responsible authority for this point + category, computed here.
+  const { data: candidates, error: authorityError } = await admin.rpc('find_authority_by_point', {
+    lat: report.latitude, lng: report.longitude, p_category: report.category,
+  });
+  if (authorityError) {
+    console.error('send-report-email: find_authority_by_point failed', authorityError.message);
+    return json({ error: 'Could not look up the authority' }, 500);
+  }
+  const authority = ((candidates ?? []) as { id: string; name: string | null; submission_methods: unknown; is_active: boolean | null }[])
+    .find((a) => a.is_active !== false && usableMethods(a.submission_methods).length > 0);
   const methods = usableMethods(authority?.submission_methods);
-  if (!authority || authority.is_active === false || methods.length === 0) {
+  if (!authority || methods.length === 0) {
     return json({ error: 'Authority has no API or email on file' }, 422);
   }
 
@@ -120,9 +133,9 @@ Deno.serve(async (req) => {
     .eq('report_id', report.id)
     .maybeSingle();
 
-  const category = (report.category || 'issue').replace(/_/g, ' ');
-  const location = [report.address, report.city, report.state].filter(Boolean).join(', ');
-  const description = (report.description || '').slice(0, MAX_DESCRIPTION_CHARS);
+  const category = oneLine((report.category || 'issue').replace(/_/g, ' '));
+  const location = oneLine(stripLinks([report.address, report.city, report.state].filter(Boolean).join(', '))).slice(0, 200);
+  const description = stripLinks((report.description || '').slice(0, MAX_DESCRIPTION_CHARS));
   const mediaUrls = ((report.media || []) as { uploadedUrl?: string; url?: string }[])
     .map((m) => m?.uploadedUrl ?? m?.url)
     .filter((u): u is string => typeof u === 'string' && u.startsWith(`${SUPABASE_URL}/storage/`));
@@ -161,7 +174,7 @@ Fault Line Community Reports`;
       authority_id: authority.id,
       methods,
       recipient: methods[0]?.endpoint ?? null,
-      subject: `Community Report: ${category} at ${location || 'reported location'}`,
+      subject: oneLine(`Community Report: ${category} at ${location || 'reported location'}`),
       body,
       payload: {
         category: report.category,
